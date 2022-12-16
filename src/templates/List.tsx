@@ -96,7 +96,7 @@ const List = () => {
             profileImageUrl: rowData.profileImageUrl,
             tweetId: rowData.id_str,
             createdAt: rowData.createdAt,
-            url: rowData.entities.urls[0].url,
+            url: rowData.entities?.urls[0]?.url || '',
           },
         ]);
       });
