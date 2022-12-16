@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 import { AppConfig } from '../utils/AppConfig';
 
 type ILogoProps = {
@@ -12,7 +14,8 @@ const Logo = (props: ILogoProps) => {
 
   return (
     <span className={`text-gray-900 inline-flex items-center ${fontStyle}`}>
-      <svg
+      <Image src="/icon80.png" alt="logo" width={size} height={size} />
+      {/* <svg
         className="text-primary-500 stroke-current mr-1"
         xmlns="http://www.w3.org/2000/svg"
         width={size}
@@ -28,7 +31,7 @@ const Logo = (props: ILogoProps) => {
         <rect x="9" y="8" width="6" height="12" rx="1" />
         <rect x="15" y="4" width="6" height="16" rx="1" />
         <path d="M4 20h14" />
-      </svg>
+      </svg> */}
 
       {AppConfig.site_name}
     </span>

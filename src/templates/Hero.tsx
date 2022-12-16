@@ -12,15 +12,15 @@ const Hero = () => (
     <Section yPadding="py-6">
       <NavbarTwoColumns logo={<Logo xl />}>
         <li>
-          <Link href="https://github.com/ixartz/Next-JS-Landing-Page-Starter-Template">
+          <Link href="https://github.com/pseudozach/nostr.directory">
             <a>GitHub</a>
           </Link>
         </li>
-        <li>
+        {/* <li>
           <Link href="/">
             <a>Sign in</a>
           </Link>
-        </li>
+        </li> */}
       </NavbarTwoColumns>
     </Section>
 
@@ -28,15 +28,25 @@ const Hero = () => (
       <HeroOneButton
         title={
           <>
-            {'The modern landing page for\n'}
-            <span className="text-primary-500">React developers</span>
+            {'Find your '} <span style={{ color: 'gray' }}>twitter</span>{' '}
+            {' follows on '}{' '}
+            <a
+              href="https://github.com/nostr-protocol/nostr"
+              target="_blank"
+              rel="noreferrer"
+              className="text-primary-500"
+            >
+              nostr
+            </a>
+            {/* {'\n'} */}
+            {/* <span className="text-primary-500">React developers</span> */}
           </>
         }
-        description="The easiest way to build a React landing page in seconds."
+        description="Add your nostr public key to the directory so your followers can find you"
         button={
-          <Link href="https://creativedesignsguru.com/category/nextjs/">
-            <a>
-              <Button xl>Download Your Free Theme</Button>
+          <Link href="https://twitter.com/intent/tweet?text=Verifying%20my%20account%20on%20nostr%0A%0AMy%20Public%20Key%3A%20%22Paste%20your%20nostr%20public%20key%20here%22%0A%0AFind%20others%20at%20https%3A%2F%2Fnostr.directory%20%40nostrdirectory">
+            <a target="_blank" rel="noreferrer">
+              <Button xl>Tweet your nostr pubkey</Button>
             </a>
           </Link>
         }

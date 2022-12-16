@@ -3,13 +3,17 @@ import { AppConfig } from '../utils/AppConfig';
 import { Banner } from './Banner';
 import { Footer } from './Footer';
 import { Hero } from './Hero';
-import { VerticalFeatures } from './VerticalFeatures';
+import { List } from './List';
+// import { Search } from './Search';
+// import { VerticalFeatures } from './VerticalFeatures';
 
 const Base = () => (
   <div className="antialiased text-gray-600">
     <Meta title={AppConfig.title} description={AppConfig.description} />
     <Hero />
-    <VerticalFeatures />
+    {/* <Search /> */}
+    <List />
+    {/* <VerticalFeatures /> */}
     <Banner />
     <Footer />
   </div>
