@@ -74,6 +74,17 @@ const Footer = () => (
                 </svg>
               </a>
             </Link>
+
+            <Link href="https://getalby.com/p/nostrdirectory">
+              <a target="_blank">
+                <Image
+                  src="/assets/images/alby.svg"
+                  alt="donate to support nostr.directory"
+                  height="20"
+                  width="20"
+                />
+              </a>
+            </Link>
           </>
         }
       >
