@@ -110,13 +110,12 @@ const List = () => {
         title="Nostr Public Keys"
         description="Here is a list of twitter accounts that tweeted their nostr public keys"
       >
-        <div style={{ height: 400, width: '100%' }}>
+        <div style={{ height: 600, width: '100%' }}>
           <DataGrid
             rows={row}
             columns={columns}
             pageSize={100}
-            rowsPerPageOptions={[10]}
-            // checkboxSelection
+            rowsPerPageOptions={[50]}
             disableSelectionOnClick
             disableColumnFilter
             disableColumnSelector
