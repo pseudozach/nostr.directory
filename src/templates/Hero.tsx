@@ -2,7 +2,8 @@ import Link from 'next/link';
 
 import { Background } from '../background/Background';
 import { Button } from '../button/Button';
-import { HeroOneButton } from '../hero/HeroOneButton';
+import { OutlinedButton } from '../button/OutlinedButton';
+import { HeroTwoButton } from '../hero/HeroTwoButton';
 import { Section } from '../layout/Section';
 import { NavbarTwoColumns } from '../navigation/NavbarTwoColumns';
 import { Logo } from './Logo';
@@ -25,16 +26,16 @@ const Hero = () => (
     </Section>
 
     <Section yPadding="pt-20 pb-32">
-      <HeroOneButton
+      <HeroTwoButton
         title={
           <>
-            {'Find your '} <span style={{ color: 'gray' }}>twitter</span>{' '}
+            {'Find your '} <span className="text-gray-600">twitter</span>{' '}
             {' follows on '}{' '}
             <a
               href="https://github.com/nostr-protocol/nostr"
               target="_blank"
               rel="noreferrer"
-              className="text-primary-500"
+              className="text-nostr-light"
             >
               nostr
             </a>
@@ -45,8 +46,15 @@ const Hero = () => (
         description="Add your nostr public key to the directory so your followers can find you"
         button={
           <Link href="https://twitter.com/intent/tweet?text=Verifying%20my%20account%20on%20nostr%0A%0AMy%20Public%20Key%3A%20%22Paste%20your%20nostr%20public%20key%20here%22%0A%0AFind%20others%20at%20https%3A%2F%2Fnostr.directory%20%40nostrdirectory%20%23nostr">
-            <a target="_blank" rel="noreferrer">
+            <a target="_blank" rel="noreferrer" className="m-2">
               <Button xl>Tweet your nostr pubkey</Button>
+            </a>
+          </Link>
+        }
+        button2={
+          <Link href="https://www.nostr.net">
+            <a target="_blank" rel="noreferrer" className="m-2">
+              <OutlinedButton xl>Find a Client. Join nostr.</OutlinedButton>
             </a>
           </Link>
         }

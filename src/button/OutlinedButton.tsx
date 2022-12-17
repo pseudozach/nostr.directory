@@ -5,12 +5,12 @@ type IButtonProps = {
   children: string;
 };
 
-const Button = (props: IButtonProps) => {
+const OutlinedButton = (props: IButtonProps) => {
   const btnClass = className({
     btn: true,
     'btn-xl': props.xl,
     'btn-base': !props.xl,
-    'btn-primary': true,
+    'btn-two': true,
   });
 
   return (
@@ -32,11 +32,19 @@ const Button = (props: IButtonProps) => {
           }
 
           .btn-primary {
-            @apply text-white bg-nostr-light;
+            @apply text-white bg-primary-500;
           }
 
           .btn-primary:hover {
             @apply bg-primary-600;
+          }
+
+          .btn-two {
+            @apply text-nostr-dark;
+          }
+
+          .btn-two:hover {
+            @apply text-gray-600;
           }
         `}
       </style>
@@ -44,4 +52,4 @@ const Button = (props: IButtonProps) => {
   );
 };
 
-export { Button };
+export { OutlinedButton };
