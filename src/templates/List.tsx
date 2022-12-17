@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import Avatar from '@mui/material/Avatar';
@@ -32,8 +34,8 @@ const columns: GridColDef[] = [
     flex: 1,
   },
   {
-    field: 'pubkey',
-    headerName: 'Nostr PubKey',
+    field: 'nPubKey',
+    headerName: 'NIP19 PubKey',
     width: 200,
     flex: 1,
     renderCell: (params: GridRenderCellParams) => (
@@ -48,20 +50,54 @@ const columns: GridColDef[] = [
         </IconButton>
         <p>{params.value}</p>
       </>
-      // <a href={params.value} target="_blank" rel="noreferrer">
-      //   <TwitterIcon />
-      // </a>
     ),
+  },
+  {
+    field: 'hexPubKey',
+    headerName: 'Hex PubKey',
+    width: 200,
+    flex: 1,
+    renderCell: (params: GridRenderCellParams) =>
+      params.value ? (
+        <>
+          <IconButton
+            aria-label="delete"
+            onClick={() => {
+              navigator.clipboard.writeText(params.value || '');
+            }}
+          >
+            <ContentCopyIcon />
+          </IconButton>
+          <p>{params.value}</p>
+        </>
+      ) : (
+        <span style={{ width: '100%', textAlign: 'center' }}>-</span>
+      ),
+  },
+  {
+    field: 'isValid',
+    headerName: 'valid?',
+    headerAlign: 'center',
+    maxWidth: 100,
+    flex: 1,
+    align: 'center',
+    renderCell: (params: GridRenderCellParams) =>
+      params.value ? (
+        <CheckCircleIcon htmlColor="green" />
+      ) : (
+        <CancelIcon htmlColor="red" />
+      ),
   },
   {
     field: 'url',
     headerName: 'Proof URL',
+    headerAlign: 'center',
     maxWidth: 100,
     flex: 1,
     align: 'center',
     renderCell: (params: GridRenderCellParams) => (
       <a href={params.value} target="_blank" rel="noreferrer">
-        <TwitterIcon />
+        <TwitterIcon htmlColor="#1DA1F2" />
       </a>
     ),
   },
@@ -87,12 +123,24 @@ const List = () => {
       querySnapshot.forEach((doc: { id: any; data: () => any }) => {
         // console.log(`${doc.id} => `, doc.data());
         const rowData = doc.data();
+        if (!rowData.nPubKey && rowData.pubkey.includes('npub'))
+          rowData.nPubKey = rowData.pubkey;
+        if (
+          !rowData.hexPubKey &&
+          !rowData.pubkey.includes('npub') &&
+          !rowData.pubkey.includes('nsec')
+        )
+          rowData.hexPubKey = rowData.pubkey;
+        if (!rowData.nPubKey && !rowData.hexPubKey) return;
         setRow((r) => [
           ...r,
           {
             id: doc.id,
+            isValid: rowData.isValid,
             screenName: rowData.screenName,
             pubkey: rowData.pubkey,
+            nPubKey: rowData.nPubKey,
+            hexPubKey: rowData.hexPubKey,
             profileImageUrl: rowData.profileImageUrl,
             tweetId: rowData.id_str,
             createdAt: rowData.createdAt,
@@ -116,6 +164,7 @@ const List = () => {
             columns={columns}
             pageSize={100}
             rowsPerPageOptions={[50]}
+            loading={row.length === 0}
             disableSelectionOnClick
             disableColumnFilter
             disableColumnSelector
