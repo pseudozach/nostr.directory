@@ -20,7 +20,7 @@ const OutlinedButton = (props: IButtonProps) => {
       <style jsx>
         {`
           .btn {
-            @apply inline-block rounded-md text-center;
+            @apply inline-block rounded-md text-center m-1;
           }
 
           .btn-base {
@@ -40,11 +40,11 @@ const OutlinedButton = (props: IButtonProps) => {
           }
 
           .btn-two {
-            @apply text-nostr-dark;
+            @apply text-nostr-dark border-2 border-nostr-dark;
           }
 
           .btn-two:hover {
-            @apply text-gray-600;
+            @apply text-gray-600 border-2 border-gray-600;
           }
         `}
       </style>
