@@ -1,21 +1,28 @@
+import * as React from 'react';
 import { useEffect, useState } from 'react';
 
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ClearSharpIcon from '@mui/icons-material/ClearSharp';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import SearchSharpIcon from '@mui/icons-material/SearchSharp';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
-import {
-  DataGrid,
-  GridColDef,
-  GridRenderCellParams,
-  GridToolbar,
-} from '@mui/x-data-grid';
+import InputAdornment from '@mui/material/InputAdornment';
+import TextField from '@mui/material/TextField';
+import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import algoliasearch from 'algoliasearch/lite';
 
 import { Background } from '../background/Background';
 import { Section } from '../layout/Section';
 import db from '../utils/firebase';
+
+const searchClient = algoliasearch(
+  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
+  process.env.NEXT_PUBLIC_ALGOLIA_API_KEY!
+);
+const searchIndex = searchClient.initIndex('twitter');
 
 const columns: GridColDef[] = [
   {
@@ -105,77 +112,172 @@ const columns: GridColDef[] = [
 ];
 
 const List = () => {
-  const [row, setRow] = useState<
-    Array<{
-      id: string;
-      screenName: string;
-      pubkey: string;
-      profileImageUrl: string;
-      tweetId: string;
-      createdAt: number;
-      url: string;
-    }>
-  >([]);
+  const [row, setRow] = useState<Array<any>>([]);
+  const [stats, setStats] = useState({ tweetCount: 1000 });
+  const [searchText, setSearchText] = useState('');
+
+  const fetchInitialData = async () => {
+    console.log('getting latest records...');
+    const querySnapshot = await db
+      .collection('twitter')
+      .orderBy('createdAt', 'desc')
+      .limit(50)
+      .get();
+    setRow([]);
+    querySnapshot.forEach((doc: { id: any; data: () => any }) => {
+      // console.log(`${doc.id} => `, doc.data());
+      const rowData = doc.data();
+      if (!rowData.nPubKey && rowData.pubkey.includes('npub'))
+        rowData.nPubKey = rowData.pubkey;
+      if (
+        !rowData.hexPubKey &&
+        !rowData.pubkey.includes('npub') &&
+        !rowData.pubkey.includes('nsec')
+      )
+        rowData.hexPubKey = rowData.pubkey;
+      if (!rowData.nPubKey && !rowData.hexPubKey) return;
+      setRow((r) => [
+        ...r,
+        {
+          id: doc.id,
+          isValid: rowData.isValid,
+          screenName: rowData.screenName,
+          pubkey: rowData.pubkey,
+          nPubKey: rowData.nPubKey,
+          hexPubKey: rowData.hexPubKey,
+          profileImageUrl: rowData.profileImageUrl,
+          tweetId: rowData.id_str,
+          createdAt: rowData.createdAt,
+          url: rowData.entities?.urls[0]?.url || '',
+        },
+      ]);
+    });
+  };
+
+  const handleChange = async () => {
+    // console.log('got searchText ', searchText);
+    // console.log(
+    //   'searchText.length && row.length ',
+    //   searchText.length,
+    //   row.length
+    // );
+    if (searchText.length === 0 && row.length === 0) {
+      fetchInitialData();
+      return;
+    }
+    if (searchText.length < 2) {
+      // console.log('return short query');
+      return;
+    }
+    // console.log('searching records for ', searchText);
+    const { hits } = await searchIndex.search(searchText, {
+      hitsPerPage: 10,
+    });
+    setRow([]);
+    for (let index = 0; index < hits.length; index += 1) {
+      const rowData: any = hits[index];
+      setRow((r) => [
+        ...r,
+        {
+          id: rowData.objectID,
+          isValid: rowData.isValid,
+          screenName: rowData.screenName,
+          pubkey: rowData?.pubkey,
+          nPubKey: rowData?.nPubKey,
+          hexPubKey: rowData?.hexPubKey,
+          profileImageUrl: rowData.profileImageUrl,
+          tweetId: rowData.id_str,
+          createdAt: rowData.createdAt,
+          url: `https://twitter.com/i/web/status/${rowData.id_str}`,
+        },
+      ]);
+    }
+
+    // console.log('hits ', hits.length);
+  };
+
+  useEffect(() => {
+    fetchInitialData();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
-      const querySnapshot = await db.collection('twitter').get();
-      querySnapshot.forEach((doc: { id: any; data: () => any }) => {
-        // console.log(`${doc.id} => `, doc.data());
-        const rowData = doc.data();
-        if (!rowData.nPubKey && rowData.pubkey.includes('npub'))
-          rowData.nPubKey = rowData.pubkey;
-        if (
-          !rowData.hexPubKey &&
-          !rowData.pubkey.includes('npub') &&
-          !rowData.pubkey.includes('nsec')
-        )
-          rowData.hexPubKey = rowData.pubkey;
-        if (!rowData.nPubKey && !rowData.hexPubKey) return;
-        setRow((r) => [
-          ...r,
-          {
-            id: doc.id,
-            isValid: rowData.isValid,
-            screenName: rowData.screenName,
-            pubkey: rowData.pubkey,
-            nPubKey: rowData.nPubKey,
-            hexPubKey: rowData.hexPubKey,
-            profileImageUrl: rowData.profileImageUrl,
-            tweetId: rowData.id_str,
-            createdAt: rowData.createdAt,
-            url: rowData.entities?.urls[0]?.url || '',
-          },
-        ]);
-      });
+      const statsRef = await db.collection('stats').doc('data').get();
+      const statsData: any = statsRef.data();
+      // console.log('got statsData ', statsData);
+      setStats(statsData);
     };
     fetchData();
   }, []);
+
+  const clearSearchField = () => {
+    // console.log('delete text - reset data');
+    setRow([]);
+    setSearchText('');
+  };
+
+  useEffect(() => {
+    handleChange();
+  }, [searchText]);
 
   return (
     <Background color="bg-gray-100">
       <Section
         title="Nostr Public Keys"
-        description="Here is a list of twitter accounts that tweeted their nostr public keys"
+        description={`Here is a list of ${stats.tweetCount!} twitter accounts that tweeted their nostr public keys`}
       >
+        <TextField
+          id="outlined-basic"
+          // label="Outlined"
+          variant="outlined"
+          placeholder="Search by twitter screen name or pubkey"
+          // onChange={handleChange}
+          onChange={(event) => {
+            setSearchText(event.target.value);
+          }}
+          value={searchText}
+          fullWidth
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchSharpIcon />
+              </InputAdornment>
+            ),
+            endAdornment: (
+              <InputAdornment position="start">
+                <IconButton
+                  aria-label="clear search"
+                  onClick={clearSearchField}
+                >
+                  <ClearSharpIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+
         <div style={{ height: 600, width: '100%' }}>
           <DataGrid
             rows={row}
             columns={columns}
             pageSize={100}
-            rowsPerPageOptions={[50]}
+            // rowsPerPageOptions={[50]}
+            hideFooter
             loading={row.length === 0}
             disableSelectionOnClick
             disableColumnFilter
             disableColumnSelector
             disableDensitySelector
-            components={{ Toolbar: GridToolbar }}
-            componentsProps={{
-              toolbar: {
-                showQuickFilter: true,
-                quickFilterProps: { debounceMs: 500 },
-              },
-            }}
+            // Toolbar: GridToolbar,
+            // components={{ FilterPanel: GridFilterPanel }}
+            // componentsProps={{
+            //   toolbar: {
+            //     showQuickFilter: true,
+            //     quickFilterProps: {
+            //       debounceMs: 500,
+            //     },
+            //   },
+            // }}
           />
         </div>
       </Section>
