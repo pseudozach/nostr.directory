@@ -4,7 +4,8 @@ type IHeroTwoButtonProps = {
   title: ReactNode;
   description: string;
   button: ReactNode;
-  button2: ReactNode;
+  // button2: ReactNode;
+  button3: ReactNode;
 };
 
 const HeroTwoButton = (props: IHeroTwoButtonProps) => (
@@ -14,8 +15,9 @@ const HeroTwoButton = (props: IHeroTwoButtonProps) => (
     </h1>
     <div className="text-2xl mt-4 mb-16">{props.description}</div>
 
-    {props.button2}
+    {/* {props.button2} */}
     {props.button}
+    {props.button3}
   </header>
 );
 

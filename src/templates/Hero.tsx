@@ -2,10 +2,10 @@ import Link from 'next/link';
 
 import { Background } from '../background/Background';
 import { Button } from '../button/Button';
-import { OutlinedButton } from '../button/OutlinedButton';
 import { HeroTwoButton } from '../hero/HeroTwoButton';
 import { Section } from '../layout/Section';
 import { NavbarTwoColumns } from '../navigation/NavbarTwoColumns';
+import Popup from '../popup/Popup';
 import { Logo } from './Logo';
 
 const Hero = () => (
@@ -51,12 +51,16 @@ const Hero = () => (
             </a>
           </Link>
         }
-        button2={
-          <Link href="https://www.nostr.net">
-            <a target="_blank" rel="noreferrer" className="m-2">
-              <OutlinedButton xl>Find a Client. Join nostr.</OutlinedButton>
-            </a>
-          </Link>
+        // button2={
+        //   <Link href="https://www.nostr.net">
+        //     <a target="_blank" rel="noreferrer" className="m-2">
+        //       <OutlinedButton xl>Find a Client. Join nostr.</OutlinedButton>
+        //     </a>
+        //   </Link>
+        // }
+        button3={
+          <Popup buttonText="Verify your pubkey on nostr" />
+          // <OutlinedButton xl>Verify your pubkey on nostr</OutlinedButton>
         }
       />
     </Section>
