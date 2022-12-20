@@ -11,4 +11,21 @@ module.exports = withBundleAnalyzer({
   // So, the source code is "basePath-ready".
   // You can remove `basePath` if you don't need it.
   reactStrictMode: true,
+  async rewrites() {
+    return [
+      {
+        source: '/.well-known/nostr.json',
+        destination: '/api/nostr',
+      },
+    ];
+  },
+  // async redirects() {
+  //   return [
+  //     {
+  //       source: '/.well-known/nostr.json',
+  //       destination: '/api/nostr',
+  //       permanent: true,
+  //     },
+  //   ];
+  // },
 });
