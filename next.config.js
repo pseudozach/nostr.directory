@@ -32,7 +32,7 @@ module.exports = withBundleAnalyzer({
     return [
       {
         // matching all API routes /api/:path*
-        source: '/*',
+        source: '/(.*)',
         headers: [
           { key: 'Access-Control-Allow-Credentials', value: 'true' },
           { key: 'Access-Control-Allow-Origin', value: '*' },
