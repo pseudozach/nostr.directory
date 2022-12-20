@@ -14,14 +14,14 @@ const Hero = () => (
       <NavbarTwoColumns logo={<Logo xl />}>
         <li>
           <Link href="https://github.com/pseudozach/nostr.directory">
-            <a>GitHub</a>
+            <a target="_blank">GitHub</a>
           </Link>
         </li>
-        {/* <li>
-          <Link href="/">
-            <a>Sign in</a>
+        <li>
+          <Link href="https://www.nostr.net/#clients">
+            <a target="_blank">Clients</a>
           </Link>
-        </li> */}
+        </li>
       </NavbarTwoColumns>
     </Section>
 
