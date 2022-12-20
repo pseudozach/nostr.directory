@@ -20,7 +20,7 @@ async function resolveNPubKey(screenName: string) {
     const tweet = doc.data();
     nPubKey = tweet.nPubKey;
   });
-  console.log('found nPubKey ', nPubKey);
+  // console.log('found nPubKey ', nPubKey);
   if (!nPubKey) throw new Error('user not found');
   return nPubKey;
 }
@@ -38,7 +38,7 @@ export default async function handler(
       throw new Error('string can not be an array');
     }
     const screenName: string = req.query.name!;
-    console.log('resolving screenName ', screenName);
+    // console.log('resolving screenName ', screenName);
     const nPubKey = await resolveNPubKey(screenName);
     const nip5 = {
       names: {
@@ -47,7 +47,7 @@ export default async function handler(
     };
     res.status(200).json(nip5);
   } catch (error: any) {
-    console.log('nostr nip05 api error ', error.message);
+    // console.log('nostr nip05 api error ', error.message);
     res.status(404).json({
       error: error.message,
     });
