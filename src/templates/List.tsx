@@ -13,6 +13,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import algoliasearch from 'algoliasearch/lite';
+import Link from 'next/link';
 
 import { Background } from '../background/Background';
 import { Section } from '../layout/Section';
@@ -81,16 +82,34 @@ const columns: GridColDef[] = [
         <span style={{ width: '100%', textAlign: 'center' }}>-</span>
       ),
   },
+  // {
+  //   field: 'isValid',
+  //   headerName: 'valid?',
+  //   headerAlign: 'center',
+  //   maxWidth: 100,
+  //   flex: 1,
+  //   align: 'center',
+  //   renderCell: (params: GridRenderCellParams) =>
+  //     params.value ? (
+  //       <CheckCircleIcon htmlColor="green" />
+  //     ) : (
+  //       <CancelIcon htmlColor="red" />
+  //     ),
+  // },
   {
-    field: 'isValid',
-    headerName: 'valid?',
+    field: 'verifyEvent',
+    headerName: 'verified?',
     headerAlign: 'center',
     maxWidth: 100,
     flex: 1,
     align: 'center',
     renderCell: (params: GridRenderCellParams) =>
       params.value ? (
-        <CheckCircleIcon htmlColor="green" />
+        <Link href={`https://www.nostr.guru/e/${params.value}`}>
+          <a target="_blank">
+            <CheckCircleIcon htmlColor="green" />
+          </a>
+        </Link>
       ) : (
         <CancelIcon htmlColor="red" />
       ),
@@ -149,6 +168,8 @@ const List = () => {
           tweetId: rowData.id_str,
           createdAt: rowData.createdAt,
           url: rowData.entities?.urls[0]?.url || '',
+          verified: rowData.verified,
+          verifyEvent: rowData.verifyEvent,
         },
       ]);
     });
@@ -189,6 +210,8 @@ const List = () => {
           tweetId: rowData.id_str,
           createdAt: rowData.createdAt,
           url: `https://twitter.com/i/web/status/${rowData.id_str}`,
+          verified: rowData.verified,
+          verifyEvent: rowData.verifyEvent,
         },
       ]);
     }
