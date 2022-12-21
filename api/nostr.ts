@@ -31,11 +31,16 @@ async function resolveHexPubKey(screenName: string) {
     .collection('twitter')
     .where('screenName', '==', screenName)
     .get();
+  let verifiedHexPubKey: string = '';
   hexPubKeyquery.forEach((doc) => {
     const tweet = doc.data();
+    if (tweet.verified) {
+      verifiedHexPubKey = tweet.hexPubKey;
+    }
     hexPubKey = tweet.hexPubKey;
   });
-  // console.log('found nPubKey ', nPubKey);
+  if (verifiedHexPubKey) hexPubKey = verifiedHexPubKey;
+  // console.log('found hexPubKey ', hexPubKey);
   if (!hexPubKey) throw new Error('user not found');
   return hexPubKey;
 }
