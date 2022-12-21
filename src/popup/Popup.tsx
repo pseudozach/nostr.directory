@@ -13,6 +13,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 import { initNostr, SendMsgType } from '@nostrgg/client';
+import { getEventHash } from 'nostr-tools';
 
 import { Button } from '../button/Button';
 import { OutlinedButton } from '../button/OutlinedButton';
@@ -42,56 +43,68 @@ export default function AlertDialog(props: PopupProps) {
   const [alertOpen, setAlertOpen] = React.useState(false);
 
   const signWithNip07 = async () => {
-    if (!window.nostr) return;
-
-    if (!twitterHandle) {
-      alert('Please enter your twitter handle first');
+    if (!window.nostr) {
+      alert('You need to have a browser extension with nostr support!');
       return;
     }
 
-    const content = `#[0] Verifying My Public Key: \"${twitterHandle}\"`;
-    // const pubkey = await window.nostr.getPublicKey();
-    const unsignedEvent: any = {
-      // pubkey,
-      created_at: Math.floor(Date.now() / 1000),
-      kind: 1,
-      tags: [
-        [
-          'p',
-          '5e7ae588d7d11eac4c25906e6da807e68c6498f49a38e4692be5a089616ceb18',
+    if (!twitterHandle) {
+      alert('Please enter your twitter handle first!');
+      return;
+    }
+
+    try {
+      const content = `#[0] Verifying My Public Key: \"${twitterHandle}\"`;
+      const pubkey = await window.nostr.getPublicKey();
+      const unsignedEvent: any = {
+        pubkey,
+        created_at: Math.floor(Date.now() / 1000),
+        kind: 1,
+        tags: [
+          [
+            'p',
+            '5e7ae588d7d11eac4c25906e6da807e68c6498f49a38e4692be5a089616ceb18',
+          ],
         ],
-      ],
-      content,
-    };
-    // event.id = getEventHash(event);
-    const signedEvent = await window.nostr.signEvent(unsignedEvent);
-    // console.log('signedEvent ', signedEvent);
+        content,
+      };
+      unsignedEvent.id = getEventHash(unsignedEvent);
+      // console.log('unsignedEvent ', unsignedEvent);
 
-    // publish to some relays via API
-    initNostr({
-      relayUrls: [
-        'wss://nostr.zebedee.cloud',
-        'wss://nostr-relay.wlvs.space',
-        // 'wss://nostr-relay.untethr.me',
-      ],
-      onConnect: (relayUrl, sendEvent) => {
-        console.log(
-          'Nostr connected to:',
-          relayUrl,
-          // sendEvent,
-          'sending signedEvent ',
-          signedEvent
-        );
+      const signedEvent = await window.nostr.signEvent(unsignedEvent);
+      // console.log('signedEvent ', signedEvent);
 
-        // Send a REQ event to start listening to events from that relayer:
-        sendEvent([SendMsgType.EVENT, signedEvent], relayUrl);
-      },
-      onEvent: (relayUrl: any, event: any) => {
-        console.log('Nostr received event:', relayUrl, event);
-        setAlertOpen(true);
-      },
-      debug: true, // Enable logs
-    });
+      // publish to some relays via API
+      initNostr({
+        relayUrls: [
+          'wss://nostr.zebedee.cloud',
+          'wss://nostr-relay.wlvs.space',
+          // 'wss://nostr-relay.untethr.me',
+        ],
+        onConnect: (relayUrl, sendEvent) => {
+          console.log(
+            'Nostr connected to:',
+            relayUrl,
+            // sendEvent,
+            'sending signedEvent ',
+            signedEvent
+          );
+
+          // Send a REQ event to start listening to events from that relayer:
+          sendEvent([SendMsgType.EVENT, signedEvent], relayUrl);
+        },
+        onEvent: (relayUrl: any, event: any) => {
+          console.log('Nostr received event:', relayUrl, event);
+          setAlertOpen(true);
+        },
+        onError(relayUrl, err) {
+          console.log('nostr error ', relayUrl, err);
+        },
+        debug: true, // Enable logs
+      });
+    } catch (error: any) {
+      console.log('signWithNip07 error ', error.message);
+    }
   };
 
   const handleClickOpen = () => {
