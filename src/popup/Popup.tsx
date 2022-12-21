@@ -4,16 +4,25 @@ import * as React from 'react';
 
 import { TextField } from '@mui/material';
 // import Button from '@mui/material/Button';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
 import { initNostr, SendMsgType } from '@nostrgg/client';
 
 import { Button } from '../button/Button';
 import { OutlinedButton } from '../button/OutlinedButton';
+
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+  props,
+  ref
+) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 type PopupProps = {
   buttonText: string;
@@ -30,6 +39,7 @@ declare const window: customWindow;
 export default function AlertDialog(props: PopupProps) {
   const [open, setOpen] = React.useState(false);
   const [twitterHandle, setTwitterHandle] = React.useState('');
+  const [alertOpen, setAlertOpen] = React.useState(true);
 
   const signWithNip07 = async () => {
     if (!window.nostr) return;
@@ -78,6 +88,7 @@ export default function AlertDialog(props: PopupProps) {
       },
       onEvent: (relayUrl: any, event: any) => {
         console.log('Nostr received event:', relayUrl, event);
+        setAlertOpen(true);
       },
       debug: true, // Enable logs
     });
@@ -89,6 +100,17 @@ export default function AlertDialog(props: PopupProps) {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleAlertClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (event && reason === 'clickaway') {
+      return;
+    }
+
+    setAlertOpen(false);
   };
 
   return (
@@ -112,7 +134,7 @@ export default function AlertDialog(props: PopupProps) {
               format: {'\n'}
             </Typography>
             <br />
-            <code className="break-all">{`@5e7ae588d7d11eac4c25906e6da807e68c6498f49a38e4692be5a089616ceb18 Verifying My Public Key: "${
+            <code className="break-all mb-4">{`@5e7ae588d7d11eac4c25906e6da807e68c6498f49a38e4692be5a089616ceb18 Verifying My Public Key: "${
               twitterHandle || 'Your twitter handle here'
             }"`}</code>
             <br />
@@ -129,7 +151,7 @@ export default function AlertDialog(props: PopupProps) {
               value={twitterHandle}
               fullWidth
             />
-            <div>
+            <div className="mt-4">
               <Typography className="mt-4">
                 If you have a NIP-07 compliant extension like Alby or nos2x, you
                 can sign and publish the note from here.
@@ -172,6 +194,19 @@ export default function AlertDialog(props: PopupProps) {
           </div>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={6000}
+        onClose={handleAlertClose}
+      >
+        <Alert
+          onClose={handleAlertClose}
+          severity="success"
+          sx={{ width: '100%' }}
+        >
+          Note published successfully...
+        </Alert>
+      </Snackbar>
     </>
   );
 }
