@@ -140,7 +140,7 @@ export default function AlertDialog(props: PopupProps) {
             <br />
             <TextField
               id="twitter-handle"
-              className="mt-4"
+              className="!mt-4"
               required
               label="Twitter Screen Name"
               variant="outlined"
