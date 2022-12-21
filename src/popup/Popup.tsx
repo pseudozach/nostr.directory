@@ -39,7 +39,7 @@ declare const window: customWindow;
 export default function AlertDialog(props: PopupProps) {
   const [open, setOpen] = React.useState(false);
   const [twitterHandle, setTwitterHandle] = React.useState('');
-  const [alertOpen, setAlertOpen] = React.useState(true);
+  const [alertOpen, setAlertOpen] = React.useState(false);
 
   const signWithNip07 = async () => {
     if (!window.nostr) return;
