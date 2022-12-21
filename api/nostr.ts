@@ -10,19 +10,34 @@ type ResponseData =
       error: string;
     };
 
-async function resolveNPubKey(screenName: string) {
-  let nPubKey = '';
-  const nPubKeyquery = await db
+// async function resolveNPubKey(screenName: string) {
+//   let nPubKey = '';
+//   const nPubKeyquery = await db
+//     .collection('twitter')
+//     .where('screenName', '==', screenName)
+//     .get();
+//   nPubKeyquery.forEach((doc) => {
+//     const tweet = doc.data();
+//     nPubKey = tweet.nPubKey;
+//   });
+//   // console.log('found nPubKey ', nPubKey);
+//   if (!nPubKey) throw new Error('user not found');
+//   return nPubKey;
+// }
+
+async function resolveHexPubKey(screenName: string) {
+  let hexPubKey = '';
+  const hexPubKeyquery = await db
     .collection('twitter')
     .where('screenName', '==', screenName)
     .get();
-  nPubKeyquery.forEach((doc) => {
+  hexPubKeyquery.forEach((doc) => {
     const tweet = doc.data();
-    nPubKey = tweet.nPubKey;
+    hexPubKey = tweet.hexPubKey;
   });
   // console.log('found nPubKey ', nPubKey);
-  if (!nPubKey) throw new Error('user not found');
-  return nPubKey;
+  if (!hexPubKey) throw new Error('user not found');
+  return hexPubKey;
 }
 
 export default async function handler(
@@ -39,10 +54,11 @@ export default async function handler(
     }
     const screenName: string = req.query.name!;
     // console.log('resolving screenName ', screenName);
-    const nPubKey = await resolveNPubKey(screenName);
+    // const nPubKey = await resolveNPubKey(screenName);
+    const hexPubKey = await resolveHexPubKey(screenName);
     const nip5 = {
       names: {
-        [screenName]: nPubKey,
+        [screenName]: hexPubKey,
       },
     };
     res.status(200).json(nip5);
