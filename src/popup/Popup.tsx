@@ -1,13 +1,18 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable no-useless-escape */
 import * as React from 'react';
 
-import Button from '@mui/material/Button';
+import { TextField } from '@mui/material';
+// import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Typography from '@mui/material/Typography';
+import { initNostr, SendMsgType } from '@nostrgg/client';
 
+import { Button } from '../button/Button';
 import { OutlinedButton } from '../button/OutlinedButton';
 
 type PopupProps = {
@@ -15,10 +20,68 @@ type PopupProps = {
   // contentText: string;
 };
 
-const verificationText = `@5e7ae588d7d11eac4c25906e6da807e68c6498f49a38e4692be5a089616ceb18 Verifying My Public Key: "Paste your twitter handle here"`;
+// const verificationText = `@5e7ae588d7d11eac4c25906e6da807e68c6498f49a38e4692be5a089616ceb18 Verifying My Public Key: "Paste your twitter handle here"`;
+
+interface customWindow extends Window {
+  nostr?: any;
+}
+declare const window: customWindow;
 
 export default function AlertDialog(props: PopupProps) {
   const [open, setOpen] = React.useState(false);
+  const [twitterHandle, setTwitterHandle] = React.useState('');
+
+  const signWithNip07 = async () => {
+    if (!window.nostr) return;
+
+    if (!twitterHandle) {
+      alert('Please enter your twitter handle first');
+      return;
+    }
+
+    const content = `#[0] Verifying My Public Key: \"${twitterHandle}\"`;
+    // const pubkey = await window.nostr.getPublicKey();
+    const unsignedEvent: any = {
+      // pubkey,
+      created_at: Math.floor(Date.now() / 1000),
+      kind: 1,
+      tags: [
+        [
+          'p',
+          '5e7ae588d7d11eac4c25906e6da807e68c6498f49a38e4692be5a089616ceb18',
+        ],
+      ],
+      content,
+    };
+    // event.id = getEventHash(event);
+    const signedEvent = await window.nostr.signEvent(unsignedEvent);
+    // console.log('signedEvent ', signedEvent);
+
+    // publish to some relays via API
+    initNostr({
+      relayUrls: [
+        'wss://nostr.zebedee.cloud',
+        'wss://nostr-relay.wlvs.space',
+        // 'wss://nostr-relay.untethr.me',
+      ],
+      onConnect: (relayUrl, sendEvent) => {
+        console.log(
+          'Nostr connected to:',
+          relayUrl,
+          // sendEvent,
+          'sending signedEvent ',
+          signedEvent
+        );
+
+        // Send a REQ event to start listening to events from that relayer:
+        sendEvent([SendMsgType.EVENT, signedEvent], relayUrl);
+      },
+      onEvent: (relayUrl: any, event: any) => {
+        console.log('Nostr received event:', relayUrl, event);
+      },
+      debug: true, // Enable logs
+    });
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -30,9 +93,6 @@ export default function AlertDialog(props: PopupProps) {
 
   return (
     <>
-      {/* <Button variant="outlined" onClick={handleClickOpen}>
-        {props.buttonText}
-      </Button> */}
       <span onClick={handleClickOpen} className="cursor-pointer">
         <OutlinedButton xl>{props.buttonText}</OutlinedButton>
       </span>
@@ -52,8 +112,31 @@ export default function AlertDialog(props: PopupProps) {
               format: {'\n'}
             </Typography>
             <br />
-            <code className="break-all">{verificationText}</code>
+            <code className="break-all">{`@5e7ae588d7d11eac4c25906e6da807e68c6498f49a38e4692be5a089616ceb18 Verifying My Public Key: "${
+              twitterHandle || 'Your twitter handle here'
+            }"`}</code>
             <br />
+            <TextField
+              id="twitter-handle"
+              className="mt-4"
+              required
+              label="Twitter Screen Name"
+              variant="outlined"
+              placeholder="fiatjaf"
+              onChange={(event) => {
+                setTwitterHandle(event.target.value);
+              }}
+              value={twitterHandle}
+              fullWidth
+            />
+            <div>
+              <Typography className="mt-4">
+                If you have a NIP-07 compliant extension like Alby or nos2x, you
+                can sign and publish the note from here.
+              </Typography>
+
+              <div className="flex w-full items-center"></div>
+            </div>
             <Typography className="mt-4">
               {'\n'}
               Here is a
@@ -71,16 +154,22 @@ export default function AlertDialog(props: PopupProps) {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button
+          <div
+            className="cursor-pointer"
             onClick={() => {
-              navigator.clipboard.writeText(verificationText);
+              navigator.clipboard.writeText(
+                `@5e7ae588d7d11eac4c25906e6da807e68c6498f49a38e4692be5a089616ceb18 Verifying My Public Key: "${
+                  twitterHandle || 'Your twitter handle here'
+                }"`
+              );
             }}
           >
-            Copy
-          </Button>
-          <Button onClick={handleClose} autoFocus>
-            OK
-          </Button>
+            <OutlinedButton>Copy Verification Text</OutlinedButton>
+          </div>
+
+          <div className="cursor-pointer" onClick={signWithNip07}>
+            <Button>Sign with Extension</Button>
+          </div>
         </DialogActions>
       </Dialog>
     </>
