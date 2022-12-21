@@ -132,7 +132,7 @@ const columns: GridColDef[] = [
 
 const List = () => {
   const [row, setRow] = useState<Array<any>>([]);
-  const [stats, setStats] = useState({ tweetCount: 1000 });
+  const [stats, setStats] = useState({ tweetCount: 1000, verifiedCount: 100 });
   const [searchText, setSearchText] = useState('');
 
   const fetchInitialData = async () => {
@@ -247,7 +247,7 @@ const List = () => {
     <Background color="bg-gray-100">
       <Section
         title="Nostr Public Keys"
-        description={`Here is a list of ${stats.tweetCount!} twitter accounts that tweeted their nostr public keys`}
+        description={`Here is a list of ${stats.tweetCount!} twitter accounts that tweeted their nostr public keys. ${stats.verifiedCount!} verified those keys on nostr.`}
       >
         <TextField
           id="outlined-basic"
