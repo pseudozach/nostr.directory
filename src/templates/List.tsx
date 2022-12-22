@@ -7,7 +7,7 @@ import ClearSharpIcon from '@mui/icons-material/ClearSharp';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import SearchSharpIcon from '@mui/icons-material/SearchSharp';
 import TwitterIcon from '@mui/icons-material/Twitter';
-import { Tooltip } from '@mui/material';
+import { Stack, Tooltip } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -137,9 +137,11 @@ const List = () => {
   const [row, setRow] = useState<Array<any>>([]);
   const [stats, setStats] = useState({ tweetCount: 1000, verifiedCount: 100 });
   const [searchText, setSearchText] = useState('');
+  const [fetching, setFetching] = useState(false);
 
   const fetchInitialData = async () => {
     console.log('getting latest records...');
+    setFetching(true);
     const querySnapshot = await db
       .collection('twitter')
       .orderBy('createdAt', 'desc')
@@ -176,6 +178,7 @@ const List = () => {
         },
       ]);
     });
+    setFetching(false);
   };
 
   const handleChange = async () => {
@@ -193,6 +196,7 @@ const List = () => {
       // console.log('return short query');
       return;
     }
+    setFetching(true);
     // console.log('searching records for ', searchText);
     const { hits } = await searchIndex.search(searchText, {
       hitsPerPage: 10,
@@ -218,7 +222,7 @@ const List = () => {
         },
       ]);
     }
-
+    setFetching(false);
     // console.log('hits ', hits.length);
   };
 
@@ -289,11 +293,22 @@ const List = () => {
             pageSize={100}
             // rowsPerPageOptions={[50]}
             hideFooter
-            loading={row.length === 0}
+            loading={fetching}
             disableSelectionOnClick
             disableColumnFilter
             disableColumnSelector
             disableDensitySelector
+            components={{
+              NoRowsOverlay: () => (
+                <Stack
+                  height="100%"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  No entries found
+                </Stack>
+              ),
+            }}
             // Toolbar: GridToolbar,
             // components={{ FilterPanel: GridFilterPanel }}
             // componentsProps={{
