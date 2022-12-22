@@ -7,6 +7,7 @@ import ClearSharpIcon from '@mui/icons-material/ClearSharp';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import SearchSharpIcon from '@mui/icons-material/SearchSharp';
 import TwitterIcon from '@mui/icons-material/Twitter';
+import { Tooltip } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -111,7 +112,9 @@ const columns: GridColDef[] = [
           </a>
         </Link>
       ) : (
-        <CancelIcon htmlColor="red" />
+        <Tooltip title="Pubkey is not verified on nostr." placement="top">
+          <CancelIcon htmlColor="red" />
+        </Tooltip>
       ),
   },
   {
