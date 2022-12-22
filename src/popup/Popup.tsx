@@ -12,11 +12,40 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Snackbar from '@mui/material/Snackbar';
 import Typography from '@mui/material/Typography';
+import { sha256 } from '@noble/hashes/sha256';
+import * as secp256k1 from '@noble/secp256k1';
 import { initNostr, SendMsgType } from '@nostrgg/client';
-import { getEventHash } from 'nostr-tools';
 
 import { Button } from '../button/Button';
 import { OutlinedButton } from '../button/OutlinedButton';
+
+const utf8Encoder = new TextEncoder();
+
+export type NostrEvent = {
+  id?: string;
+  sig?: string;
+  kind: number;
+  tags: string[][];
+  pubkey: string;
+  content: string;
+  created_at: number;
+};
+
+function serializeEvent(evt: NostrEvent): string {
+  return JSON.stringify([
+    0,
+    evt.pubkey,
+    evt.created_at,
+    evt.kind,
+    evt.tags,
+    evt.content,
+  ]);
+}
+
+function getEventHash(event: NostrEvent): string {
+  const eventHash = sha256(utf8Encoder.encode(serializeEvent(event)));
+  return secp256k1.utils.bytesToHex(eventHash);
+}
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,

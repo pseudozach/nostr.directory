@@ -19,6 +19,8 @@
     "@mui/icons-material": "^5.11.0",
     "@mui/material": "^5.11.0",
     "@mui/x-data-grid": "^5.17.14",
+    "@noble/hashes": "^1.1.5",
+    "@noble/secp256k1": "^1.7.0",
     "@nostrgg/client": "^0.1.1",
     "algoliasearch": "^4.14.2",
     "autosuggest-highlight": "^3.3.4",
@@ -29,7 +31,6 @@
     "lodash.throttle": "^4.1.1",
     "next": "^12.0.9",
     "next-seo": "^4.29.0",
-    "nostr-tools": "^1.0.0-beta2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "styled-jsx-plugin-postcss": "^4.0.1"

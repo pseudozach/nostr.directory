@@ -293,7 +293,7 @@ const List = () => {
             pageSize={100}
             // rowsPerPageOptions={[50]}
             hideFooter
-            loading={fetching}
+            loading={row.length === 0 && fetching}
             disableSelectionOnClick
             disableColumnFilter
             disableColumnSelector
