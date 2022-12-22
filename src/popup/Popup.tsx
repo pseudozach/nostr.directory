@@ -41,15 +41,27 @@ export default function AlertDialog(props: PopupProps) {
   const [open, setOpen] = React.useState(false);
   const [twitterHandle, setTwitterHandle] = React.useState('');
   const [alertOpen, setAlertOpen] = React.useState(false);
+  const [errorAlert, setErrorAlert] = React.useState({
+    open: false,
+    text: 'Error while doing stuff',
+  });
 
   const signWithNip07 = async () => {
     if (!window.nostr) {
-      alert('You need to have a browser extension with nostr support!');
+      // alert('You need to have a browser extension with nostr support!');
+      setErrorAlert({
+        open: true,
+        text: 'You need to have a browser extension with nostr support!',
+      });
       return;
     }
 
     if (!twitterHandle) {
-      alert('Please enter your twitter handle first!');
+      // alert('Please enter your twitter handle first!');
+      setErrorAlert({
+        open: true,
+        text: 'Please enter your twitter handle first!',
+      });
       return;
     }
 
@@ -124,6 +136,20 @@ export default function AlertDialog(props: PopupProps) {
     }
 
     setAlertOpen(false);
+  };
+
+  const handleErrorAlertClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (event && reason === 'clickaway') {
+      return;
+    }
+
+    setErrorAlert({
+      open: false,
+      text: 'Error while doing stuff',
+    });
   };
 
   return (
@@ -218,6 +244,19 @@ export default function AlertDialog(props: PopupProps) {
           sx={{ width: '100%' }}
         >
           Note published successfully...
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={errorAlert.open}
+        autoHideDuration={6000}
+        onClose={handleErrorAlertClose}
+      >
+        <Alert
+          onClose={handleErrorAlertClose}
+          severity="error"
+          sx={{ width: '100%' }}
+        >
+          {errorAlert.text}
         </Alert>
       </Snackbar>
     </>
