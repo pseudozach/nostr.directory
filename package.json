@@ -16,6 +16,8 @@
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
+    "@google-cloud/firestore": "^6.4.1",
+    "@google-cloud/storage": "^6.8.0",
     "@mui/icons-material": "^5.11.0",
     "@mui/material": "^5.11.0",
     "@mui/x-data-grid": "^5.17.14",
@@ -26,6 +28,7 @@
     "autosuggest-highlight": "^3.3.4",
     "classnames": "^2.3.1",
     "firebase": "^8.10.1",
+    "firestore-backfire": "^2.4.0",
     "instantsearch.js": "^4.49.2",
     "lodash": "^4.17.21",
     "lodash.throttle": "^4.1.1",
