@@ -8,18 +8,15 @@ on: [push]
 jobs:
   backup:
     runs-on: ubuntu-latest
-    steps:
-    - name: Create secret files
-      run: |
-        echo ${{ secrets.GCP_SA_KEY }} | base64 -d > gcp.json
-        echo ${{ secrets.FB_SA_KEY }} | base64 -d > fb.json
-        echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
-        
+    steps:       
     - name: Check out repository code
       uses: actions/checkout@v3
 
     - name: Backup firestore db in json format
       run: |
+        echo ${{ secrets.GCP_SA_KEY }} | base64 -d > gcp.json
+        echo ${{ secrets.FB_SA_KEY }} | base64 -d > fb.json
+        echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
         npm ci
         jq '.client_email' gcp.json
         npx backfire export gs://nostrdb-backups/$NOW.ndjson --gcpProject nostrdirectory --gcpKeyFile gcp.json --paths twitter --project nostrdirectory --keyFile fb.json
