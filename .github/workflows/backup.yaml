@@ -13,14 +13,12 @@ jobs:
       run: |
         echo ${{ secrets.GCP_SA_KEY }} | base64 -d > gcp.json
         echo ${{ secrets.FB_SA_KEY }} | base64 -d > fb.json
+        echo "NOW=$(date +'%Y-%m-%dT%H:%M:%S')" >> $GITHUB_ENV
         
     - name: Check out repository code
       uses: actions/checkout@v3
 
     - name: Backup firestore db in json format
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       run: |
         npm ci
-        npx backfire export gs://nostrdb-backups  --gcpProject nostrdirectory --gcpKeyFile gcp.json --paths twitter --project nostrdirectory --keyFile fb.json
+        npx backfire export gs://nostrdb-backups/$NOW.ndjson  --gcpProject nostrdirectory --gcpKeyFile gcp.json --paths twitter --project nostrdirectory --keyFile fb.json
