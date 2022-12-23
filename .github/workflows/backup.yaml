@@ -18,3 +18,16 @@ jobs:
         echo ${{ secrets.FB_SA_KEY }} | base64 -d > fb.json
         npm i
         GOOGLE_APPLICATION_CREDENTIALS='gcp.json' npx backfire export gs://nostrdb-backups/ndjson/$(date +'%Y-%m-%dT%H:%M:%S').ndjson --gcpProject nostrdirectory --gcpKeyFile gcp.json --paths twitter --project nostrdirectory --keyFile fb.json
+
+    - uses: senmu/download-json-property-action@v1.0.0
+      id: get-stats
+      with:
+        url: 'https://firestore.googleapis.com/v1/projects/nostrdirectory/databases/(default)/documents/stats/data'
+        property_path: fields
+
+    - name: publish stats
+      uses: theborakompanioni/nostr-action@v1
+      with:
+        key: ${{ secrets.NOSTR_KEY }}
+        relay: wss://nostr.zebedee.cloud
+        content: 🤖 $(date +'%Y-%m-%dT%H:%M:%S') stats ${{ steps.get-stats.outputs.value }}
