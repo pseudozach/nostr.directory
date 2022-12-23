@@ -21,4 +21,5 @@ jobs:
     - name: Backup firestore db in json format
       run: |
         npm ci
-        npx backfire export gs://nostrdb-backups/$NOW.ndjson  --gcpProject nostrdirectory --gcpKeyFile gcp.json --paths twitter --project nostrdirectory --keyFile fb.json
+        jq '.client_email' gcp.json
+        npx backfire export gs://nostrdb-backups/$NOW.ndjson --gcpProject nostrdirectory --gcpKeyFile gcp.json --paths twitter --project nostrdirectory --keyFile fb.json
