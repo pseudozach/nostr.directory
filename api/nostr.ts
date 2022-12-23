@@ -29,7 +29,7 @@ async function resolveHexPubKey(screenName: string) {
   let hexPubKey = '';
   const hexPubKeyquery = await db
     .collection('twitter')
-    .where('screenName', '==', screenName)
+    .where('lcScreenName', '==', screenName)
     .get();
   let verifiedHexPubKey: string = '';
   hexPubKeyquery.forEach((doc) => {
@@ -57,7 +57,7 @@ export default async function handler(
     if (Array.isArray(req.query.name)) {
       throw new Error('string can not be an array');
     }
-    const screenName: string = req.query.name!;
+    const screenName: string = req.query.name!.toLowerCase();
     // console.log('resolving screenName ', screenName);
     // const nPubKey = await resolveNPubKey(screenName);
     const hexPubKey = await resolveHexPubKey(screenName);
