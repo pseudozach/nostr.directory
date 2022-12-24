@@ -139,18 +139,74 @@ const List = () => {
   const [searchText, setSearchText] = useState('');
   const [fetching, setFetching] = useState(false);
 
+  const dedupArray = (rawArray: any) => {
+    const finalArray: any = [];
+    for (let index = 0; index < rawArray.length; index += 1) {
+      const element = rawArray[index];
+      const dupFound = finalArray.find(
+        (r: any) =>
+          r.hexPubKey === element.hexPubKey &&
+          r.screenName === element.screenName
+      );
+      if (dupFound) {
+        break;
+      }
+      finalArray.push(element);
+    }
+    setRow(finalArray);
+  };
+
+  // const dedupSet = (rowData: any) => {
+  //   // ignore duplicate hexPubKeys
+  //   console.log('comparing rowData.hexPubKey ', rowData.hexPubKey, ' to ', row);
+  //   for (let index = 0; index < row.length; index += 1) {
+  //     const element = row[index];
+  //     console.log('element? ', element);
+  //   }
+  //   const dup = row.filter((r) => r.hexPubKey === rowData.hexPubKey);
+  //   console.log('dup ', dup);
+  //   if (dup.length) {
+  //     console.log('dup found ', dup);
+  //     return;
+  //   }
+
+  //   // if (trimmed && !row.includes(trimmed)) {
+  //   //   setCategories((prevState) => prevState.concat(trimmed));
+  //   // }
+
+  //   setRow((r) => [
+  //     ...r,
+  //     {
+  //       id: rowData.id,
+  //       isValid: rowData.isValid,
+  //       screenName: rowData.screenName,
+  //       pubkey: rowData.pubkey,
+  //       nPubKey: rowData.nPubKey,
+  //       hexPubKey: rowData.hexPubKey,
+  //       profileImageUrl: rowData.profileImageUrl,
+  //       tweetId: rowData.id_str,
+  //       createdAt: rowData.createdAt,
+  //       url: rowData.entities?.urls[0]?.url || '',
+  //       verified: rowData.verified,
+  //       verifyEvent: rowData.verifyEvent,
+  //     },
+  //   ]);
+  // };
+
   const fetchInitialData = async () => {
     console.log('getting latest records...');
+    setRow([]);
     setFetching(true);
     const querySnapshot = await db
       .collection('twitter')
       .orderBy('createdAt', 'desc')
       .limit(50)
       .get();
-    setRow([]);
+    const rawArray: any[] = [];
     querySnapshot.forEach((doc: { id: any; data: () => any }) => {
       // console.log(`${doc.id} => `, doc.data());
       const rowData = doc.data();
+
       if (!rowData.nPubKey && rowData.pubkey.includes('npub'))
         rowData.nPubKey = rowData.pubkey;
       if (
@@ -160,34 +216,17 @@ const List = () => {
       )
         rowData.hexPubKey = rowData.pubkey;
       if (!rowData.nPubKey && !rowData.hexPubKey) return;
-      setRow((r) => [
-        ...r,
-        {
-          id: doc.id,
-          isValid: rowData.isValid,
-          screenName: rowData.screenName,
-          pubkey: rowData.pubkey,
-          nPubKey: rowData.nPubKey,
-          hexPubKey: rowData.hexPubKey,
-          profileImageUrl: rowData.profileImageUrl,
-          tweetId: rowData.id_str,
-          createdAt: rowData.createdAt,
-          url: rowData.entities?.urls[0]?.url || '',
-          verified: rowData.verified,
-          verifyEvent: rowData.verifyEvent,
-        },
-      ]);
+
+      rowData.id = doc.id;
+      rowData.tweetId = rowData.id_str;
+      rowData.url = rowData.entities?.urls[0]?.url || '';
+      rawArray.push(rowData);
     });
+    dedupArray(rawArray);
     setFetching(false);
   };
 
   const handleChange = async () => {
-    // console.log('got searchText ', searchText);
-    // console.log(
-    //   'searchText.length && row.length ',
-    //   searchText.length,
-    //   row.length
-    // );
     if (searchText.length === 0 && row.length === 0) {
       fetchInitialData();
       return;
@@ -197,31 +236,38 @@ const List = () => {
       return;
     }
     setFetching(true);
+    setRow([]);
     // console.log('searching records for ', searchText);
     const { hits } = await searchIndex.search(searchText, {
       hitsPerPage: 10,
     });
-    setRow([]);
+    const rawArray = [];
     for (let index = 0; index < hits.length; index += 1) {
       const rowData: any = hits[index];
-      setRow((r) => [
-        ...r,
-        {
-          id: rowData.objectID,
-          isValid: rowData.isValid,
-          screenName: rowData.screenName,
-          pubkey: rowData?.pubkey,
-          nPubKey: rowData?.nPubKey,
-          hexPubKey: rowData?.hexPubKey,
-          profileImageUrl: rowData.profileImageUrl,
-          tweetId: rowData.id_str,
-          createdAt: rowData.createdAt,
-          url: `https://twitter.com/i/web/status/${rowData.id_str}`,
-          verified: rowData.verified,
-          verifyEvent: rowData.verifyEvent,
-        },
-      ]);
+      rowData.id = rowData.objectID;
+      rowData.tweetId = rowData.id_str;
+      rowData.url = `https://twitter.com/i/web/status/${rowData.id_str}`;
+      rawArray.push(rowData);
+
+      // setRow((r) => [
+      //   ...r,
+      //   {
+      //     id: rowData.objectID,
+      //     isValid: rowData.isValid,
+      //     screenName: rowData.screenName,
+      //     pubkey: rowData?.pubkey,
+      //     nPubKey: rowData?.nPubKey,
+      //     hexPubKey: rowData?.hexPubKey,
+      //     profileImageUrl: rowData.profileImageUrl,
+      //     tweetId: rowData.id_str,
+      //     createdAt: rowData.createdAt,
+      //     url: `https://twitter.com/i/web/status/${rowData.id_str}`,
+      //     verified: rowData.verified,
+      //     verifyEvent: rowData.verifyEvent,
+      //   },
+      // ]);
     }
+    dedupArray(rawArray);
     setFetching(false);
     // console.log('hits ', hits.length);
   };
