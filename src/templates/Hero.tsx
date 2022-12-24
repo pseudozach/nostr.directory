@@ -13,8 +13,8 @@ const Hero = () => (
     <Section yPadding="py-6">
       <NavbarTwoColumns logo={<Logo xl />}>
         <li>
-          <Link href="https://github.com/pseudozach/nostr.directory">
-            <a target="_blank">GitHub</a>
+          <Link href="https://getalby.com/p/nostrdirectory">
+            <a target="_blank">Donate</a>
           </Link>
         </li>
         <li>

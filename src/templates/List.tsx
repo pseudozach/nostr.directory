@@ -145,6 +145,7 @@ const List = () => {
       const element = rawArray[index];
       const dupFound = finalArray.find(
         (r: any) =>
+          // should also check and prefer the row with verified
           r.hexPubKey === element.hexPubKey &&
           r.screenName === element.screenName
       );
