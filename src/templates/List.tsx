@@ -17,8 +17,9 @@ import algoliasearch from 'algoliasearch/lite';
 import Link from 'next/link';
 
 import { Background } from '../background/Background';
+import { Button as PrimaryButton } from '../button/Button';
 import { Section } from '../layout/Section';
-import db from '../utils/firebase';
+import { db } from '../utils/firebase';
 
 const searchClient = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
@@ -297,12 +298,50 @@ const List = () => {
     handleChange();
   }, [searchText]);
 
+  const popupSignIn = async () => {
+    // auth
+    //   .signInWithPopup(twitterProvider)
+    //   .then((result) => {
+    //     /** @type {firebase.auth.OAuthCredential} */
+    //     const { credential } = result;
+    //     // This gives you a the Twitter OAuth 1.0 Access Token and Secret.
+    //     // You can use these server side with your app's credentials to access the Twitter API.
+    //     const token = credential.accessToken!;
+    //     const { secret } = credential;
+    //     // The signed-in user info.
+    //     const { user } = result;
+    //     // ...
+    //     console.log('logged in ', token, secret, user);
+    //   })
+    //   .catch((error) => {
+    //     // Handle Errors here.
+    //     const errorCode = error.code;
+    //     const errorMessage = error.message;
+    //     // The email of the user's account used.
+    //     const { email } = error;
+    //     // The firebase.auth.AuthCredential type that was used.
+    //     const { credential } = error;
+    //     // ...
+    //     console.log(
+    //       'signin error ',
+    //       errorCode,
+    //       errorMessage,
+    //       email,
+    //       credential
+    //     );
+    //   });
+  };
+
   return (
     <Background color="bg-gray-100">
       <Section
         title="Nostr Public Keys"
         description={`Here is a list of ${stats.tweetCount!} twitter accounts that tweeted their nostr public keys. ${stats.verifiedCount!} verified those keys on nostr.`}
       >
+        <div style={{ display: 'flex' }} onClick={popupSignIn}>
+          To see a list of your follows that are on nostr:{' '}
+          <PrimaryButton xl>Sign in with Twitter</PrimaryButton>
+        </div>
         <TextField
           id="outlined-basic"
           // label="Outlined"

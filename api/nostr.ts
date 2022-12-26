@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import db from '../src/utils/firebase';
+import { db } from '../src/utils/firebase';
 
 type ResponseData =
   | {
