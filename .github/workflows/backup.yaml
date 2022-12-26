@@ -30,4 +30,4 @@ jobs:
       with:
         key: ${{ secrets.NOSTR_KEY }}
         relay: wss://nostr.zebedee.cloud
-        content: 🤖 $(date +'%Y-%m-%dT%H:%M:%S') stats ${{ steps.get-stats.outputs.value }}
+        content: 🤖 Latest stats ${{ steps.get-stats.outputs.value }}
