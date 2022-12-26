@@ -88,26 +88,26 @@ const Footer = () => (
           </>
         }
       >
-        {/* <li>
-          <Link href="/">
-            <a>Home</a>
+        <li>
+          <Link href="https://github.com/nostr-protocol/nostr">
+            <a>nostr Protocol</a>
           </Link>
         </li>
         <li>
-          <Link href="/">
-            <a>About</a>
+          <Link href="https://usenostr.org/">
+            <a>What is nostr?</a>
           </Link>
         </li>
         <li>
-          <Link href="/">
-            <a>Docs</a>
+          <Link href="https://www.youtube.com/watch?v=HbicnlCXg_Y">
+            <a>Workshop Video</a>
           </Link>
         </li>
         <li>
           <Link href="https://github.com/pseudozach/nostr.directory">
             <a>GitHub</a>
           </Link>
-        </li> */}
+        </li>
       </CenteredFooter>
     </Section>
   </Background>
