@@ -149,11 +149,11 @@ const List = () => {
           r.hexPubKey === element.hexPubKey &&
           r.screenName === element.screenName
       );
-      if (dupFound) {
-        break;
+      if (!dupFound) {
+        finalArray.push(element);
       }
-      finalArray.push(element);
     }
+    // console.log('finalArray length: ', finalArray.length);
     setRow(finalArray);
   };
 
@@ -223,6 +223,7 @@ const List = () => {
       rowData.url = rowData.entities?.urls[0]?.url || '';
       rawArray.push(rowData);
     });
+    // console.log('rawArray length: ', rawArray.length);
     dedupArray(rawArray);
     setFetching(false);
   };
