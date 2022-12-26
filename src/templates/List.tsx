@@ -19,7 +19,7 @@ import Link from 'next/link';
 import { Background } from '../background/Background';
 import { Button as PrimaryButton } from '../button/Button';
 import { Section } from '../layout/Section';
-import { db } from '../utils/firebase';
+import { auth, db, twitterProvider } from '../utils/firebase';
 
 const searchClient = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
@@ -299,37 +299,37 @@ const List = () => {
   }, [searchText]);
 
   const popupSignIn = async () => {
-    // auth
-    //   .signInWithPopup(twitterProvider)
-    //   .then((result) => {
-    //     /** @type {firebase.auth.OAuthCredential} */
-    //     const { credential } = result;
-    //     // This gives you a the Twitter OAuth 1.0 Access Token and Secret.
-    //     // You can use these server side with your app's credentials to access the Twitter API.
-    //     const token = credential.accessToken!;
-    //     const { secret } = credential;
-    //     // The signed-in user info.
-    //     const { user } = result;
-    //     // ...
-    //     console.log('logged in ', token, secret, user);
-    //   })
-    //   .catch((error) => {
-    //     // Handle Errors here.
-    //     const errorCode = error.code;
-    //     const errorMessage = error.message;
-    //     // The email of the user's account used.
-    //     const { email } = error;
-    //     // The firebase.auth.AuthCredential type that was used.
-    //     const { credential } = error;
-    //     // ...
-    //     console.log(
-    //       'signin error ',
-    //       errorCode,
-    //       errorMessage,
-    //       email,
-    //       credential
-    //     );
-    //   });
+    auth
+      .signInWithPopup(twitterProvider)
+      .then((result) => {
+        /** @type {firebase.auth.OAuthCredential} */
+        const { credential } = result;
+        // This gives you a the Twitter OAuth 1.0 Access Token and Secret.
+        // You can use these server side with your app's credentials to access the Twitter API.
+        // const token = credential.accessToken!;
+        // const { secret } = credential;
+        // The signed-in user info.
+        const { user } = result;
+        // ...
+        console.log('logged in ', result, credential, user);
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const { email } = error;
+        // The firebase.auth.AuthCredential type that was used.
+        const { credential } = error;
+        // ...
+        console.log(
+          'signin error ',
+          errorCode,
+          errorMessage,
+          email,
+          credential
+        );
+      });
   };
 
   return (
