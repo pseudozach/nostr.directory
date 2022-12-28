@@ -144,7 +144,7 @@ const FollowList = () => {
   const router = useRouter();
 
   const dedupArray = (rawArray: any) => {
-    const finalArray: any = [];
+    let finalArray: any = [];
     for (let index = 0; index < rawArray.length; index += 1) {
       const element = rawArray[index];
       const dupFound = finalArray.find(
@@ -153,10 +153,14 @@ const FollowList = () => {
           r.hexPubKey === element.hexPubKey &&
           r.screenName === element.screenName
       );
-      if (dupFound) {
-        break;
+      if (!dupFound) {
+        finalArray.push(element);
+      } else if (!dupFound.verified && element.verified) {
+        // remove duplicate and add new element instead
+        const removedArray = finalArray.filter((e: any) => e !== dupFound);
+        removedArray.push(element);
+        finalArray = removedArray;
       }
-      finalArray.push(element);
     }
     setRow(finalArray);
   };
@@ -253,7 +257,7 @@ const FollowList = () => {
       // {"#p":[pubkey],kinds:[3]}
 
       const relay = nostrTools.relayInit(
-        // 'wss://nostr-pub.wellorder.net',
+        // 'wss://nostr-pub.wellorder.net'
         // 'wss://nostr.zebedee.cloud'
         'wss://nostr-2.zebedee.cloud'
         // 'wss://nostr-relay.wlvs.space'
@@ -268,7 +272,7 @@ const FollowList = () => {
           {
             kinds: [3],
             authors: [pubkey],
-            since: 0,
+            // since: 0,
           },
         ]);
         sub.on('event', async (event: any) => {
@@ -294,11 +298,11 @@ const FollowList = () => {
           console.log('signedEvent ', signedEvent);
 
           const pub = relay.publish(event);
-          pub.on('ok', () => {
-            console.log(`${relay.url} has accepted our event`);
+          pub.on('ok', (ev: any) => {
+            console.log(`${relay.url} has accepted our event `, ev);
           });
-          pub.on('seen', () => {
-            console.log(`we saw the event on ${relay.url}`);
+          pub.on('seen', (ev: any) => {
+            console.log(`we saw the event on ${relay.url} `, ev);
             setAlertOpen(true);
           });
           pub.on('failed', (reason: any) => {
@@ -310,6 +314,7 @@ const FollowList = () => {
           });
         });
         sub.on('eose', async () => {
+          // console.log('eose');
           sub.unsub();
           // await relay.close();
         });
@@ -378,7 +383,7 @@ const FollowList = () => {
       </Section>
       <Snackbar
         open={alertOpen}
-        autoHideDuration={6000}
+        autoHideDuration={10000}
         onClose={handleAlertClose}
       >
         <Alert
@@ -391,7 +396,7 @@ const FollowList = () => {
       </Snackbar>
       <Snackbar
         open={errorAlert.open}
-        autoHideDuration={6000}
+        autoHideDuration={10000}
         onClose={handleErrorAlertClose}
       >
         <Alert

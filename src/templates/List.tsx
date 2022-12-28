@@ -142,7 +142,7 @@ const List = () => {
   const [fetching, setFetching] = useState(false);
 
   const dedupArray = (rawArray: any) => {
-    const finalArray: any = [];
+    let finalArray: any = [];
     for (let index = 0; index < rawArray.length; index += 1) {
       const element = rawArray[index];
       const dupFound = finalArray.find(
@@ -151,10 +151,14 @@ const List = () => {
           r.hexPubKey === element.hexPubKey &&
           r.screenName === element.screenName
       );
-      if (dupFound) {
-        break;
+      if (!dupFound) {
+        finalArray.push(element);
+      } else if (!dupFound.verified && element.verified) {
+        console.log('remove duplicate and add new element instead ');
+        const removedArray = finalArray.filter((e: any) => e !== dupFound);
+        removedArray.push(element);
+        finalArray = removedArray;
       }
-      finalArray.push(element);
     }
     setRow(finalArray);
   };
@@ -295,7 +299,7 @@ const List = () => {
     setSearchText('');
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     handleChange();
   }, [searchText]);
 

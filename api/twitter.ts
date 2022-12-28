@@ -85,14 +85,12 @@ export default async function handler(
             .where('userId', 'in', elementStr)
             .get();
           query.forEach((doc: any) => {
-            // console.log('found something ', doc.id, doc.data().screenName);
             const fsObj = doc.data();
             fsObj.id = doc.id;
             foundIds.push(fsObj);
           });
         }
 
-        // console.log('foundIds ', foundIds);
         res.status(200).json(foundIds);
 
         // TODO: later only if user has more than 5000 follows
