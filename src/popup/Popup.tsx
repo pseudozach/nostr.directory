@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable no-useless-escape */
 import * as React from 'react';
 
@@ -61,10 +60,10 @@ type PopupProps = {
 
 // const verificationText = `@5e7ae588d7d11eac4c25906e6da807e68c6498f49a38e4692be5a089616ceb18 Verifying My Public Key: "Paste your twitter handle here"`;
 
-interface customWindow extends Window {
+interface CustomWindow extends Window {
   nostr?: any;
 }
-declare const window: customWindow;
+declare const window: CustomWindow;
 
 export default function AlertDialog(props: PopupProps) {
   const [open, setOpen] = React.useState(false);

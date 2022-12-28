@@ -14,6 +14,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import algoliasearch from 'algoliasearch/lite';
+import firebase from 'firebase/app';
 import Link from 'next/link';
 
 import { Background } from '../background/Background';
@@ -45,7 +46,7 @@ const columns: GridColDef[] = [
   },
   {
     field: 'nPubKey',
-    headerName: 'NIP19 PubKey',
+    headerName: 'nPubKey',
     width: 200,
     flex: 1,
     renderCell: (params: GridRenderCellParams) => (
@@ -302,16 +303,29 @@ const List = () => {
     auth
       .signInWithPopup(twitterProvider)
       .then((result) => {
-        /** @type {firebase.auth.OAuthCredential} */
-        const { credential } = result;
-        // This gives you a the Twitter OAuth 1.0 Access Token and Secret.
-        // You can use these server side with your app's credentials to access the Twitter API.
+        if (!result.credential) {
+          alert('Error getting credentials from twitter API');
+          return;
+        }
+
+        // eslint-disable-next-line prefer-destructuring
+        const credential: firebase.auth.OAuthCredential = result.credential!;
         // const token = credential.accessToken!;
         // const { secret } = credential;
         // The signed-in user info.
-        const { user } = result;
-        // ...
+        const { user }: any = result;
         console.log('logged in ', result, credential, user);
+
+        if (
+          !credential.accessToken ||
+          !credential.secret ||
+          !user?.providerData.uid
+        ) {
+          alert('Error getting credentials from twitter API');
+          return;
+        }
+        // send credential to twitter page for a checkmark list of twitter follows that are already on nostr.
+        window.location.href = `/twitter?accessToken=${credential.accessToken}&accessSecret=${credential.secret}&userId=${user?.providerData.uid}`;
       })
       .catch((error) => {
         // Handle Errors here.
@@ -338,7 +352,16 @@ const List = () => {
         title="Nostr Public Keys"
         description={`Here is a list of ${stats.tweetCount!} twitter accounts that tweeted their nostr public keys. ${stats.verifiedCount!} verified those keys on nostr.`}
       >
-        <div style={{ display: 'flex' }} onClick={popupSignIn}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: 8,
+          }}
+          className="text-xl"
+          onClick={popupSignIn}
+        >
           To see a list of your follows that are on nostr:{' '}
           <PrimaryButton xl>Sign in with Twitter</PrimaryButton>
         </div>
