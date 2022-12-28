@@ -160,6 +160,7 @@ const List = () => {
         finalArray = removedArray;
       }
     }
+    // console.log('finalArray length: ', finalArray.length);
     setRow(finalArray);
   };
 
@@ -229,6 +230,7 @@ const List = () => {
       rowData.url = rowData.entities?.urls[0]?.url || '';
       rawArray.push(rowData);
     });
+    // console.log('rawArray length: ', rawArray.length);
     dedupArray(rawArray);
     setFetching(false);
   };
