@@ -228,7 +228,7 @@ const FollowList = () => {
   }, []);
 
   const bulkFollow = async () => {
-    console.log('bulkFollow this array: ', selected);
+    // console.log('bulkFollow this array: ', selected);
 
     if (selected.length === 0) {
       setErrorAlert({
@@ -254,7 +254,8 @@ const FollowList = () => {
 
       const relay = nostrTools.relayInit(
         // 'wss://nostr-pub.wellorder.net',
-        'wss://nostr.zebedee.cloud'
+        // 'wss://nostr.zebedee.cloud'
+        'wss://nostr-2.zebedee.cloud'
         // 'wss://nostr-relay.wlvs.space'
         // 'wss://nostr.rocks'
       );
@@ -262,57 +263,59 @@ const FollowList = () => {
 
       relay.on('connect', () => {
         console.log(`connected to ${relay.url}`);
+
+        const sub = relay.sub([
+          {
+            kinds: [3],
+            authors: [pubkey],
+            since: 0,
+          },
+        ]);
+        sub.on('event', async (event: any) => {
+          console.log('got event ', event);
+          // TODO: Should ignore the ones that are already on the list!
+
+          // prepare updated follow/contact list
+          const nestedSelected: any[] = [];
+          selected.forEach((pk: string) => {
+            nestedSelected.push('p', pk);
+          });
+          // add the new list and publish
+          const updatedEvent = {
+            ...event,
+            created_at: Math.floor(Date.now() / 1000),
+            tags: [...event.tags, nestedSelected],
+          };
+
+          updatedEvent.id = nostrTools.getEventHash(updatedEvent);
+          // console.log('updatedEvent ', updatedEvent);
+
+          const signedEvent = await window.nostr.signEvent(updatedEvent);
+          console.log('signedEvent ', signedEvent);
+
+          const pub = relay.publish(event);
+          pub.on('ok', () => {
+            console.log(`${relay.url} has accepted our event`);
+          });
+          pub.on('seen', () => {
+            console.log(`we saw the event on ${relay.url}`);
+            setAlertOpen(true);
+          });
+          pub.on('failed', (reason: any) => {
+            console.log(`failed to publish to ${relay.url}: ${reason}`);
+            setErrorAlert({
+              open: true,
+              text: `Failed to publish event with reason: ${reason}`,
+            });
+          });
+        });
+        sub.on('eose', async () => {
+          sub.unsub();
+          // await relay.close();
+        });
       });
       relay.on('error', () => {
         console.log(`failed to connect to ${relay.url}`);
-      });
-
-      const sub = relay.sub([
-        {
-          kinds: [3],
-          authors: [pubkey],
-        },
-      ]);
-      sub.on('event', async (event: any) => {
-        // TODO: Should ignore the ones that are already on the list!
-
-        // prepare updated follow/contact list
-        const nestedSelected: any[] = [];
-        selected.forEach((pk: string) => {
-          nestedSelected.push('p', pk);
-        });
-        // add the new list and publish
-        const updatedEvent = {
-          ...event,
-          created_at: Math.floor(Date.now() / 1000),
-          tags: [...event.tags, nestedSelected],
-        };
-
-        updatedEvent.id = nostrTools.getEventHash(updatedEvent);
-        // console.log('updatedEvent ', updatedEvent);
-
-        const signedEvent = await window.nostr.signEvent(updatedEvent);
-        console.log('signedEvent ', signedEvent);
-
-        const pub = relay.publish(event);
-        pub.on('ok', () => {
-          console.log(`${relay.url} has accepted our event`);
-        });
-        pub.on('seen', () => {
-          console.log(`we saw the event on ${relay.url}`);
-          setAlertOpen(true);
-        });
-        pub.on('failed', (reason: any) => {
-          console.log(`failed to publish to ${relay.url}: ${reason}`);
-          setErrorAlert({
-            open: true,
-            text: `Failed to publish event with reason: ${reason}`,
-          });
-        });
-      });
-      sub.on('eose', async () => {
-        sub.unsub();
-        // await relay.close();
       });
     } catch (error: any) {
       console.log('signWithNip07 error ', error);

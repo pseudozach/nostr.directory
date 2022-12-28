@@ -319,13 +319,13 @@ const List = () => {
         if (
           !credential.accessToken ||
           !credential.secret ||
-          !user?.providerData.uid
+          !user?.providerData[0].uid
         ) {
           alert('Error getting credentials from twitter API');
           return;
         }
         // send credential to twitter page for a checkmark list of twitter follows that are already on nostr.
-        window.location.href = `/twitter?accessToken=${credential.accessToken}&accessSecret=${credential.secret}&userId=${user?.providerData.uid}`;
+        window.location.href = `/twitter?accessToken=${credential.accessToken}&accessSecret=${credential.secret}&userId=${user?.providerData[0].uid}`;
       })
       .catch((error) => {
         // Handle Errors here.
