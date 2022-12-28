@@ -141,6 +141,8 @@ const FollowList = () => {
     open: false,
     text: 'Error while doing stuff',
   });
+  const [relayConnection, setRelayConnection] = useState<nostrTools.Relay>();
+  const [beforeContacts, setBeforeContacts] = useState<nostrTools.Event>();
   const router = useRouter();
 
   const dedupArray = (rawArray: any) => {
@@ -218,12 +220,77 @@ const FollowList = () => {
       }
 
       dedupArray(rawArray);
-      setFetching(false);
 
       // TODO: Should ignore the ones that are already on the contact list!
       // fetch nostr follow list and pre-mark the ones that are being followed or exclude them?
+
+      try {
+        // first get existing followers of this user
+        const pubkey = await window.nostr.getPublicKey();
+        // console.log('got pubkey ', pubkey);
+        // {"#p":[pubkey],kinds:[3]}
+
+        const relay = nostrTools.relayInit(
+          // 'wss://nostr-pub.wellorder.net'
+          // 'wss://nostr.zebedee.cloud'
+          // 'wss://nostr-2.zebedee.cloud'
+          'wss://nostr-relay.wlvs.space'
+          // 'wss://nostr.rocks'
+        );
+        setRelayConnection(relay);
+        await relay.connect();
+
+        relay.on('connect', () => {
+          console.log(`connected to ${relay.url}`);
+
+          const sub = relay.sub([
+            {
+              kinds: [3],
+              authors: [pubkey],
+              // since: 0,
+            },
+          ]);
+          sub.on('event', async (event: any) => {
+            // console.log('got event and setBeforeContacts:  ', event);
+            setBeforeContacts(event);
+
+            // mark these on the list?
+            const onlyIds: string[] = [];
+            event.tags.forEach((item: any) => {
+              if (item[0] === 'p') onlyIds.push(item[1]);
+            });
+            // console.log('onlyIds -> selected for preselection ', onlyIds);
+            setSelected(onlyIds);
+            setFetching(false);
+          });
+          sub.on('eose', async () => {
+            // console.log('eose');
+            sub.unsub();
+          });
+        });
+        relay.on('error', () => {
+          console.log(`failed to connect to ${relay.url}`);
+          setFetching(false);
+          setErrorAlert({
+            open: true,
+            text: `failed to connect to ${relay.url}`,
+          });
+        });
+      } catch (error: any) {
+        console.log('fetch contact list error ', error);
+        setFetching(false);
+        setErrorAlert({
+          open: true,
+          text: `fetch contact list error ${error}`,
+        });
+      }
     } catch (error: any) {
-      console.log('error ', error.message);
+      console.log('fetchInitialData error ', error.message);
+      setFetching(false);
+      setErrorAlert({
+        open: true,
+        text: `fetchInitialData error ${error.message}`,
+      });
     }
   };
 
@@ -251,79 +318,87 @@ const FollowList = () => {
     }
 
     try {
-      // first get existing followers of this user
+      // first get existing followers of this user - no we do that at initial
       const pubkey = await window.nostr.getPublicKey();
-      console.log('got pubkey ', pubkey);
+      // console.log('got pubkey, relayConnection ', pubkey, relayConnection);
       // {"#p":[pubkey],kinds:[3]}
 
-      const relay = nostrTools.relayInit(
-        // 'wss://nostr-pub.wellorder.net'
-        // 'wss://nostr.zebedee.cloud'
-        'wss://nostr-2.zebedee.cloud'
-        // 'wss://nostr-relay.wlvs.space'
-        // 'wss://nostr.rocks'
+      // Since we already pre-populated selected list, the final selected list should have all the contacts this account wants to have.
+      // console.log('selected: ', selected);
+      // console.log('nestedSelected ready: ', nestedSelected);
+      // console.log('beforeContacts: ', beforeContacts);
+
+      // branle merges it like this
+      let tags = beforeContacts?.tags || [];
+      // console.log('init tags: ', tags);
+
+      // remove contacts that we're not following anymore
+      tags = tags.filter(
+        ([t, v]: Array<string>) => t === 'p' && selected.find((f) => f === v)
       );
-      await relay.connect();
 
-      relay.on('connect', () => {
-        console.log(`connected to ${relay.url}`);
+      // copy even the comments from branle
+      // now we merely add to the existing event because it might contain more data in the
+      // tags that we don't want to replace
+      selected.forEach((pk: string) => {
+        if (!tags.find(([t, v]: Array<string>) => t === 'p' && v === pk)) {
+          tags.push(['p', pk]);
+        }
+      });
 
-        const sub = relay.sub([
-          {
-            kinds: [3],
-            authors: [pubkey],
-            // since: 0,
-          },
-        ]);
-        sub.on('event', async (event: any) => {
-          console.log('got event ', event);
-          // TODO: Should ignore the ones that are already on the list!
+      // await Promise.all(
+      //   nestedSelected.map(async pubkey => {
+      //     if (!tags.find(([t, v]) => t === 'p' && v === pubkey)) {
+      //       tags.push(await getPubKeyTagWithRelay(pubkey))
+      //     }
+      //   })
+      // )
 
-          // prepare updated follow/contact list
-          const nestedSelected: any[] = [];
-          selected.forEach((pk: string) => {
-            nestedSelected.push('p', pk);
-          });
-          // add the new list and publish
-          const updatedEvent = {
-            ...event,
-            created_at: Math.floor(Date.now() / 1000),
-            tags: [...event.tags, nestedSelected],
-          };
+      // console.log('final tags: ', tags);
 
-          updatedEvent.id = nostrTools.getEventHash(updatedEvent);
-          // console.log('updatedEvent ', updatedEvent);
+      // add the new list and publish
+      const updatedEvent: nostrTools.Event = {
+        ...beforeContacts,
+        kind: nostrTools.Kind.Contacts,
+        created_at: Math.floor(Date.now() / 1000),
+        tags,
+        pubkey,
+        content: beforeContacts?.content || '',
+      };
 
-          const signedEvent = await window.nostr.signEvent(updatedEvent);
-          console.log('signedEvent ', signedEvent);
+      updatedEvent.id = nostrTools.getEventHash(updatedEvent);
+      // console.log('updatedEvent ', updatedEvent);
 
-          const pub = relay.publish(event);
-          pub.on('ok', (ev: any) => {
-            console.log(`${relay.url} has accepted our event `, ev);
-          });
-          pub.on('seen', (ev: any) => {
-            console.log(`we saw the event on ${relay.url} `, ev);
-            setAlertOpen(true);
-          });
-          pub.on('failed', (reason: any) => {
-            console.log(`failed to publish to ${relay.url}: ${reason}`);
-            setErrorAlert({
-              open: true,
-              text: `Failed to publish event with reason: ${reason}`,
-            });
+      const signedEvent = await window.nostr.signEvent(updatedEvent);
+      // console.log('signedEvent ', signedEvent);
+
+      if (relayConnection) {
+        const pub = relayConnection.publish(signedEvent);
+        pub.on('ok', (ev: any) => {
+          console.log(`${relayConnection.url} has accepted our event `, ev);
+        });
+        pub.on('seen', (ev: any) => {
+          console.log(`we saw the event on ${relayConnection.url} `, ev);
+          setAlertOpen(true);
+        });
+        pub.on('failed', (reason: any) => {
+          console.log(`failed to publish to ${relayConnection.url}: ${reason}`);
+          setErrorAlert({
+            open: true,
+            text: `Failed to publish event with reason: ${reason}`,
           });
         });
-        sub.on('eose', async () => {
-          // console.log('eose');
-          sub.unsub();
-          // await relay.close();
-        });
-      });
-      relay.on('error', () => {
-        console.log(`failed to connect to ${relay.url}`);
-      });
+      } else {
+        throw new Error(
+          'Failed to publish, lost relay connection. Refresh and try again.'
+        );
+      }
     } catch (error: any) {
-      console.log('signWithNip07 error ', error);
+      console.log('bulkFollow error ', error);
+      setErrorAlert({
+        open: true,
+        text: `Some other error: ${JSON.stringify(error)}`,
+      });
     }
   };
 
@@ -350,7 +425,9 @@ const FollowList = () => {
             //   console.log('cellData ', cellData);
             //   navigator.clipboard.writeText(cellData.formattedValue || '');
             // }}
+            selectionModel={selected}
             onSelectionModelChange={(newSelectionArray) => {
+              // console.log('newSelectionArray: ', newSelectionArray);
               setSelected(newSelectionArray);
             }}
             components={{
@@ -363,6 +440,7 @@ const FollowList = () => {
                   No entries found
                 </Stack>
               ),
+              // LoadingOverlay: LinearProgress,
             }}
           />
         </div>
