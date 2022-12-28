@@ -455,16 +455,26 @@ const FollowList = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'flex-end',
-            marginTop: 4,
           }}
-          className="text-xl"
+          className="text-xl mt-4"
           onClick={bulkFollow}
         >
           Follow accounts you selected on{' '}
           <span className="text-nostr-darker ml-1"> nostr</span>:{' '}
           <Button xl>Update contact list</Button>
         </div>
+        <Alert
+          severity="warning"
+          className="mt-4 items-center"
+          // sx={{ width: '100%' }}
+        >
+          * Please <b>double-check your contact list</b> before publishing to
+          make sure you dont lose any contacts.
+          <br />* If you have more than 5000 follows on twitter, there may be
+          accounts missing from this list.
+        </Alert>
       </Section>
+
       <Snackbar
         open={alertOpen}
         autoHideDuration={10000}
