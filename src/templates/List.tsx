@@ -154,7 +154,7 @@ const List = () => {
       if (!dupFound) {
         finalArray.push(element);
       } else if (!dupFound.verified && element.verified) {
-        console.log('remove duplicate and add new element instead ');
+        // console.log('remove duplicate and add new element instead ');
         const removedArray = finalArray.filter((e: any) => e !== dupFound);
         removedArray.push(element);
         finalArray = removedArray;
@@ -318,7 +318,14 @@ const List = () => {
         // const { secret } = credential;
         // The signed-in user info.
         const { user }: any = result;
-        console.log('logged in ', result, credential, user);
+        // console.log(
+        //   'logged in ',
+        //   result,
+        //   credential,
+        //   user,
+        //   `/twitter?accessToken=${credential.accessToken}&accessSecret=${credential.secret}&userId=${user?.providerData[0].uid}&screenName=${result?.additionalUserInfo?.profile?.screen_name}`
+        // );
+        // return;
 
         if (
           !credential.accessToken ||
@@ -329,7 +336,7 @@ const List = () => {
           return;
         }
         // send credential to twitter page for a checkmark list of twitter follows that are already on nostr.
-        window.location.href = `/twitter?accessToken=${credential.accessToken}&accessSecret=${credential.secret}&userId=${user?.providerData[0].uid}`;
+        window.location.href = `/twitter?accessToken=${credential.accessToken}&accessSecret=${credential.secret}&userId=${user?.providerData[0].uid}&screenName=${result?.additionalUserInfo?.profile?.screen_name}`;
       })
       .catch((error) => {
         // Handle Errors here.
@@ -366,8 +373,8 @@ const List = () => {
           className="text-xl"
           onClick={popupSignIn}
         >
-          To see a list of your follows that are on nostr:{' '}
-          <PrimaryButton xl>Sign in with Twitter</PrimaryButton>
+          To view & update your nostr contact list based on your twitter
+          follows: <PrimaryButton xl>Sign in with Twitter</PrimaryButton>
         </div>
         <TextField
           id="outlined-basic"

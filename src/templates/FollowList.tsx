@@ -143,6 +143,7 @@ const FollowList = () => {
   });
   const [relayConnection, setRelayConnection] = useState<nostrTools.Relay>();
   const [beforeContacts, setBeforeContacts] = useState<nostrTools.Event>();
+  const [screenName, setScreenName] = useState('');
   const router = useRouter();
 
   const dedupArray = (rawArray: any) => {
@@ -197,6 +198,11 @@ const FollowList = () => {
     setFetching(true);
     try {
       // console.log('router.query ', router);
+      const tmpScreenName = router.asPath
+        .split('&')
+        [router.asPath.split('&').length - 1]?.split('=')[1];
+      if (tmpScreenName) setScreenName(tmpScreenName);
+
       const response = await axios.get(`/api${router.asPath}`);
       const idsArray = response.data;
 
@@ -405,7 +411,7 @@ const FollowList = () => {
   return (
     <Background color="bg-gray-100">
       <Section
-        title="Your twitter follows on nostr"
+        title={`${screenName}'s twitter follows on nostr`}
         description={`Here is a list of accounts you follow on twitter that are also on nostr. Select the ones you want to follow and update your contact list.`}
       >
         <div style={{ height: 600, width: '100%' }}>
