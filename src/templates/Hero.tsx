@@ -4,27 +4,10 @@ import { Background } from '../background/Background';
 import { Button } from '../button/Button';
 import { HeroTwoButton } from '../hero/HeroTwoButton';
 import { Section } from '../layout/Section';
-import { NavbarTwoColumns } from '../navigation/NavbarTwoColumns';
 import Popup from '../popup/Popup';
-import { Logo } from './Logo';
 
 const Hero = () => (
   <Background color="bg-gray-100">
-    <Section yPadding="py-6">
-      <NavbarTwoColumns logo={<Logo xl />}>
-        <li>
-          <Link href="https://getalby.com/p/nostrdirectory">
-            <a target="_blank">Donate</a>
-          </Link>
-        </li>
-        <li>
-          <Link href="https://www.nostr.net/#clients">
-            <a target="_blank">Clients</a>
-          </Link>
-        </li>
-      </NavbarTwoColumns>
-    </Section>
-
     <Section yPadding="pt-20 pb-32">
       <HeroTwoButton
         title={
