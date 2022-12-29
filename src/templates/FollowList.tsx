@@ -231,6 +231,14 @@ const FollowList = () => {
       // fetch nostr follow list and pre-mark the ones that are being followed or exclude them?
 
       try {
+        if (!window.nostr) {
+          // alert('You need to have a browser extension with nostr support!');
+          setErrorAlert({
+            open: true,
+            text: 'You need to have a browser extension with nostr support in order to check your existing nostr contact list.',
+          });
+          return;
+        }
         // first get existing followers of this user
         const pubkey = await window.nostr.getPublicKey();
         // console.log('got pubkey ', pubkey);
