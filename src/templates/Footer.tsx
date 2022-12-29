@@ -90,22 +90,22 @@ const Footer = () => (
       >
         <li>
           <Link href="https://github.com/nostr-protocol/nostr">
-            <a>nostr Protocol</a>
+            <a target="_blank">nostr Protocol</a>
           </Link>
         </li>
         <li>
           <Link href="https://usenostr.org/">
-            <a>What is nostr?</a>
+            <a target="_blank">What is nostr?</a>
           </Link>
         </li>
         <li>
           <Link href="https://www.youtube.com/watch?v=HbicnlCXg_Y">
-            <a>Workshop Video</a>
+            <a target="_blank">Workshop Video</a>
           </Link>
         </li>
         <li>
           <Link href="https://storage.googleapis.com/storage/v1/b/nostrdb-backups/o?prefix=ndjson">
-            <a>Daily DB Exports</a>
+            <a target="_blank">Daily DB Exports</a>
           </Link>
         </li>
       </CenteredFooter>
