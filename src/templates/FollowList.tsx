@@ -467,9 +467,10 @@ const FollowList = () => {
           className="text-xl mt-4"
           onClick={bulkFollow}
         >
-          Follow accounts you selected on{' '}
-          <span className="text-nostr-darker ml-1"> nostr</span>:{' '}
-          <Button xl>Update contact list</Button>
+          Follow accounts you selected on nostr:{' '}
+          <Button xl disabled>
+            Update contact list
+          </Button>
         </div>
         <Alert
           severity="warning"
