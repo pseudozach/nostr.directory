@@ -468,9 +468,7 @@ const FollowList = () => {
           onClick={bulkFollow}
         >
           Follow accounts you selected on nostr:{' '}
-          <Button xl disabled>
-            Update contact list
-          </Button>
+          <Button xl>Update contact list</Button>
         </div>
         <Alert
           severity="warning"

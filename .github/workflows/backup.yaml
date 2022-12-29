@@ -29,5 +29,5 @@ jobs:
       uses: theborakompanioni/nostr-action@v1
       with:
         key: ${{ secrets.NOSTR_KEY }}
-        relay: wss://nostr.zebedee.cloud
+        relay: wss://nostr-relay.wlvs.space
         content: 🤖 Latest stats ${{ steps.get-stats.outputs.value }}
