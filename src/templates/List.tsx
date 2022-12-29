@@ -362,7 +362,7 @@ const List = () => {
   return (
     <Background color="bg-gray-100">
       <Section
-        title="Nostr Public Keys"
+        title="Nostr Public Key Database"
         description={`Here is a list of ${stats.tweetCount!} twitter accounts that tweeted their nostr public keys. ${stats.verifiedCount!} verified those keys on nostr.`}
       >
         <div

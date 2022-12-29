@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 
 type IHeroTwoButtonProps = {
   title: ReactNode;
-  description: string;
+  description: ReactNode;
   button: ReactNode;
   // button2: ReactNode;
   button3: ReactNode;
