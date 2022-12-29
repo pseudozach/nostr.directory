@@ -14,11 +14,13 @@ import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import algoliasearch from 'algoliasearch/lite';
+import firebase from 'firebase/app';
 import Link from 'next/link';
 
 import { Background } from '../background/Background';
+import { Button as PrimaryButton } from '../button/Button';
 import { Section } from '../layout/Section';
-import db from '../utils/firebase';
+import { auth, db, twitterProvider } from '../utils/firebase';
 
 const searchClient = algoliasearch(
   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
@@ -44,7 +46,7 @@ const columns: GridColDef[] = [
   },
   {
     field: 'nPubKey',
-    headerName: 'NIP19 PubKey',
+    headerName: 'nPubKey',
     width: 200,
     flex: 1,
     renderCell: (params: GridRenderCellParams) => (
@@ -140,7 +142,7 @@ const List = () => {
   const [fetching, setFetching] = useState(false);
 
   const dedupArray = (rawArray: any) => {
-    const finalArray: any = [];
+    let finalArray: any = [];
     for (let index = 0; index < rawArray.length; index += 1) {
       const element = rawArray[index];
       const dupFound = finalArray.find(
@@ -151,6 +153,11 @@ const List = () => {
       );
       if (!dupFound) {
         finalArray.push(element);
+      } else if (!dupFound.verified && element.verified) {
+        // console.log('remove duplicate and add new element instead ');
+        const removedArray = finalArray.filter((e: any) => e !== dupFound);
+        removedArray.push(element);
+        finalArray = removedArray;
       }
     }
     // console.log('finalArray length: ', finalArray.length);
@@ -294,16 +301,83 @@ const List = () => {
     setSearchText('');
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     handleChange();
   }, [searchText]);
+
+  const popupSignIn = async () => {
+    auth
+      .signInWithPopup(twitterProvider)
+      .then((result) => {
+        if (!result.credential) {
+          alert('Error getting credentials from twitter API');
+          return;
+        }
+
+        // eslint-disable-next-line prefer-destructuring
+        const credential: firebase.auth.OAuthCredential = result.credential!;
+        // const token = credential.accessToken!;
+        // const { secret } = credential;
+        // The signed-in user info.
+        const { user }: any = result;
+        // console.log(
+        //   'logged in ',
+        //   result,
+        //   credential,
+        //   user,
+        //   `/twitter?accessToken=${credential.accessToken}&accessSecret=${credential.secret}&userId=${user?.providerData[0].uid}&screenName=${result?.additionalUserInfo?.profile?.screen_name}`
+        // );
+        // return;
+
+        if (
+          !credential.accessToken ||
+          !credential.secret ||
+          !user?.providerData[0].uid
+        ) {
+          alert('Error getting credentials from twitter API');
+          return;
+        }
+        // send credential to twitter page for a checkmark list of twitter follows that are already on nostr.
+        window.location.href = `/twitter?accessToken=${credential.accessToken}&accessSecret=${credential.secret}&userId=${user?.providerData[0].uid}&screenName=${result?.additionalUserInfo?.profile?.screen_name}`;
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const { email } = error;
+        // The firebase.auth.AuthCredential type that was used.
+        const { credential } = error;
+        // ...
+        console.log(
+          'signin error ',
+          errorCode,
+          errorMessage,
+          email,
+          credential
+        );
+      });
+  };
 
   return (
     <Background color="bg-gray-100">
       <Section
-        title="Nostr Public Keys"
+        title="Nostr Public Key Database"
         description={`Here is a list of ${stats.tweetCount!} twitter accounts that tweeted their nostr public keys. ${stats.verifiedCount!} verified those keys on nostr.`}
       >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: 8,
+          }}
+          className="text-xl"
+          onClick={popupSignIn}
+        >
+          To view & update your nostr contact list based on your twitter
+          follows: <PrimaryButton xl>Sign in with Twitter</PrimaryButton>
+        </div>
         <TextField
           id="outlined-basic"
           // label="Outlined"

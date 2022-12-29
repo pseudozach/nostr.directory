@@ -13,10 +13,10 @@ const Footer = () => (
         logo={<Logo />}
         iconList={
           <>
-            <Link href="https://branle.netlify.app/5e7ae588d7d11eac4c25906e6da807e68c6498f49a38e4692be5a089616ceb18">
+            <Link href="https://www.nostr.guru/p/5e7ae588d7d11eac4c25906e6da807e68c6498f49a38e4692be5a089616ceb18">
               <a target="_blank">
                 <Image
-                  src="/assets/images/bird.png"
+                  src="/assets/images/nostrlogo.webp"
                   alt="follow us on nostr"
                   height="20"
                   width="20"
@@ -90,22 +90,22 @@ const Footer = () => (
       >
         <li>
           <Link href="https://github.com/nostr-protocol/nostr">
-            <a>nostr Protocol</a>
+            <a target="_blank">nostr Protocol</a>
           </Link>
         </li>
         <li>
           <Link href="https://usenostr.org/">
-            <a>What is nostr?</a>
+            <a target="_blank">What is nostr?</a>
           </Link>
         </li>
         <li>
           <Link href="https://www.youtube.com/watch?v=HbicnlCXg_Y">
-            <a>Workshop Video</a>
+            <a target="_blank">Workshop Video</a>
           </Link>
         </li>
         <li>
-          <Link href="https://github.com/pseudozach/nostr.directory">
-            <a>GitHub</a>
+          <Link href="https://storage.googleapis.com/storage/v1/b/nostrdb-backups/o?prefix=ndjson">
+            <a target="_blank">Daily DB Exports</a>
           </Link>
         </li>
       </CenteredFooter>

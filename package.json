@@ -26,6 +26,7 @@
     "@nostrgg/client": "^0.1.1",
     "algoliasearch": "^4.14.2",
     "autosuggest-highlight": "^3.3.4",
+    "axios": "^1.2.1",
     "classnames": "^2.3.1",
     "firebase": "^8.10.1",
     "firestore-backfire": "^2.4.0",
@@ -34,9 +35,11 @@
     "lodash.throttle": "^4.1.1",
     "next": "^12.0.9",
     "next-seo": "^4.29.0",
+    "nostr-tools": "^1.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "styled-jsx-plugin-postcss": "^4.0.1"
+    "styled-jsx-plugin-postcss": "^4.0.1",
+    "twit": "^2.2.11"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^12.0.9",
@@ -44,6 +47,7 @@
     "@types/lodash": "^4.14.191",
     "@types/node": "^17.0.13",
     "@types/react": "^17.0.38",
+    "@types/twit": "^2.2.31",
     "@typescript-eslint/eslint-plugin": "^5.10.1",
     "@typescript-eslint/parser": "^5.10.1",
     "autoprefixer": "^10.4.2",

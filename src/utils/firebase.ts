@@ -1,6 +1,6 @@
 import firebase from 'firebase/app';
 import 'firebase/firestore';
-// console.log('process.env ', process.env);
+import 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -18,6 +18,9 @@ if (!firebase.apps.length) {
 } else {
   initFirebase = firebase.app();
 }
-const db = initFirebase.firestore();
 
-export default db;
+const db = initFirebase.firestore();
+const auth = initFirebase.auth();
+const twitterProvider = new firebase.auth.TwitterAuthProvider();
+
+export { db, auth, twitterProvider };
