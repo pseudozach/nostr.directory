@@ -3,7 +3,12 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
-import { AlternateEmail, ContentCopy } from '@mui/icons-material';
+import {
+  AlternateEmail,
+  ContentCopy,
+  HelpOutline,
+  QrCode,
+} from '@mui/icons-material';
 import CurrencyBitcoinIcon from '@mui/icons-material/CurrencyBitcoin';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
@@ -27,6 +32,12 @@ import {
   IconButton,
   InputAdornment,
   TextField,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from '@mui/material';
 import axios from 'axios';
 import Image from 'next/image';
@@ -34,8 +45,10 @@ import { useRouter } from 'next/router';
 import { nip19 } from 'nostr-tools';
 import * as nostrTools from 'nostr-tools';
 import type { ProfilePointer } from 'nostr-tools/nip19';
+import { QRCodeSVG } from 'qrcode.react';
 
 import { Background } from '../background/Background';
+import { OutlinedButton } from '../button/OutlinedButton';
 import { Section } from '../layout/Section';
 import { db } from '../utils/firebase';
 import { defaultRelays, hexToNpub, npubToHex } from '../utils/helpers';
@@ -62,13 +75,27 @@ const Profile = () => {
   const [fetching, setFetching] = useState(false);
   const [userRelays, setUserRelays] = useState<Array<any>>([]);
   const [filteredRelays, setFilteredRelays] = useState<Array<any>>([]);
-  const [errorAlert, setErrorAlert] = React.useState({
+  const [errorAlert, setErrorAlert] = useState({
     open: false,
     text: 'Error while doing stuff',
   });
   const [nProfile, setNProfile] = useState('');
   const [nip05, setNip05] = useState('');
+  const [dialog, setDialog] = useState({
+    open: false,
+    title: '',
+    text: <></>,
+    button1: '',
+    button2: '',
+  });
   const router = useRouter();
+
+  const handleClose = () => {
+    setDialog({
+      ...dialog,
+      open: false,
+    });
+  };
 
   const handleErrorAlertClose = (
     event?: React.SyntheticEvent | Event,
@@ -285,7 +312,36 @@ const Profile = () => {
               <Avatar alt="profile picture" src={tweet.profileImageUrl} />
             }
             action={
-              <Tooltip title="WoT Score" className="!my-2 !mx-3">
+              <Tooltip
+                title="WoT Score"
+                className="!my-2 !mx-3"
+                onClick={() =>
+                  setDialog({
+                    open: true,
+                    title: 'WoT Score',
+                    text: (
+                      <>
+                        Web of Trust score for the user is calculated as 10
+                        points per badge at the moment. <br />
+                        We are looking for feedback on a WoT scheme where users
+                        sign messages with their keys to signal how trusted
+                        their connections are. <br />
+                        Current plan is to implement{' '}
+                        <a
+                          href="https://github.com/nostr-protocol/nostr/issues/20#issuecomment-913027389"
+                          target={'_blank'}
+                          rel="noreferrer"
+                          className="!underline"
+                        >
+                          this scheme by fiatjaf.
+                        </a>
+                      </>
+                    ),
+                    button1: '',
+                    button2: 'ok',
+                  })
+                }
+              >
                 <Avatar
                   sx={{ backgroundColor: 'green', color: 'white' }}
                   variant="rounded"
@@ -320,6 +376,27 @@ const Profile = () => {
                     their nostr private key.
                   </>
                 )}
+                <HelpOutline
+                  className="cursor-pointer !ml-1 align-middle"
+                  onClick={() =>
+                    setDialog({
+                      open: true,
+                      title: 'Twitter Verification',
+                      text: (
+                        <>
+                          User is expected to; <br />
+                          1. tweet their nostr public key by following the
+                          format on the nostr.directory homepage.
+                          <br />
+                          2. send a public (kind 1) note on nostr following the
+                          format on the nostr.directory homepage.
+                        </>
+                      ),
+                      button1: '',
+                      button2: 'ok',
+                    })
+                  }
+                />
               </div>
               <div className="my-2">
                 {tweet.mastodon ? (
@@ -335,6 +412,49 @@ const Profile = () => {
                     with their nostr private key.
                   </>
                 )}
+                <HelpOutline
+                  className="cursor-pointer !ml-1 align-middle"
+                  onClick={() =>
+                    setDialog({
+                      open: true,
+                      title: 'Mastodon Verification',
+                      text: (
+                        <>
+                          User is expected to; <br />
+                          1. set a meta entry on their mastodon profile {
+                            '>'
+                          }{' '}
+                          appearance {'>'} Profile Metadata with key:value =
+                          nostr:public key.
+                          <br />
+                          2. send a public (kind 1) note on nostr following the
+                          below format.
+                          <br />
+                          <br />
+                          <div className="mt-1">
+                            <code className="break-all mb-4">{`@5e7ae588d7d11eac4c25906e6da807e68c6498f49a38e4692be5a089616ceb18 Verifying My Public Key for mastodon: "${'Your mastodon profile link e.g. https://mastodon.social/@melvincarvalho'}"`}</code>
+                          </div>
+                        </>
+                      ),
+                      button1: '',
+                      // (
+                      //   <div
+                      //     className="cursor-pointer"
+                      //     onClick={() => {
+                      //       navigator.clipboard.writeText(
+                      //         `@5e7ae588d7d11eac4c25906e6da807e68c6498f49a38e4692be5a089616ceb18 Verifying My Public Key for mastodon: "${'Your mastodon profile link e.g. https://mastodon.social/@melvincarvalho'}"`
+                      //       );
+                      //     }}
+                      //   >
+                      //     <OutlinedButton>
+                      //       Copy Verification Text
+                      //     </OutlinedButton>
+                      //   </div>
+                      // ),
+                      button2: 'ok',
+                    })
+                  }
+                />
               </div>
               <div className="my-2">
                 {nip05 ? (
@@ -348,6 +468,32 @@ const Profile = () => {
                     User has <b>NOT</b> set a NIP-05 identifier for themselves.
                   </>
                 )}
+                <HelpOutline
+                  className="cursor-pointer !ml-1 align-middle"
+                  onClick={() =>
+                    setDialog({
+                      open: true,
+                      title: 'Mastodon Verification',
+                      text: (
+                        <>
+                          User is expected to; <br />
+                          Have a nip05 tag on their nostr profile that resolves
+                          to their Hex Public Key as per{' '}
+                          <a
+                            href="https://github.com/nostr-protocol/nips/blob/master/05.md"
+                            target={'_blank'}
+                            rel="noreferrer"
+                            className="!underline"
+                          >
+                            NIP-05 nostr specification.
+                          </a>
+                        </>
+                      ),
+                      button1: '',
+                      button2: 'ok',
+                    })
+                  }
+                />
               </div>
               <div className="my-2">
                 {tweet.donated === true ? (
@@ -363,6 +509,33 @@ const Profile = () => {
                     their nostr pubkey.
                   </>
                 )}
+                <HelpOutline
+                  className="cursor-pointer !ml-1 align-middle"
+                  onClick={() =>
+                    setDialog({
+                      open: true,
+                      title: 'Donation Badge',
+                      text: (
+                        <>
+                          User is expected to send any amount of donation to{' '}
+                          <a
+                            href="lightning:nostrdirectory@getalby.com"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-bold underline"
+                          >
+                            {' '}
+                            nostrdirectory@getalby.com
+                          </a>{' '}
+                          Lightning Address and include their pubkey in the
+                          comment.
+                        </>
+                      ),
+                      button1: '',
+                      button2: 'ok',
+                    })
+                  }
+                />
               </div>
             </div>
             <Divider />
@@ -426,6 +599,20 @@ const Profile = () => {
                 endAdornment: (
                   <InputAdornment position="end">
                     {' '}
+                    <IconButton
+                      aria-label="copy hex pubkey"
+                      onClick={() => {
+                        setDialog({
+                          open: true,
+                          title: 'nProfile QR Code',
+                          text: <QRCodeSVG value={nProfile} size={256} />,
+                          button1: '',
+                          button2: 'ok',
+                        });
+                      }}
+                    >
+                      <QrCode />
+                    </IconButton>
                     <IconButton
                       aria-label="copy hex pubkey"
                       onClick={() => {
@@ -524,6 +711,41 @@ const Profile = () => {
             )}
           </CardContent>
         </Card>
+
+        <Dialog
+          open={dialog.open}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          fullWidth
+        >
+          <DialogTitle id="alert-dialog-title">{dialog.title}</DialogTitle>
+          <DialogContent>
+            <DialogContentText
+              id="alert-dialog-description"
+              className="flex justify-center"
+            >
+              <Typography className="mt-4">{dialog.text}</Typography>
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            {dialog.button1 && (
+              <div
+                className="cursor-pointer"
+                onClick={() => {
+                  navigator.clipboard.writeText(`asd`);
+                }}
+              >
+                <OutlinedButton>{dialog.button1}</OutlinedButton>
+              </div>
+            )}
+
+            <div className="cursor-pointer">
+              <Button onClick={handleClose}>{dialog.button2}</Button>
+            </div>
+          </DialogActions>
+        </Dialog>
+
         <Snackbar
           open={errorAlert.open}
           autoHideDuration={10000}
