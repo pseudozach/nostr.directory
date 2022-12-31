@@ -1,16 +1,17 @@
 import { Meta } from '../../layout/Meta';
-import { Banner } from '../../templates/Banner';
 import { Footer } from '../../templates/Footer';
+import { Navbar } from '../../templates/Navbar';
 import { Profile } from '../../templates/Profile';
 
 const Page = () => (
   <div className="antialiased text-gray-600">
-    <Meta title={'Profile Page'} description={'Social Media Connections'} />
-    {/* <Hero /> */}
-    {/* <Search /> */}
+    <Meta
+      title={'Nostr Profile Page'}
+      description={'Social Media Connections'}
+    />
+    <Navbar />
     <Profile />
-    {/* <VerticalFeatures /> */}
-    <Banner />
+    {/* <Banner /> */}
     <Footer />
   </div>
 );

@@ -27,6 +27,7 @@
     "algoliasearch": "^4.14.2",
     "autosuggest-highlight": "^3.3.4",
     "axios": "^1.2.1",
+    "bech32": "^2.0.0",
     "classnames": "^2.3.1",
     "firebase": "^8.10.1",
     "firestore-backfire": "^2.4.0",
