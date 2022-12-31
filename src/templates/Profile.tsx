@@ -250,8 +250,6 @@ const Profile = () => {
                 tweetObj.hexPubKey
               ) {
                 setNip05(metadata.nip05);
-                // increment wotscore
-                setWotScore((ws) => ws + 10);
               }
             }
           }
@@ -299,6 +297,12 @@ const Profile = () => {
 
     // console.log('filtered: ', uniqueArray);
   }, [userRelays]);
+
+  useEffect(() => {
+    if (nip05 === '')
+      // increment wotscore
+      setWotScore((ws) => ws + 10);
+  }, [nip05]);
 
   return (
     <Background color="bg-gray-100">
@@ -539,7 +543,7 @@ const Profile = () => {
               </div>
             </div>
             <Divider />
-            <Typography variant="h6" color="text.secondary" className="mt-2">
+            <Typography variant="h6" color="text.secondary" className="!my-2">
               NIP19
             </Typography>
             <TextField
