@@ -285,8 +285,11 @@ const Profile = () => {
               <Avatar alt="profile picture" src={tweet.profileImageUrl} />
             }
             action={
-              <Tooltip title="WoT Score">
-                <Avatar sx={{ backgroundColor: 'green', color: 'white' }}>
+              <Tooltip title="WoT Score" className="!my-2 !mx-3">
+                <Avatar
+                  sx={{ backgroundColor: 'green', color: 'white' }}
+                  variant="rounded"
+                >
                   {wotScore}
                 </Avatar>
               </Tooltip>
@@ -369,7 +372,7 @@ const Profile = () => {
             <TextField
               label="hexPubKey"
               id="hexPubKey"
-              className="my-2"
+              className="!my-2"
               value={tweet.hexPubKey}
               fullWidth
               InputProps={{
@@ -392,7 +395,7 @@ const Profile = () => {
             <TextField
               label="nPubKey"
               id="nPubKey"
-              className="my-2"
+              className="!my-2"
               value={tweet.nPubKey}
               fullWidth
               InputProps={{
@@ -415,7 +418,7 @@ const Profile = () => {
             <TextField
               label="nProfile"
               id="nProfile"
-              className="mt-2"
+              className="!mt-2"
               value={nProfile}
               fullWidth
               InputProps={{
