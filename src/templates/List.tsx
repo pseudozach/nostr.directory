@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
+import { ArrowCircleRightOutlined } from '@mui/icons-material';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ClearSharpIcon from '@mui/icons-material/ClearSharp';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import SearchSharpIcon from '@mui/icons-material/SearchSharp';
-import TwitterIcon from '@mui/icons-material/Twitter';
 import { Stack, Tooltip } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
@@ -119,17 +119,32 @@ const columns: GridColDef[] = [
         </Tooltip>
       ),
   },
+  // {
+  //   field: 'url',
+  //   headerName: 'Proof URL',
+  //   headerAlign: 'center',
+  //   maxWidth: 100,
+  //   flex: 1,
+  //   align: 'center',
+  //   renderCell: (params: GridRenderCellParams) => (
+  //     <a href={params.value} target="_blank" rel="noreferrer">
+  //       <TwitterIcon htmlColor="#1DA1F2" />
+  //     </a>
+  //   ),
+  // },
   {
-    field: 'url',
-    headerName: 'Proof URL',
+    field: 'profile',
+    headerName: 'Profile',
     headerAlign: 'center',
     maxWidth: 100,
     flex: 1,
     align: 'center',
     renderCell: (params: GridRenderCellParams) => (
-      <a href={params.value} target="_blank" rel="noreferrer">
-        <TwitterIcon htmlColor="#1DA1F2" />
-      </a>
+      <Link href={params.value}>
+        <a>
+          <ArrowCircleRightOutlined className="text-nostr-light" />
+        </a>
+      </Link>
     ),
   },
   // { field: 'createdAt', headerName: 'createdAt', width: 150 },
@@ -228,6 +243,7 @@ const List = () => {
       rowData.id = doc.id;
       rowData.tweetId = rowData.id_str;
       rowData.url = rowData.entities?.urls[0]?.url || '';
+      rowData.profile = `/p/${rowData.nPubKey}`;
       rawArray.push(rowData);
     });
     // console.log('rawArray length: ', rawArray.length);
@@ -256,6 +272,7 @@ const List = () => {
       rowData.id = rowData.objectID;
       rowData.tweetId = rowData.id_str;
       rowData.url = `https://twitter.com/i/web/status/${rowData.id_str}`;
+      rowData.profile = `/p/${rowData.nPubKey}`;
       rawArray.push(rowData);
 
       // setRow((r) => [
