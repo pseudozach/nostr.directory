@@ -521,7 +521,8 @@ const Profile = () => {
                       title: 'Donation Badge',
                       text: (
                         <>
-                          User is expected to send any amount of donation to{' '}
+                          User is expected to send at least 1000 sats of
+                          donation to{' '}
                           <a
                             href="lightning:nostrdirectory@getalby.com"
                             target="_blank"
