@@ -559,6 +559,25 @@ const Profile = () => {
                   <InputAdornment position="end">
                     {' '}
                     <IconButton
+                      aria-label="copy hex pubkey"
+                      onClick={() => {
+                        setDialog({
+                          open: true,
+                          title: 'hexPubKey QR Code',
+                          text: (
+                            <QRCodeSVG
+                              value={tweet.hexPubKey || ''}
+                              size={256}
+                            />
+                          ),
+                          button1: '',
+                          button2: 'ok',
+                        });
+                      }}
+                    >
+                      <QrCode />
+                    </IconButton>
+                    <IconButton
                       aria-label="copy npub"
                       onClick={() => {
                         navigator.clipboard.writeText(tweet.hexPubKey || '');
@@ -581,6 +600,22 @@ const Profile = () => {
                 endAdornment: (
                   <InputAdornment position="end">
                     {' '}
+                    <IconButton
+                      aria-label="copy hex pubkey"
+                      onClick={() => {
+                        setDialog({
+                          open: true,
+                          title: 'nPubKey QR Code',
+                          text: (
+                            <QRCodeSVG value={tweet.nPubKey || ''} size={256} />
+                          ),
+                          button1: '',
+                          button2: 'ok',
+                        });
+                      }}
+                    >
+                      <QrCode />
+                    </IconButton>
                     <IconButton
                       aria-label="copy hex pubkey"
                       onClick={() => {
