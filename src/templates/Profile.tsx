@@ -429,7 +429,7 @@ const Profile = () => {
                             '>'
                           }{' '}
                           appearance {'>'} Profile Metadata with key:value =
-                          nostr:public key.
+                          nostr:<b>hex</b> public key.
                           <br />
                           2. send a public (kind 1) note on nostr following the
                           below format.
