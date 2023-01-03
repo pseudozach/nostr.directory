@@ -503,14 +503,14 @@ const Profile = () => {
                 {tweet.donated === true ? (
                   <>
                     <CurrencyBitcoinIcon htmlColor="orange" className="mr-2" />
-                    User has sent a donation to nostr.directory with their nostr
-                    pubkey.
+                    User has sent a 1000+ sats donation to nostr.directory with
+                    their nostr pubkey.
                   </>
                 ) : (
                   <>
                     <CurrencyBitcoinIcon color="error" className="mr-2" />
-                    User has <b>NOT</b> sent a donation to nostr.directory with
-                    their nostr pubkey.
+                    User has <b>NOT</b> sent a 1000+ sats donation to
+                    nostr.directory with their nostr pubkey.
                   </>
                 )}
                 <HelpOutline
