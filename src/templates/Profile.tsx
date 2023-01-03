@@ -477,7 +477,7 @@ const Profile = () => {
                   onClick={() =>
                     setDialog({
                       open: true,
-                      title: 'Mastodon Verification',
+                      title: 'NIP-05 Verification',
                       text: (
                         <>
                           User is expected to; <br />
@@ -499,18 +499,28 @@ const Profile = () => {
                   }
                 />
               </div>
-              <div className="my-2">
+              <div className="my-2 flex">
                 {tweet.donated ? (
                   <>
-                    <CurrencyBitcoinIcon htmlColor="orange" className="mr-2" />
+                    <Avatar
+                      sx={{ width: 24, height: 24, bgcolor: 'orange' }}
+                      className="mr-2 inline-flex"
+                    >
+                      <CurrencyBitcoinIcon htmlColor="white" />
+                    </Avatar>
                     User has sent a 1000+ sats donation to nostr.directory with
                     their nostr pubkey.
                   </>
                 ) : (
                   <>
-                    <CurrencyBitcoinIcon color="error" className="mr-2" />
-                    User has <b>NOT</b> sent a 1000+ sats donation to
-                    nostr.directory with their nostr pubkey.
+                    <Avatar
+                      sx={{ width: 24, height: 24, bgcolor: '#d32f2f' }}
+                      className="mr-2 inline-flex"
+                    >
+                      <CurrencyBitcoinIcon htmlColor="white" />
+                    </Avatar>
+                    User has <b className="mx-1"> NOT</b> sent a 1000+ sats
+                    donation to nostr.directory with their nostr pubkey.
                   </>
                 )}
                 <HelpOutline
