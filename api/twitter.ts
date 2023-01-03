@@ -25,6 +25,7 @@ export default async function handler(
 ) {
   // loop through user's follows list and return list of nostrdirectory tweets that are found to match
   try {
+    // console.log('START timing twitter API call: ', new Date());
     if (
       !req.query.accessToken ||
       !req.query.accessSecret ||
@@ -70,9 +71,9 @@ export default async function handler(
         const { ids } = data;
         // console.log(
         //   'ids, next_cursor, total_count ',
-        //   ids,
-        //   next_cursor,
-        //   total_count
+        //   ids
+        //   // next_cursor,
+        //   // total_count
         // );
 
         const foundIds: any[] = [];
@@ -91,6 +92,7 @@ export default async function handler(
           });
         }
 
+        // console.log('END timing twitter API call: ', new Date());
         res.status(200).json(foundIds);
 
         // TODO: later only if user has more than 5000 follows
