@@ -531,8 +531,8 @@ const Profile = () => {
                       title: 'Donation Badge',
                       text: (
                         <>
-                          User is expected to send at least 1000 sats of
-                          donation to{' '}
+                          User is expected to send at least 1000 sats donation
+                          to{' '}
                           <a
                             href="lightning:nostrdirectory@getalby.com"
                             target="_blank"
@@ -542,8 +542,17 @@ const Profile = () => {
                             {' '}
                             nostrdirectory@getalby.com
                           </a>{' '}
-                          Lightning Address and include their pubkey in the
-                          comment.
+                          Lightning Address and set their pubkey as the{' '}
+                          <a
+                            href="https://getalby.com/p/nostrdirectory"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="font-bold underline"
+                          >
+                            {' '}
+                            message
+                          </a>
+                          .
                         </>
                       ),
                       button1: '',
