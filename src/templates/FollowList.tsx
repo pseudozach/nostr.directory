@@ -219,7 +219,7 @@ const FollowList = () => {
           rowData.hexPubKey = rowData.pubkey;
         if (!rowData.nPubKey && !rowData.hexPubKey) return;
 
-        rowData.id = rowData.hexPubKey;
+        rowData.id = rowData.hexPubKey || Math.floor(Math.random() * 10 ** 8);
         rowData.tweetId = rowData.id_str;
         rowData.url = rowData.entities?.urls[0]?.url || '';
         rawArray.push(rowData);
