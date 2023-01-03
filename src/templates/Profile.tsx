@@ -500,7 +500,7 @@ const Profile = () => {
                 />
               </div>
               <div className="my-2">
-                {tweet.donated === true ? (
+                {tweet.donated ? (
                   <>
                     <CurrencyBitcoinIcon htmlColor="orange" className="mr-2" />
                     User has sent a 1000+ sats donation to nostr.directory with
