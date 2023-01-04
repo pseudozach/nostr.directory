@@ -99,8 +99,8 @@ const Footer = () => (
           </Link>
         </li>
         <li>
-          <Link href="https://www.youtube.com/watch?v=HbicnlCXg_Y">
-            <a target="_blank">Workshop Video</a>
+          <Link href="https://www.nostr.net/#clients">
+            <a target="_blank">nostr Clients</a>
           </Link>
         </li>
         <li>
