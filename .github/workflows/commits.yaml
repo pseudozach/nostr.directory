@@ -1,0 +1,14 @@
+name: post on push
+
+on: [push]
+  
+jobs:
+  note:
+    runs-on: ubuntu-latest
+    steps:       
+    - name: post commit to nostr
+      uses: theborakompanioni/nostr-action@v1
+      with:
+        key: ${{ secrets.NOSTR_COMMIT_KEY }}
+        relay: wss://nostr-relay.wlvs.space
+        content: 🤖 Latest commit on nostr.directory repository ${{ github.event.head_commit.message }}
