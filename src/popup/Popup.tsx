@@ -1,6 +1,7 @@
 /* eslint-disable no-useless-escape */
 import * as React from 'react';
 
+import { Warning } from '@mui/icons-material';
 import { TextField } from '@mui/material';
 // import Button from '@mui/material/Button';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
@@ -219,6 +220,19 @@ export default function AlertDialog(props: PopupProps) {
               fullWidth
             />
             <div className="mt-4">
+              <Typography className="mt-4">
+                <Warning /> Make sure you properly tag our pubkey (@5e7ae58...)
+                with a{' '}
+                <a
+                  href="https://github.com/nostr-protocol/nips/blob/master/01.md#other-notes"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline"
+                >
+                  p tag.
+                </a>{' '}
+              </Typography>
+
               <Typography className="mt-4">
                 If you have a NIP-07 compliant extension like Alby or nos2x, you
                 can sign and publish the note from here.

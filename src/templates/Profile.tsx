@@ -717,7 +717,7 @@ const Profile = () => {
             </div>
 
             <Divider />
-            <Typography variant="h6" color="text.secondary" className="mt-2">
+            <Typography variant="h6" color="text.secondary" className="!mt-2">
               Social Proofs
             </Typography>
             <div className="mt-2 mb-4 flex items-center">
