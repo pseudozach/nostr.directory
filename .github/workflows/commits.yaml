@@ -11,4 +11,4 @@ jobs:
       with:
         key: ${{ secrets.NOSTR_COMMIT_KEY }}
         relay: wss://nostr-relay.wlvs.space
-        content: 🤖 Latest commit on nostr.directory repository ${{ github.event.head_commit.message }}
+        content: 🤖 Latest commit on nostr.directory repository -> ${{ github.event.head_commit.message }}
