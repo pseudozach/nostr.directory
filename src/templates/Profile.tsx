@@ -70,6 +70,7 @@ const Profile = () => {
     id_str: '',
     verified: false,
     donated: false,
+    userId: '',
   });
   const [wotScore, setWotScore] = useState(0);
   const [fetching, setFetching] = useState(false);
@@ -88,6 +89,7 @@ const Profile = () => {
     button1: '',
     button2: '',
   });
+  const [validPFP, setValidPFP] = useState(false);
   const router = useRouter();
 
   const handleClose = () => {
@@ -304,6 +306,36 @@ const Profile = () => {
       setWotScore((ws) => ws + 10);
   }, [nip05]);
 
+  useEffect(() => {
+    if (validPFP || !tweet.profileImageUrl) return;
+    // check and validate profileImageUrl and fix it if it's broken because some people update their pfp for some reason :)
+    // https://github.com/pseudozach/nostr.directory/issues/11
+    async function fetchPFP() {
+      try {
+        await axios.get(tweet.profileImageUrl);
+        setValidPFP(true);
+      } catch (error: any) {
+        // console.log(
+        //   'tweet.profileImageUrl error ',
+        //   error.response.status,
+        //   tweet.userId
+        // );
+        if (error.response.status === 404) {
+          // fetch new pfp from twitter API
+          const response2 = await axios.get(
+            `/api/twitterpfp?userId=${tweet.userId}`
+          );
+          setTweet({
+            ...tweet,
+            profileImageUrl: response2.data.profile_image_url,
+          });
+          setValidPFP(true);
+        }
+      }
+    }
+    fetchPFP();
+  }, [tweet, validPFP]);
+
   return (
     <Background color="bg-gray-100">
       <Section
@@ -313,7 +345,10 @@ const Profile = () => {
         <Card>
           <CardHeader
             avatar={
-              <Avatar alt="profile picture" src={tweet.profileImageUrl} />
+              <Avatar
+                alt={`${tweet.screenName} profile picture`}
+                src={tweet.profileImageUrl}
+              />
             }
             action={
               <Tooltip
