@@ -67,8 +67,10 @@ const Profile = () => {
     hexPubKey: '',
     profileImageUrl: '',
     mastodon: '',
+    mastodonEvent: '',
     id_str: '',
     verified: false,
+    verifyEvent: '',
     donated: false,
     userId: '',
   });
@@ -404,9 +406,15 @@ const Profile = () => {
               <div className="my-2">
                 {tweet.verified === true ? (
                   <>
-                    <VerifiedUserIcon color="success" className="mr-2" />
-                    User has signed their <b>twitter</b> handle with their nostr
-                    private key.
+                    <a
+                      href={`https://www.nostr.guru/e/${tweet.verifyEvent}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <VerifiedUserIcon color="success" className="mr-2" />
+                      User has signed their <b>twitter</b> handle with their
+                      nostr private key.
+                    </a>
                   </>
                 ) : (
                   <>
@@ -440,9 +448,15 @@ const Profile = () => {
               <div className="my-2">
                 {tweet.mastodon ? (
                   <>
-                    <VerifiedUserIcon color="success" className="mr-2" />
-                    User has signed their <b>mastodon</b> profile with their
-                    nostr private key.
+                    <a
+                      href={`https://www.nostr.guru/e/${tweet.mastodonEvent}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <VerifiedUserIcon color="success" className="mr-2" />
+                      User has signed their <b>mastodon</b> profile with their
+                      nostr private key.
+                    </a>
                   </>
                 ) : (
                   <>
@@ -498,8 +512,16 @@ const Profile = () => {
               <div className="my-2">
                 {nip05 ? (
                   <>
-                    <AlternateEmail color="success" className="mr-2" />
-                    User has a valid NIP-05 identifier: <b>{nip05}</b>
+                    <a
+                      href={`https://${
+                        nip05.split('@')[1]
+                      }/.well-known/nostr.json?name=${nip05.split('@')[0]}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <AlternateEmail color="success" className="mr-2" />
+                      User has a valid NIP-05 identifier: <b>{nip05}</b>
+                    </a>
                   </>
                 ) : (
                   <>
