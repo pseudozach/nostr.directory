@@ -4,13 +4,13 @@ import Link from 'next/link';
 import { Background } from '../background/Background';
 import { CenteredFooter } from '../footer/CenteredFooter';
 import { Section } from '../layout/Section';
-import { Logo } from './Logo';
 
 const Footer = () => (
   <Background color="bg-gray-100">
     <Section>
       <CenteredFooter
-        logo={<Logo />}
+        // <Logo />
+        logo={<></>}
         iconList={
           <>
             <Link href="https://www.nostr.guru/p/5e7ae588d7d11eac4c25906e6da807e68c6498f49a38e4692be5a089616ceb18">
