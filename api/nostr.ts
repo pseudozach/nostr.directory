@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-import * as fb from '../src/utils/firebase';
+import { db } from '../src/utils/firebase';
 
 type ResponseData =
   | {
@@ -27,7 +27,7 @@ type ResponseData =
 
 async function resolveHexPubKey(screenName: string) {
   let hexPubKey = '';
-  const hexPubKeyquery = await fb.db
+  const hexPubKeyquery = await db
     .collection('twitter')
     .where('lcScreenName', '==', screenName)
     .get();
