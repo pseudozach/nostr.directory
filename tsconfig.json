@@ -35,6 +35,6 @@
     "isolatedModules": true,
     "incremental": true
   },
-  "exclude": ["./out/**/*", "./node_modules/**/*"],
+  "exclude": ["./out/**/*", "./node_modules/**/*", "./api"],
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
 }
