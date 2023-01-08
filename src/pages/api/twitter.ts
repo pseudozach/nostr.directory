@@ -3,7 +3,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import Twit from 'twit';
 
-import { db } from '../src/utils/firebase';
+import { db } from '../../utils/firebase';
 
 const { CONSUMER_KEY, CONSUMER_SECRET } = process.env;
 // const countPerRequest = 5000;
