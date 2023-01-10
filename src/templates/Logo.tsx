@@ -13,7 +13,7 @@ const Logo = (props: ILogoProps) => {
       {/* <Image src="/icon80.png" alt="logo" width={size} height={size} /> */}
 
       <svg
-        width="auto"
+        width="100%"
         height={size}
         viewBox="0 0 1949 502"
         fill="none"

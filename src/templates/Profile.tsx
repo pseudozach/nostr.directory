@@ -5,9 +5,12 @@ import { useEffect, useState } from 'react';
 
 import {
   AlternateEmail,
+  ArrowCircleRightOutlined,
   ContentCopy,
   HelpOutline,
   QrCode,
+  CheckCircle,
+  Cancel,
 } from '@mui/icons-material';
 import CurrencyBitcoinIcon from '@mui/icons-material/CurrencyBitcoin';
 import TwitterIcon from '@mui/icons-material/Twitter';
@@ -38,6 +41,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Link,
 } from '@mui/material';
 import axios from 'axios';
 import Image from 'next/image';
@@ -78,6 +82,7 @@ const Profile = () => {
   const [fetching, setFetching] = useState(false);
   const [userRelays, setUserRelays] = useState<Array<any>>([]);
   const [filteredRelays, setFilteredRelays] = useState<Array<any>>([]);
+  const [previousKeys, setPreviousKeys] = useState<Array<any>>([]);
   const [errorAlert, setErrorAlert] = useState({
     open: false,
     text: 'Error while doing stuff',
@@ -92,6 +97,7 @@ const Profile = () => {
     button2: '',
   });
   const [validPFP, setValidPFP] = useState(false);
+  const [newerKeyExists, setNewerKeyExists] = useState(false);
   const router = useRouter();
 
   const handleClose = () => {
@@ -178,6 +184,7 @@ const Profile = () => {
 
     if (!tweetObj) return;
 
+    // console.log('got duplicates ', duplicates);
     // prefer verified if exists
     tweetObj =
       duplicates.find((x: any) => x.verified === true) || duplicates[0];
@@ -192,85 +199,120 @@ const Profile = () => {
     setWotScore(tmpWot);
 
     setTweet(tweetObj);
+    // console.log(`setTweet to `, tweetObj);
+
+    try {
+      // check if this screenName has older/revoked keys
+      // console.log(
+      //   'checking other keys for this screenName ',
+      //   tweetObj.screenName
+      // );
+      let screenNameKeys: any = [];
+      const skquerySnapshot = await db
+        .collection('twitter')
+        .where('lcScreenName', '==', tweetObj.screenName)
+        // .orderBy('createdAt', 'desc')
+        .get();
+      skquerySnapshot.forEach((doc: any) => {
+        screenNameKeys.push(doc.data());
+      });
+
+      screenNameKeys = screenNameKeys.filter(
+        (x: any) => x.nPubKey !== tweetObj.nPubKey
+      );
+      console.log('got other keys for this screenName ', screenNameKeys);
+      setPreviousKeys(screenNameKeys);
+
+      const newerKey = screenNameKeys.find(
+        (y: any) => y.created_at > tweetObj.created_at
+      );
+      if (newerKey) setNewerKeyExists(true);
+    } catch (error) {
+      console.log('otherKeys error ', error);
+    }
 
     // get nostr profile of user to show users, followers, relays etc.
     for (let index = 0; index < defaultRelays.length; index += 1) {
       const element = defaultRelays[index];
-      const relay = nostrTools.relayInit(element!);
-      // setRelayConnection(relay);
-      await relay.connect();
+      try {
+        const relay = nostrTools.relayInit(element!);
+        // setRelayConnection(relay);
+        await relay.connect();
 
-      relay.on('connect', () => {
-        console.log(`connected to ${relay.url}`);
+        relay.on('connect', () => {
+          console.log(`connected to ${relay.url}`);
 
-        const sub = relay.sub([
-          {
-            kinds: [0, 3],
-            authors: [tweetObj.hexPubKey],
-            // since: 0,
-          },
-        ]);
-        sub.on('event', async (event: any) => {
-          // console.log(
-          //   'got event and setUserRelays:  ',
-          //   event.content,
-          //   'adding to ',
-          //   userRelays,
-          //   '\nparsed: ',
-          //   JSON.parse(event.content)
-          // );
+          const sub = relay.sub([
+            {
+              kinds: [0, 3],
+              authors: [tweetObj.hexPubKey],
+              // since: 0,
+            },
+          ]);
+          sub.on('event', async (event: any) => {
+            // console.log(
+            //   'got event and setUserRelays:  ',
+            //   event.content,
+            //   'adding to ',
+            //   userRelays,
+            //   '\nparsed: ',
+            //   JSON.parse(event.content)
+            // );
 
-          if (event.kind === 3) {
-            // console.log('got 3 ', event);
-            const relayList = JSON.parse(event.content);
-            Object.keys(relayList).forEach((k) => {
-              // console.log(
-              //   'calling checkAdd with k, ',
-              //   k,
-              //   relayList[k],
-              //   userRelays
-              // );
-              checkAdd({
-                url: k,
-                read: relayList[k].read,
-                write: relayList[k].write,
+            if (event.kind === 3) {
+              // console.log('got 3 ', event);
+              const relayList = JSON.parse(event.content);
+              Object.keys(relayList).forEach((k) => {
+                // console.log(
+                //   'calling checkAdd with k, ',
+                //   k,
+                //   relayList[k],
+                //   userRelays
+                // );
+                checkAdd({
+                  url: k,
+                  read: relayList[k].read,
+                  write: relayList[k].write,
+                });
               });
-            });
-          }
+            }
 
-          if (event.kind === 0) {
-            // console.log('got 0 ', event);
-            const metadata = JSON.parse(event.content);
-            if (metadata.nip05 && nip05 === '') {
-              // validate nip05
-              const response = await axios.get(
-                `https://${
-                  metadata.nip05.split('@')[1]
-                }/.well-known/nostr.json?name=${metadata.nip05.split('@')[0]}`
-              );
+            if (event.kind === 0) {
+              // console.log('got 0 ', event);
+              const metadata = JSON.parse(event.content);
+              if (metadata.nip05 && nip05 === '') {
+                // validate nip05
+                const response = await axios.get(
+                  `https://${
+                    metadata.nip05.split('@')[1]
+                  }/.well-known/nostr.json?name=${metadata.nip05.split('@')[0]}`
+                );
 
-              if (
-                response.data.names[metadata.nip05.split('@')[0]] ===
-                tweetObj.hexPubKey
-              ) {
-                setNip05(metadata.nip05);
+                if (
+                  response.data.names[metadata.nip05.split('@')[0]] ===
+                  tweetObj.hexPubKey
+                ) {
+                  setNip05(metadata.nip05);
+                }
               }
             }
-          }
+          });
+          sub.on('eose', async () => {
+            // console.log('eose');
+            sub.unsub();
+          });
         });
-        sub.on('eose', async () => {
-          // console.log('eose');
-          sub.unsub();
+        relay.on('error', () => {
+          console.log(`failed to connect to ${relay.url}`);
+          setFetching(false);
+          setErrorAlert({
+            open: true,
+            text: `failed to connect to ${relay.url}`,
+          });
         });
-      });
-      relay.on('error', () => {
-        console.log(`failed to connect to ${relay.url}`);
-        setFetching(false);
-        setErrorAlert({
-          open: true,
-          text: `failed to connect to ${relay.url}`,
-        });
-      });
+      } catch (error: any) {
+        console.log('relay connect error ', element, error);
+      }
     }
   };
 
@@ -344,6 +386,17 @@ const Profile = () => {
       // title={`${tweet.screenName}'s profile`}
       // description={`Here is the profile of ${tweet.screenName}`}
       >
+        {/* // add alert here if user has a newer verified pubkey */}
+        {newerKeyExists && (
+          <Alert severity="error" sx={{ width: '100%' }}>
+            {tweet.screenName} has a newer key. See{' '}
+            <Link href="#keyrotation">
+              <a>Key Rotation</a>
+            </Link>
+            .
+          </Alert>
+        )}
+
         <Card>
           <CardHeader
             avatar={
@@ -798,7 +851,7 @@ const Profile = () => {
               </a>
             </div>
             {tweet.mastodon && (
-              <div className="mt-4 flex items-center">
+              <div className="my-4 flex items-center">
                 <Image
                   src={'/assets/images/Mastodonlogo.svg'}
                   alt="mastodon logo"
@@ -824,6 +877,86 @@ const Profile = () => {
                   Proof Link
                 </a>
               </div>
+            )}
+
+            {previousKeys.length > 0 && (
+              <>
+                <Divider />
+                <Typography
+                  variant="h6"
+                  color="text.secondary"
+                  className="!mt-2"
+                >
+                  Key Rotation
+                </Typography>
+                <div
+                  className="my-2 flex-vertical items-center"
+                  id="keyrotation"
+                >
+                  <TableContainer component={Paper} className="my-2">
+                    <Table
+                    // sx={{ minWidth: 650 }}
+                    >
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>
+                            Other Keys for <b>{tweet.screenName}</b>
+                          </TableCell>
+                          <TableCell align="right">Date Posted</TableCell>
+                          <TableCell align="center">Verified?</TableCell>
+                          <TableCell align="center">Profile</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {previousKeys.map((row: any) => (
+                          <TableRow
+                            key={Math.random()}
+                            sx={{
+                              '&:last-child td, &:last-child th': { border: 0 },
+                            }}
+                          >
+                            <TableCell component="th" scope="row">
+                              {row.nPubKey}
+                            </TableCell>
+                            <TableCell align="right">{`${new Date(
+                              row.created_at
+                            ).toLocaleString()}`}</TableCell>
+                            <TableCell
+                              component="th"
+                              scope="row"
+                              align="center"
+                            >
+                              {row.verified === true ? (
+                                <Link
+                                  href={`https://www.nostr.guru/e/${row.verifyEvent}`}
+                                >
+                                  <a target="_blank">
+                                    <CheckCircle htmlColor="green" />
+                                  </a>
+                                </Link>
+                              ) : (
+                                <Tooltip
+                                  title="Pubkey is not verified on nostr."
+                                  placement="top"
+                                >
+                                  <Cancel htmlColor="red" />
+                                </Tooltip>
+                              )}
+                            </TableCell>
+                            <TableCell align="center">
+                              <Link href={`/p/${row.nPubKey}`}>
+                                <a>
+                                  <ArrowCircleRightOutlined className="text-nostr-light" />
+                                </a>
+                              </Link>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>
