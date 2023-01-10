@@ -10,5 +10,5 @@ jobs:
       uses: theborakompanioni/nostr-action@v1
       with:
         key: ${{ secrets.NOSTR_COMMIT_KEY }}
-        relay: wss://nostr-relay.wlvs.space
+        relay: wss://nostr-pub.wellorder.net
         content: 🤖 Latest commit on nostr.directory repository -> ${{ github.event.head_commit.message }}
