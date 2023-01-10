@@ -199,11 +199,42 @@ const Profile = () => {
     setWotScore(tmpWot);
 
     setTweet(tweetObj);
+    // console.log(`setTweet to `, tweetObj);
 
     try {
-      // get nostr profile of user to show users, followers, relays etc.
-      for (let index = 0; index < defaultRelays.length; index += 1) {
-        const element = defaultRelays[index];
+      // check if this screenName has older/revoked keys
+      // console.log(
+      //   'checking other keys for this screenName ',
+      //   tweetObj.screenName
+      // );
+      let screenNameKeys: any = [];
+      const skquerySnapshot = await db
+        .collection('twitter')
+        .where('lcScreenName', '==', tweetObj.screenName)
+        // .orderBy('createdAt', 'desc')
+        .get();
+      skquerySnapshot.forEach((doc: any) => {
+        screenNameKeys.push(doc.data());
+      });
+
+      screenNameKeys = screenNameKeys.filter(
+        (x: any) => x.nPubKey !== tweetObj.nPubKey
+      );
+      console.log('got other keys for this screenName ', screenNameKeys);
+      setPreviousKeys(screenNameKeys);
+
+      const newerKey = screenNameKeys.find(
+        (y: any) => y.created_at > tweetObj.created_at
+      );
+      if (newerKey) setNewerKeyExists(true);
+    } catch (error) {
+      console.log('otherKeys error ', error);
+    }
+
+    // get nostr profile of user to show users, followers, relays etc.
+    for (let index = 0; index < defaultRelays.length; index += 1) {
+      const element = defaultRelays[index];
+      try {
         const relay = nostrTools.relayInit(element!);
         // setRelayConnection(relay);
         await relay.connect();
@@ -279,39 +310,9 @@ const Profile = () => {
             text: `failed to connect to ${relay.url}`,
           });
         });
+      } catch (error: any) {
+        console.log('relay connect error ', element, error);
       }
-    } catch (error: any) {
-      console.log('relay error ', error);
-    }
-
-    try {
-      // check if this screenName has older/revoked keys
-      console.log(
-        'checking other keys for this screenName ',
-        tweetObj.screenName
-      );
-      let screenNameKeys: any = [];
-      const skquerySnapshot = await db
-        .collection('twitter')
-        .where('lcScreenName', '==', tweetObj.screenName)
-        // .orderBy('createdAt', 'desc')
-        .get();
-      skquerySnapshot.forEach((doc: any) => {
-        screenNameKeys.push(doc.data());
-      });
-
-      screenNameKeys = screenNameKeys.filter(
-        (x: any) => x.nPubKey !== tweetObj.nPubKey
-      );
-      console.log('got other keys for this screenName ', screenNameKeys);
-      setPreviousKeys(screenNameKeys);
-
-      const newerKey = screenNameKeys.find(
-        (y: any) => y.created_at > tweetObj.created_at
-      );
-      if (newerKey) setNewerKeyExists(true);
-    } catch (error) {
-      console.log('otherKeys error ', error);
     }
   };
 
