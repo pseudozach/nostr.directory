@@ -167,54 +167,66 @@ const Profile = () => {
     } catch (error) {}
 
     // convert twitter handle to pubkey as well
-    if (hexPubKey.length < 64) {
-      // console.log(
-      //   'after pubkey check if still no pubkey here so it means its a twitter handle? ',
-      //   someIdentifier,
-      //   nPubKey,
-      //   hexPubKey
-      // );
-      const tweetsByIdentifier: any = [];
-      setFetching(true);
-      const tquerySnapshot = await db
-        .collection('twitter')
-        .where('lcScreenName', '==', someIdentifier.toLowerCase())
-        .get();
-      tquerySnapshot.forEach((doc: { id: any; data: () => any }) => {
-        tweetsByIdentifier.push(doc.data());
-      });
-      // console.log(
-      //   'got tweets by this screenName ',
-      //   someIdentifier,
-      //   tweetsByIdentifier
-      // );
-      if (tweetsByIdentifier.length < 1) {
-        console.log('handle not found in DB!');
-        setIdNotFound(true);
-        return;
-      }
-      if (tweetsByIdentifier.length > 1) {
-        const verifiedTweets = tweetsByIdentifier.filter(
-          (z: any) => z.verified === true
-        );
-        if (verifiedTweets.length === 1) {
-          nPubKey = verifiedTweets[0].nPubKey;
-          hexPubKey = verifiedTweets[0].hexPubKey;
-        } else {
-          // pick the most recent one
-          const latestCreatedAt = Math.max(
-            ...verifiedTweets.map((o: any) => o.created_at)
-          );
-          const latestVerifiedTweet = verifiedTweets.find((o: any) => {
-            return o.created_at === latestCreatedAt;
-          });
-          nPubKey = latestVerifiedTweet.nPubKey;
-          hexPubKey = latestVerifiedTweet.hexPubKey;
+    try {
+      if (hexPubKey.length < 64) {
+        // console.log(
+        //   'after pubkey check if still no pubkey here so it means its a twitter handle? ',
+        //   someIdentifier,
+        //   nPubKey,
+        //   hexPubKey
+        // );
+        const tweetsByIdentifier: any = [];
+        setFetching(true);
+        const tquerySnapshot = await db
+          .collection('twitter')
+          .where('lcScreenName', '==', someIdentifier.toLowerCase())
+          .get();
+        tquerySnapshot.forEach((doc: { id: any; data: () => any }) => {
+          tweetsByIdentifier.push(doc.data());
+        });
+        // console.log(
+        //   'got tweets by this screenName ',
+        //   someIdentifier,
+        //   tweetsByIdentifier
+        // );
+        if (tweetsByIdentifier.length < 1) {
+          console.log('handle not found in DB!');
+          setIdNotFound(true);
+          return;
         }
-      } else {
-        nPubKey = tweetsByIdentifier[0].nPubKey;
-        hexPubKey = tweetsByIdentifier[0].hexPubKey;
+        if (tweetsByIdentifier.length > 1) {
+          const verifiedTweets = tweetsByIdentifier.filter(
+            (z: any) => z.verified === true
+          );
+          if (verifiedTweets.length === 1) {
+            // there's only 1 verified tweet
+            nPubKey = verifiedTweets[0].nPubKey;
+            hexPubKey = verifiedTweets[0].hexPubKey;
+          } else if (verifiedTweets.length > 1) {
+            // there's more than 1 verified tweet
+            const latestVerifiedTweet = verifiedTweets.reduce(
+              (prev: any, current: any) =>
+                +prev.createdAt > +current.createdAt ? prev : current
+            );
+            // console.log('latestVerifiedTweet ', latestVerifiedTweet);
+            nPubKey = latestVerifiedTweet.nPubKey;
+            hexPubKey = latestVerifiedTweet.hexPubKey;
+          } else {
+            // no verified tweets - pick the most recent one
+            const latestTweet = tweetsByIdentifier.reduce(
+              (prev: any, current: any) =>
+                +prev.createdAt > +current.createdAt ? prev : current
+            );
+            nPubKey = latestTweet.nPubKey;
+            hexPubKey = latestTweet.hexPubKey;
+          }
+        } else {
+          nPubKey = tweetsByIdentifier[0].nPubKey;
+          hexPubKey = tweetsByIdentifier[0].hexPubKey;
+        }
       }
+    } catch (error) {
+      console.log('parse handle error ', error);
     }
 
     // // should have a valid npub here
@@ -266,8 +278,7 @@ const Profile = () => {
       let screenNameKeys: any = [];
       const skquerySnapshot = await db
         .collection('twitter')
-        .where('lcScreenName', '==', tweetObj.screenName)
-        // .orderBy('createdAt', 'desc')
+        .where('lcScreenName', '==', tweetObj.screenName.toLowerCase())
         .get();
       skquerySnapshot.forEach((doc: any) => {
         screenNameKeys.push(doc.data());
@@ -276,7 +287,7 @@ const Profile = () => {
       screenNameKeys = screenNameKeys.filter(
         (x: any) => x.nPubKey !== tweetObj.nPubKey
       );
-      // console.log('got other keys for this screenName ', screenNameKeys);
+      console.log('got other keys for this screenName ', screenNameKeys);
       setPreviousKeys(screenNameKeys);
 
       const newerKey = screenNameKeys.find(
