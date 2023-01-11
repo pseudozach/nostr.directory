@@ -195,6 +195,7 @@ const Profile = () => {
         if (tweetsByIdentifier.length < 1) {
           console.log('handle not found in DB!');
           setIdNotFound(true);
+          setFetching(false);
           return;
         }
         if (tweetsByIdentifier.length > 1) {
@@ -920,7 +921,6 @@ const Profile = () => {
               >
                 Profile Link
               </a>
-
               <a
                 href={`https://twitter.com/${tweet.screenName}/status/${tweet.id_str}`}
                 className="mx-2 underline"
