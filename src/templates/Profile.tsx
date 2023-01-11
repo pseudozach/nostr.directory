@@ -98,6 +98,7 @@ const Profile = () => {
   });
   const [validPFP, setValidPFP] = useState(false);
   const [newerKeyExists, setNewerKeyExists] = useState(false);
+  const [idNotFound, setIdNotFound] = useState(false);
   const router = useRouter();
 
   const handleClose = () => {
@@ -189,6 +190,7 @@ const Profile = () => {
       // );
       if (tweetsByIdentifier.length < 1) {
         console.log('handle not found in DB!');
+        setIdNotFound(true);
         return;
       }
       if (tweetsByIdentifier.length > 1) {
@@ -440,6 +442,12 @@ const Profile = () => {
       // title={`${tweet.screenName}'s profile`}
       // description={`Here is the profile of ${tweet.screenName}`}
       >
+        {idNotFound && (
+          <Alert severity="error" sx={{ width: '100%' }}>
+            {router.query.id} not found in our database.
+          </Alert>
+        )}
+
         {/* // add alert here if user has a newer verified pubkey */}
         {newerKeyExists && (
           <Alert severity="error" sx={{ width: '100%' }}>
