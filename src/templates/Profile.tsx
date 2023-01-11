@@ -254,7 +254,12 @@ const Profile = () => {
       duplicates.push(doc.data());
     });
 
-    if (!tweetObj) return;
+    if (!tweetObj) {
+      console.log('pubkey not found in DB!');
+      setIdNotFound(true);
+      setFetching(false);
+      return;
+    }
 
     // console.log('got duplicates ', duplicates);
     // prefer verified if exists
@@ -462,7 +467,7 @@ const Profile = () => {
       >
         {idNotFound && (
           <Alert severity="error" sx={{ width: '100%' }}>
-            {router.query.id} not found in our database.
+            {router.query.id} is not found in our database.
           </Alert>
         )}
 
