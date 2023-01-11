@@ -42,6 +42,7 @@ import {
   DialogContentText,
   DialogTitle,
   Link,
+  LinearProgress,
 } from '@mui/material';
 import axios from 'axios';
 import Image from 'next/image';
@@ -138,6 +139,8 @@ const Profile = () => {
       return;
     }
 
+    setFetching(true);
+
     // is someIdentifier npub, hex or nprofile?
     let hexPubKey;
     let nPubKey;
@@ -176,7 +179,7 @@ const Profile = () => {
         //   hexPubKey
         // );
         const tweetsByIdentifier: any = [];
-        setFetching(true);
+        // setFetching(true);
         const tquerySnapshot = await db
           .collection('twitter')
           .where('lcScreenName', '==', someIdentifier.toLowerCase())
@@ -239,7 +242,7 @@ const Profile = () => {
 
     // setUserRelays([]);
     const duplicates: any = [];
-    setFetching(true);
+    // setFetching(true);
     const querySnapshot = await db
       .collection('twitter')
       .where('nPubKey', '==', nPubKey)
@@ -287,7 +290,7 @@ const Profile = () => {
       screenNameKeys = screenNameKeys.filter(
         (x: any) => x.nPubKey !== tweetObj.nPubKey
       );
-      console.log('got other keys for this screenName ', screenNameKeys);
+      // console.log('got other keys for this screenName ', screenNameKeys);
       setPreviousKeys(screenNameKeys);
 
       const newerKey = screenNameKeys.find(
@@ -367,20 +370,23 @@ const Profile = () => {
           sub.on('eose', async () => {
             // console.log('eose');
             sub.unsub();
+            setFetching(false);
           });
         });
         relay.on('error', () => {
           console.log(`failed to connect to ${relay.url}`);
-          setFetching(false);
           setErrorAlert({
             open: true,
             text: `failed to connect to ${relay.url}`,
           });
+          setFetching(false);
         });
       } catch (error: any) {
         console.log('relay connect error ', element, error);
+        setFetching(false);
       }
     }
+    setFetching(false);
   };
 
   useEffect(() => {
@@ -471,6 +477,7 @@ const Profile = () => {
         )}
 
         <Card>
+          {fetching && <LinearProgress />}
           <CardHeader
             avatar={
               <Avatar
