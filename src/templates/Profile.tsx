@@ -138,7 +138,6 @@ const Profile = () => {
     }
 
     // is someIdentifier npub, hex or nprofile?
-    // TODO: convert twitter handle to pubkey as well
     let hexPubKey;
     let nPubKey;
     if (someIdentifier.slice(0, 8) === 'nprofile') {
@@ -161,14 +160,69 @@ const Profile = () => {
         hexPubKey = someIdentifier;
       }
     }
-
     try {
       nPubKey = hexToNpub(hexPubKey);
-    } catch (error) {
-      return;
+      // eslint-disable-next-line no-empty
+    } catch (error) {}
+
+    // convert twitter handle to pubkey as well
+    if (hexPubKey.length < 64) {
+      // console.log(
+      //   'after pubkey check if still no pubkey here so it means its a twitter handle? ',
+      //   someIdentifier,
+      //   nPubKey,
+      //   hexPubKey
+      // );
+      const tweetsByIdentifier: any = [];
+      setFetching(true);
+      const tquerySnapshot = await db
+        .collection('twitter')
+        .where('lcScreenName', '==', someIdentifier.toLowerCase())
+        .get();
+      tquerySnapshot.forEach((doc: { id: any; data: () => any }) => {
+        tweetsByIdentifier.push(doc.data());
+      });
+      // console.log(
+      //   'got tweets by this screenName ',
+      //   someIdentifier,
+      //   tweetsByIdentifier
+      // );
+      if (tweetsByIdentifier.length < 1) {
+        console.log('handle not found in DB!');
+        return;
+      }
+      if (tweetsByIdentifier.length > 1) {
+        const verifiedTweets = tweetsByIdentifier.filter(
+          (z: any) => z.verified === true
+        );
+        if (verifiedTweets.length === 1) {
+          nPubKey = verifiedTweets[0].nPubKey;
+          hexPubKey = verifiedTweets[0].hexPubKey;
+        } else {
+          // pick the most recent one
+          const latestCreatedAt = Math.max(
+            ...verifiedTweets.map((o: any) => o.created_at)
+          );
+          const latestVerifiedTweet = verifiedTweets.find((o: any) => {
+            return o.created_at === latestCreatedAt;
+          });
+          nPubKey = latestVerifiedTweet.nPubKey;
+          hexPubKey = latestVerifiedTweet.hexPubKey;
+        }
+      } else {
+        nPubKey = tweetsByIdentifier[0].nPubKey;
+        hexPubKey = tweetsByIdentifier[0].hexPubKey;
+      }
     }
 
-    // should have a valid npub here
+    // // should have a valid npub here
+    // console.log(
+    //   'should have valid data here - identifier, nPubKey, hexPubKey: ',
+    //   someIdentifier,
+    //   nPubKey,
+    //   hexPubKey
+    // );
+
     // setUserRelays([]);
     const duplicates: any = [];
     setFetching(true);
@@ -220,7 +274,7 @@ const Profile = () => {
       screenNameKeys = screenNameKeys.filter(
         (x: any) => x.nPubKey !== tweetObj.nPubKey
       );
-      console.log('got other keys for this screenName ', screenNameKeys);
+      // console.log('got other keys for this screenName ', screenNameKeys);
       setPreviousKeys(screenNameKeys);
 
       const newerKey = screenNameKeys.find(
