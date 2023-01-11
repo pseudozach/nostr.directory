@@ -20,12 +20,6 @@ import { Button as PrimaryButton } from '../button/Button';
 import { Section } from '../layout/Section';
 import { auth, db, twitterProvider } from '../utils/firebase';
 
-// const searchClient = algoliasearch(
-//   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
-//   process.env.NEXT_PUBLIC_ALGOLIA_API_KEY!
-// );
-// const searchIndex = searchClient.initIndex('twitter');
-
 const List = () => {
   const [row, setRow] = useState<Array<any>>([]);
   const [stats, setStats] = useState({
@@ -187,43 +181,6 @@ const List = () => {
     // { field: 'createdAt', headerName: 'createdAt', width: 150 },
   ];
 
-  // const dedupSet = (rowData: any) => {
-  //   // ignore duplicate hexPubKeys
-  //   console.log('comparing rowData.hexPubKey ', rowData.hexPubKey, ' to ', row);
-  //   for (let index = 0; index < row.length; index += 1) {
-  //     const element = row[index];
-  //     console.log('element? ', element);
-  //   }
-  //   const dup = row.filter((r) => r.hexPubKey === rowData.hexPubKey);
-  //   console.log('dup ', dup);
-  //   if (dup.length) {
-  //     console.log('dup found ', dup);
-  //     return;
-  //   }
-
-  //   // if (trimmed && !row.includes(trimmed)) {
-  //   //   setCategories((prevState) => prevState.concat(trimmed));
-  //   // }
-
-  //   setRow((r) => [
-  //     ...r,
-  //     {
-  //       id: rowData.id,
-  //       isValid: rowData.isValid,
-  //       screenName: rowData.screenName,
-  //       pubkey: rowData.pubkey,
-  //       nPubKey: rowData.nPubKey,
-  //       hexPubKey: rowData.hexPubKey,
-  //       profileImageUrl: rowData.profileImageUrl,
-  //       tweetId: rowData.id_str,
-  //       createdAt: rowData.createdAt,
-  //       url: rowData.entities?.urls[0]?.url || '',
-  //       verified: rowData.verified,
-  //       verifyEvent: rowData.verifyEvent,
-  //     },
-  //   ]);
-  // };
-
   const fetchInitialData = async () => {
     // console.log('getting latest records...');
     setRow([]);
@@ -260,53 +217,6 @@ const List = () => {
     setFetching(false);
   };
 
-  // const handleChange = async () => {
-  //   if (searchText.length === 0 && row.length === 0) {
-  //     fetchInitialData();
-  //     return;
-  //   }
-  //   if (searchText.length < 2) {
-  //     // console.log('return short query');
-  //     return;
-  //   }
-  //   setFetching(true);
-  //   setRow([]);
-  //   // console.log('searching records for ', searchText);
-  //   const { hits } = await searchIndex.search(searchText, {
-  //     hitsPerPage: 10,
-  //   });
-  //   const rawArray = [];
-  //   for (let index = 0; index < hits.length; index += 1) {
-  //     const rowData: any = hits[index];
-  //     rowData.id = rowData.objectID;
-  //     rowData.tweetId = rowData.id_str;
-  //     rowData.url = `https://twitter.com/i/web/status/${rowData.id_str}`;
-  //     rowData.profile = `/p/${rowData.nPubKey}`;
-  //     rawArray.push(rowData);
-
-  //     // setRow((r) => [
-  //     //   ...r,
-  //     //   {
-  //     //     id: rowData.objectID,
-  //     //     isValid: rowData.isValid,
-  //     //     screenName: rowData.screenName,
-  //     //     pubkey: rowData?.pubkey,
-  //     //     nPubKey: rowData?.nPubKey,
-  //     //     hexPubKey: rowData?.hexPubKey,
-  //     //     profileImageUrl: rowData.profileImageUrl,
-  //     //     tweetId: rowData.id_str,
-  //     //     createdAt: rowData.createdAt,
-  //     //     url: `https://twitter.com/i/web/status/${rowData.id_str}`,
-  //     //     verified: rowData.verified,
-  //     //     verifyEvent: rowData.verifyEvent,
-  //     //   },
-  //     // ]);
-  //   }
-  //   dedupArray(rawArray);
-  //   setFetching(false);
-  //   // console.log('hits ', hits.length);
-  // };
-
   useEffect(() => {
     fetchInitialData();
   }, []);
@@ -320,16 +230,6 @@ const List = () => {
     };
     fetchData();
   }, []);
-
-  // const clearSearchField = () => {
-  //   // console.log('delete text - reset data');
-  //   setRow([]);
-  //   setSearchText('');
-  // };
-
-  // React.useEffect(() => {
-  //   handleChange();
-  // }, [searchText]);
 
   const popupSignIn = async () => {
     auth
@@ -450,6 +350,11 @@ const List = () => {
           onChange={(event) => {
             setInputText(event.target.value);
           }}
+          onKeyPress={(event) => {
+            if (event.key === 'Enter') {
+              router.push(`/p/${inputText}`);
+            }
+          }}
           value={inputText}
           fullWidth
           InputProps={{
@@ -473,37 +378,6 @@ const List = () => {
             ),
           }}
         />
-
-        {/* <TextField
-          id="outlined-basic"
-          // label="Outlined"
-          variant="outlined"
-          placeholder="Search by twitter screen name or pubkey"
-          // onChange={handleChange}
-          onChange={(event) => {
-            setSearchText(event.target.value);
-          }}
-          value={searchText}
-          fullWidth
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchSharpIcon />
-              </InputAdornment>
-            ),
-            endAdornment: (
-              <InputAdornment position="start">
-                <IconButton
-                  aria-label="clear search"
-                  onClick={clearSearchField}
-                >
-                  <ClearSharpIcon />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        /> */}
-
         <Typography
           variant="h4"
           color="text.primary"
