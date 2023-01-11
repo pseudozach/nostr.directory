@@ -4,29 +4,27 @@ import { useEffect, useState } from 'react';
 import { ArrowCircleRightOutlined } from '@mui/icons-material';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ClearSharpIcon from '@mui/icons-material/ClearSharp';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import SearchSharpIcon from '@mui/icons-material/SearchSharp';
-import { Stack, Tooltip } from '@mui/material';
+import { Stack, Tooltip, Typography } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
-import algoliasearch from 'algoliasearch/lite';
 import firebase from 'firebase/app';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 import { Background } from '../background/Background';
 import { Button as PrimaryButton } from '../button/Button';
 import { Section } from '../layout/Section';
 import { auth, db, twitterProvider } from '../utils/firebase';
 
-const searchClient = algoliasearch(
-  process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
-  process.env.NEXT_PUBLIC_ALGOLIA_API_KEY!
-);
-const searchIndex = searchClient.initIndex('twitter');
+// const searchClient = algoliasearch(
+//   process.env.NEXT_PUBLIC_ALGOLIA_APP_ID!,
+//   process.env.NEXT_PUBLIC_ALGOLIA_API_KEY!
+// );
+// const searchIndex = searchClient.initIndex('twitter');
 
 const columns: GridColDef[] = [
   {
@@ -35,7 +33,9 @@ const columns: GridColDef[] = [
     maxWidth: 50,
     align: 'center',
     renderCell: (params: GridRenderCellParams) => (
-      <Avatar alt="profile picture" src={params.value} />
+      <Avatar src={params.value}>
+        {/* <img src={'/assets/images/nostrich.jpg'} alt="fallback image" /> */}
+      </Avatar>
     ),
   },
   {
@@ -153,8 +153,10 @@ const columns: GridColDef[] = [
 const List = () => {
   const [row, setRow] = useState<Array<any>>([]);
   const [stats, setStats] = useState({ tweetCount: 1000, verifiedCount: 100 });
-  const [searchText, setSearchText] = useState('');
+  // const [searchText, setSearchText] = useState('');
   const [fetching, setFetching] = useState(false);
+  const [inputText, setInputText] = useState('');
+  const router = useRouter();
 
   const dedupArray = (rawArray: any) => {
     let finalArray: any = [];
@@ -217,12 +219,13 @@ const List = () => {
   // };
 
   const fetchInitialData = async () => {
-    console.log('getting latest records...');
+    // console.log('getting latest records...');
     setRow([]);
     setFetching(true);
     const querySnapshot = await db
       .collection('twitter')
-      .orderBy('createdAt', 'desc')
+      // .orderBy('createdAt', 'desc')
+      .orderBy('user.followers_count', 'desc')
       .limit(50)
       .get();
     const rawArray: any[] = [];
@@ -251,52 +254,52 @@ const List = () => {
     setFetching(false);
   };
 
-  const handleChange = async () => {
-    if (searchText.length === 0 && row.length === 0) {
-      fetchInitialData();
-      return;
-    }
-    if (searchText.length < 2) {
-      // console.log('return short query');
-      return;
-    }
-    setFetching(true);
-    setRow([]);
-    // console.log('searching records for ', searchText);
-    const { hits } = await searchIndex.search(searchText, {
-      hitsPerPage: 10,
-    });
-    const rawArray = [];
-    for (let index = 0; index < hits.length; index += 1) {
-      const rowData: any = hits[index];
-      rowData.id = rowData.objectID;
-      rowData.tweetId = rowData.id_str;
-      rowData.url = `https://twitter.com/i/web/status/${rowData.id_str}`;
-      rowData.profile = `/p/${rowData.nPubKey}`;
-      rawArray.push(rowData);
+  // const handleChange = async () => {
+  //   if (searchText.length === 0 && row.length === 0) {
+  //     fetchInitialData();
+  //     return;
+  //   }
+  //   if (searchText.length < 2) {
+  //     // console.log('return short query');
+  //     return;
+  //   }
+  //   setFetching(true);
+  //   setRow([]);
+  //   // console.log('searching records for ', searchText);
+  //   const { hits } = await searchIndex.search(searchText, {
+  //     hitsPerPage: 10,
+  //   });
+  //   const rawArray = [];
+  //   for (let index = 0; index < hits.length; index += 1) {
+  //     const rowData: any = hits[index];
+  //     rowData.id = rowData.objectID;
+  //     rowData.tweetId = rowData.id_str;
+  //     rowData.url = `https://twitter.com/i/web/status/${rowData.id_str}`;
+  //     rowData.profile = `/p/${rowData.nPubKey}`;
+  //     rawArray.push(rowData);
 
-      // setRow((r) => [
-      //   ...r,
-      //   {
-      //     id: rowData.objectID,
-      //     isValid: rowData.isValid,
-      //     screenName: rowData.screenName,
-      //     pubkey: rowData?.pubkey,
-      //     nPubKey: rowData?.nPubKey,
-      //     hexPubKey: rowData?.hexPubKey,
-      //     profileImageUrl: rowData.profileImageUrl,
-      //     tweetId: rowData.id_str,
-      //     createdAt: rowData.createdAt,
-      //     url: `https://twitter.com/i/web/status/${rowData.id_str}`,
-      //     verified: rowData.verified,
-      //     verifyEvent: rowData.verifyEvent,
-      //   },
-      // ]);
-    }
-    dedupArray(rawArray);
-    setFetching(false);
-    // console.log('hits ', hits.length);
-  };
+  //     // setRow((r) => [
+  //     //   ...r,
+  //     //   {
+  //     //     id: rowData.objectID,
+  //     //     isValid: rowData.isValid,
+  //     //     screenName: rowData.screenName,
+  //     //     pubkey: rowData?.pubkey,
+  //     //     nPubKey: rowData?.nPubKey,
+  //     //     hexPubKey: rowData?.hexPubKey,
+  //     //     profileImageUrl: rowData.profileImageUrl,
+  //     //     tweetId: rowData.id_str,
+  //     //     createdAt: rowData.createdAt,
+  //     //     url: `https://twitter.com/i/web/status/${rowData.id_str}`,
+  //     //     verified: rowData.verified,
+  //     //     verifyEvent: rowData.verifyEvent,
+  //     //   },
+  //     // ]);
+  //   }
+  //   dedupArray(rawArray);
+  //   setFetching(false);
+  //   // console.log('hits ', hits.length);
+  // };
 
   useEffect(() => {
     fetchInitialData();
@@ -312,15 +315,15 @@ const List = () => {
     fetchData();
   }, []);
 
-  const clearSearchField = () => {
-    // console.log('delete text - reset data');
-    setRow([]);
-    setSearchText('');
-  };
+  // const clearSearchField = () => {
+  //   // console.log('delete text - reset data');
+  //   setRow([]);
+  //   setSearchText('');
+  // };
 
-  React.useEffect(() => {
-    handleChange();
-  }, [searchText]);
+  // React.useEffect(() => {
+  //   handleChange();
+  // }, [searchText]);
 
   const popupSignIn = async () => {
     auth
@@ -382,20 +385,37 @@ const List = () => {
         title="Nostr Public Key Database"
         description={`Here is a list of ${stats.tweetCount!} twitter accounts that tweeted their nostr public keys. ${stats.verifiedCount!} verified those keys on nostr.`}
       >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: 8,
-          }}
-          className="text-xl"
-          onClick={popupSignIn}
-        >
-          To view & update your nostr contact list based on your twitter
-          follows: <PrimaryButton xl>Sign in with Twitter</PrimaryButton>
-        </div>
         <TextField
+          id="profile-basic"
+          // label="Outlined"
+          variant="outlined"
+          placeholder="Search by twitter screen name or pubkey e.g. jack or npub1melv..."
+          // onChange={handleChange}
+          onChange={(event) => {
+            setInputText(event.target.value);
+          }}
+          value={inputText}
+          fullWidth
+          InputProps={{
+            // startAdornment: (
+            //   <InputAdornment sx={{ backgroundColor: 'gray' }} position="start">
+            //     twitter.com/
+            //   </InputAdornment>
+            // ),
+            endAdornment: (
+              <InputAdornment position="start">
+                <IconButton
+                  aria-label="clear search"
+                  onClick={() => router.push(`/p/${inputText}`)}
+                >
+                  <ArrowCircleRightOutlined className="text-nostr-light" />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+
+        {/* <TextField
           id="outlined-basic"
           // label="Outlined"
           variant="outlined"
@@ -423,7 +443,15 @@ const List = () => {
               </InputAdornment>
             ),
           }}
-        />
+        /> */}
+
+        <Typography
+          variant="h4"
+          color="text.primary"
+          className="text-center mb-2 mt-4"
+        >
+          Popular Accounts
+        </Typography>
 
         <div style={{ height: 600, width: '100%' }}>
           <DataGrid
@@ -459,6 +487,19 @@ const List = () => {
             //   },
             // }}
           />
+        </div>
+
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          className="text-xl my-4"
+          onClick={popupSignIn}
+        >
+          Add your twitter follows to your nostr contact list{' '}
+          <PrimaryButton>Sign in with Twitter</PrimaryButton>
         </div>
       </Section>
     </Background>
