@@ -552,12 +552,12 @@ const List = () => {
           style={{
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'end',
           }}
           className="text-xl my-4"
           onClick={popupSignIn}
         >
-          Add your twitter follows to your nostr contact list{' '}
+          To add your twitter follows to your nostr contact list{' '}
           <PrimaryButton>Sign in with Twitter</PrimaryButton>
         </div>
       </Section>
