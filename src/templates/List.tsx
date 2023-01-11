@@ -223,10 +223,13 @@ const List = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const statsRef = await db.collection('stats').doc('data').get();
-      const statsData: any = statsRef.data();
-      // console.log('got statsData ', statsData);
-      setStats(statsData);
+      db.collection('stats')
+        .doc('data')
+        .onSnapshot((doc: any) => {
+          const statsData: any = doc.data();
+          // console.log('got statsData ', statsData);
+          setStats(statsData);
+        });
     };
     fetchData();
   }, []);
