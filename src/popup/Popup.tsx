@@ -59,7 +59,7 @@ type PopupProps = {
   // contentText: string;
 };
 
-// const verificationText = `@5e7ae588d7d11eac4c25906e6da807e68c6498f49a38e4692be5a089616ceb18 Verifying My Public Key: "Paste your twitter handle here"`;
+// const verificationText = `@npub1teawtzxh6y02cnp9jphxm2q8u6xxfx85nguwg6ftuksgjctvavvqnsgq5u Verifying My Public Key: "Paste your twitter handle here"`;
 
 interface CustomWindow extends Window {
   nostr?: any;
@@ -202,7 +202,7 @@ export default function AlertDialog(props: PopupProps) {
               format: {'\n'}
             </Typography>
             <br />
-            <code className="break-all mb-4">{`@5e7ae588d7d11eac4c25906e6da807e68c6498f49a38e4692be5a089616ceb18 Verifying My Public Key: "${
+            <code className="break-all mb-4">{`@npub1teawtzxh6y02cnp9jphxm2q8u6xxfx85nguwg6ftuksgjctvavvqnsgq5u Verifying My Public Key: "${
               twitterHandle || 'Your twitter handle here'
             }"`}</code>
             <br />
@@ -261,7 +261,7 @@ export default function AlertDialog(props: PopupProps) {
             className="cursor-pointer"
             onClick={() => {
               navigator.clipboard.writeText(
-                `@5e7ae588d7d11eac4c25906e6da807e68c6498f49a38e4692be5a089616ceb18 Verifying My Public Key: "${
+                `@npub1teawtzxh6y02cnp9jphxm2q8u6xxfx85nguwg6ftuksgjctvavvqnsgq5u Verifying My Public Key: "${
                   twitterHandle || 'Your twitter handle here'
                 }"`
               );
