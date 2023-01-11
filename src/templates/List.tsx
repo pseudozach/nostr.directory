@@ -392,50 +392,50 @@ const List = () => {
         // description={`Here is a list of ${stats.tweetCount!} twitter accounts that tweeted their nostr public keys. ${stats.verifiedCount!} verified those keys on nostr.`}
       >
         <Stack direction="row" spacing={2} className="justify-center m-4 p-2">
-          <Paper className="p-2 text-center">
+          <Paper className="!p-2 text-center">
             <Typography
               variant="h6"
               color="text.secondary"
-              className="text-center m-2"
+              className="!text-center !m-2"
             >
               Tweets
             </Typography>
             <Typography
               variant="h5"
               color="text.secondary"
-              className="text-center m-2 text-nostr-light"
+              className="!text-center !m-2 !text-nostr-light"
             >
               {stats.tweetCount}
             </Typography>
           </Paper>
-          <Paper className="p-2 text-center">
+          <Paper className="!p-2 !text-center">
             <Typography
               variant="h6"
               color="text.secondary"
-              className="text-center m-2"
+              className="!text-center !m-2"
             >
               Verifications
             </Typography>{' '}
             <Typography
               variant="h5"
               color="text.secondary"
-              className="text-center m-2 text-nostr-light"
+              className="!text-center !m-2 !text-nostr-light"
             >
               {stats.verifiedCount}
             </Typography>
           </Paper>
-          <Paper className="p-2 text-center">
+          <Paper className="!p-2 !text-center">
             <Typography
               variant="h6"
               color="text.secondary"
-              className="text-center m-2"
+              className="!text-center !m-2"
             >
               Donations
             </Typography>{' '}
             <Typography
               variant="h5"
               color="text.secondary"
-              className="text-center m-2 text-nostr-light"
+              className="!text-center !m-2 !text-nostr-light"
             >
               {stats.donatedCount}
             </Typography>
