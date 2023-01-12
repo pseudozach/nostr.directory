@@ -13,6 +13,7 @@ import {
   Cancel,
   Check,
   Close,
+  Telegram,
 } from '@mui/icons-material';
 import CurrencyBitcoinIcon from '@mui/icons-material/CurrencyBitcoin';
 import TwitterIcon from '@mui/icons-material/Twitter';
@@ -80,6 +81,9 @@ const Profile = () => {
     verifyEvent: '',
     donated: false,
     userId: '',
+    telegram: '',
+    telegramUserName: '',
+    telegramMsgId: '',
   });
   const [wotScore, setWotScore] = useState(0);
   const [fetching, setFetching] = useState(false);
@@ -276,6 +280,7 @@ const Profile = () => {
     if (tweetObj.verified) tmpWot += 10;
     if (tweetObj.mastodon) tmpWot += 10;
     if (tweetObj.donated) tmpWot += 10;
+    if (tweetObj.telegram) tmpWot += 10;
     setWotScore(tmpWot);
 
     setTweet(tweetObj);
@@ -601,6 +606,86 @@ const Profile = () => {
                         </>
                       ),
                       button1: '',
+                      button2: 'ok',
+                    })
+                  }
+                />
+              </div>
+              <div className="my-2">
+                {tweet.telegram ? (
+                  <>
+                    <a
+                      href={`https://www.nostr.guru/e/${tweet.telegramEvent}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <VerifiedUserIcon color="success" className="mr-2" />
+                      User has signed their <b>telegram</b> profile with their
+                      nostr private key.
+                    </a>
+                  </>
+                ) : (
+                  <>
+                    <VerifiedUserIcon color="error" className="mr-2" />
+                    User has <b>NOT</b> signed their <b>telegram</b> profile
+                    with their nostr private key.
+                  </>
+                )}
+                <HelpOutline
+                  className="cursor-pointer !ml-1 align-middle"
+                  onClick={() =>
+                    setDialog({
+                      open: true,
+                      title: 'Telegram Verification',
+                      text: (
+                        <>
+                          User is expected to; <br />
+                          <b>1.</b> Join{' '}
+                          <a
+                            href="https://t.me/nostrdirectory"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="underline"
+                          >
+                            @nostrdirectory telegram group
+                          </a>
+                          <br />
+                          <br />
+                          <b>2.</b> Post a public message in the telegram group
+                          in below format:
+                          <br />
+                          <div className="mt-1">
+                            <code className="break-all mb-4">{`Verifying My Public Key: "Paste your public key here"`}</code>
+                          </div>
+                          <br />
+                          <b>3.</b> nostrdirectorybot will auto-reply to your
+                          message and provide you with your verification string.
+                          <b>
+                            Copy the verification string and publish it on nostr
+                          </b>{' '}
+                          as a public (kind 1) note, it should look like the
+                          below:
+                          <br />
+                          <div className="mt-1">
+                            <code className="break-all mb-4">{`@npub1teawtzxh6y02cnp9jphxm2q8u6xxfx85nguwg6ftuksgjctvavvqnsgq5u Verifying My Public Key for telegram: "${'Your telegram screenName:Your telegram user ID'}"`}</code>
+                          </div>
+                        </>
+                      ),
+                      button1: '',
+                      // (
+                      //   <div
+                      //     className="cursor-pointer"
+                      //     onClick={() => {
+                      //       navigator.clipboard.writeText(
+                      //         `@5e7ae588d7d11eac4c25906e6da807e68c6498f49a38e4692be5a089616ceb18 Verifying My Public Key for mastodon: "${'Your mastodon profile link e.g. https://mastodon.social/@melvincarvalho'}"`
+                      //       );
+                      //     }}
+                      //   >
+                      //     <OutlinedButton>
+                      //       Copy Verification Text
+                      //     </OutlinedButton>
+                      //   </div>
+                      // ),
                       button2: 'ok',
                     })
                   }
@@ -990,7 +1075,29 @@ const Profile = () => {
                 </a>
               </div>
             )}
-
+            {tweet.telegram && (
+              <div className="my-4 flex items-center">
+                <Telegram sx={{ height: '40px', width: '40px' }} />
+                <a>
+                  <a
+                    href={`https://t.me/${tweet.telegramUserName}`}
+                    className="mx-2 underline"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Profile Link
+                  </a>
+                </a>
+                <a
+                  href={`https://t.me/nostrdirectory/${tweet.telegramMsgId}`}
+                  className="mx-2 underline"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Proof Link
+                </a>
+              </div>
+            )}
             {previousKeys.length > 0 && (
               <>
                 <Divider />

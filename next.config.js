@@ -18,6 +18,9 @@ module.exports = withBundleAnalyzer({
     // !! WARN !!
     ignoreBuildErrors: true,
   },
+  // images: {
+  //   domains: ['nostr.build'],
+  // },
   async rewrites() {
     return [
       {
