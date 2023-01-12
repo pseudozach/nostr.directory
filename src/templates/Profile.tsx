@@ -11,6 +11,8 @@ import {
   QrCode,
   CheckCircle,
   Cancel,
+  Check,
+  Close,
 } from '@mui/icons-material';
 import CurrencyBitcoinIcon from '@mui/icons-material/CurrencyBitcoin';
 import TwitterIcon from '@mui/icons-material/Twitter';
@@ -100,6 +102,7 @@ const Profile = () => {
   const [validPFP, setValidPFP] = useState(false);
   const [newerKeyExists, setNewerKeyExists] = useState(false);
   const [idNotFound, setIdNotFound] = useState(false);
+  const [tweetExists, setTweetExists] = useState(true);
   const router = useRouter();
 
   const handleClose = () => {
@@ -305,6 +308,22 @@ const Profile = () => {
       if (newerKey) setNewerKeyExists(true);
     } catch (error) {
       console.log('otherKeys error ', error);
+    }
+
+    // check tweetURL if it still exists
+    try {
+      const response = await axios.get(
+        `/api/checktweet?tweetId=${tweetObj.id_str}`
+      );
+      // console.log('checktweet response ', response.data);
+      if (response.data.status === 'OK') {
+        setTweetExists(true);
+      } else {
+        setTweetExists(false);
+      }
+    } catch (error: any) {
+      // console.log('checktweet error ', error);
+      if (error.response.status === 404) setTweetExists(false);
     }
 
     // get nostr profile of user to show users, followers, relays etc.
@@ -933,6 +952,11 @@ const Profile = () => {
                 rel="noreferrer"
               >
                 Proof Link
+                {tweetExists ? (
+                  <Check color="success" />
+                ) : (
+                  <Close color="error" />
+                )}
               </a>
             </div>
             {tweet.mastodon && (
