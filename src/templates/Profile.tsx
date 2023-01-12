@@ -387,7 +387,10 @@ const Profile = () => {
                   response.data.names[metadata.nip05.split('@')[0]] ===
                   tweetObj.hexPubKey
                 ) {
-                  setNip05(metadata.nip05);
+                  const formattedNip5 = metadata.nip05.startsWith('_@')
+                    ? `@${metadata.nip05.split('@')[1]}`
+                    : metadata.nip05;
+                  setNip05(formattedNip5);
                 }
               }
             }
