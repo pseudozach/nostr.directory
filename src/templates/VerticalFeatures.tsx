@@ -30,7 +30,7 @@ const VerticalFeatures = () => (
       reverse
     />
     <VerticalFeatureRow
-      title="Become un-Unplatformable"
+      title="Become un-Deplatformable"
       description="Your digital identity, connections and communication channels are unmistakeably yours. Validated cryptographically."
       image="/assets/images/platform.svg"
       imageAlt="Become un-Unplatformable alt text"
