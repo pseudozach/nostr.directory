@@ -586,7 +586,7 @@ const Profile = () => {
               Badges
             </Typography>
             <div className="mt-2 mb-4 flex-col items-center">
-              <div className="my-2">
+              <div className="my-2 flex items-center">
                 {tweet.verified === true ? (
                   <>
                     <a
@@ -594,16 +594,28 @@ const Profile = () => {
                       target="_blank"
                       rel="noreferrer"
                     >
-                      <VerifiedUserIcon color="success" className="mr-2" />
+                      <VerifiedUserIcon
+                        color="success"
+                        className="mr-2"
+                        fontSize="large"
+                      />
+                    </a>
+                    <span>
                       User has signed their <b>twitter</b> handle with their
                       nostr private key.
-                    </a>
+                    </span>
                   </>
                 ) : (
                   <>
-                    <VerifiedUserIcon color="error" className="mr-2" />
-                    User has <b>NOT</b> signed their <b>twitter</b> handle with
-                    their nostr private key.
+                    <VerifiedUserIcon
+                      color="error"
+                      className="mr-2"
+                      fontSize="large"
+                    />
+                    <span>
+                      User has <b>NOT</b> signed their <b>twitter</b> handle
+                      with their nostr private key.
+                    </span>
                   </>
                 )}
                 <HelpOutline
@@ -628,7 +640,7 @@ const Profile = () => {
                   }
                 />
               </div>
-              <div className="my-2">
+              <div className="my-2 flex items-center">
                 {tweet.telegram ? (
                   <>
                     <a
@@ -636,16 +648,28 @@ const Profile = () => {
                       target="_blank"
                       rel="noreferrer"
                     >
-                      <VerifiedUserIcon color="success" className="mr-2" />
+                      <VerifiedUserIcon
+                        color="success"
+                        className="mr-2"
+                        fontSize="large"
+                      />
+                    </a>
+                    <span>
                       User has signed their <b>telegram</b> profile with their
                       nostr private key.
-                    </a>
+                    </span>
                   </>
                 ) : (
                   <>
-                    <VerifiedUserIcon color="error" className="mr-2" />
-                    User has <b>NOT</b> signed their <b>telegram</b> profile
-                    with their nostr private key.
+                    <VerifiedUserIcon
+                      color="error"
+                      className="mr-2"
+                      fontSize="large"
+                    />
+                    <span>
+                      User has <b>NOT</b> signed their <b>telegram</b> profile
+                      with their nostr private key.
+                    </span>
                   </>
                 )}
                 <HelpOutline
@@ -708,7 +732,7 @@ const Profile = () => {
                   }
                 />
               </div>
-              <div className="my-2">
+              <div className="my-2 flex items-center">
                 {tweet.mastodon ? (
                   <>
                     <a
@@ -716,16 +740,28 @@ const Profile = () => {
                       target="_blank"
                       rel="noreferrer"
                     >
-                      <VerifiedUserIcon color="success" className="mr-2" />
+                      <VerifiedUserIcon
+                        color="success"
+                        className="mr-2"
+                        fontSize="large"
+                      />
+                    </a>
+                    <span>
                       User has signed their <b>mastodon</b> profile with their
                       nostr private key.
-                    </a>
+                    </span>
                   </>
                 ) : (
                   <>
-                    <VerifiedUserIcon color="error" className="mr-2" />
-                    User has <b>NOT</b> signed their <b>mastodon</b> profile
-                    with their nostr private key.
+                    <VerifiedUserIcon
+                      color="error"
+                      className="mr-2"
+                      fontSize="large"
+                    />
+                    <span>
+                      User has <b>NOT</b> signed their <b>mastodon</b> profile
+                      with their nostr private key.
+                    </span>
                   </>
                 )}
                 <HelpOutline
@@ -772,7 +808,7 @@ const Profile = () => {
                   }
                 />
               </div>
-              <div className="my-2">
+              <div className="my-2 flex items-center">
                 {nip05 ? (
                   <>
                     <a
@@ -782,14 +818,27 @@ const Profile = () => {
                       target="_blank"
                       rel="noreferrer"
                     >
-                      <AlternateEmail color="success" className="mr-2" />
-                      User has a valid NIP-05 identifier: <b>{nip05}</b>
+                      <AlternateEmail
+                        color="success"
+                        className="mr-2"
+                        fontSize="large"
+                      />
                     </a>
+                    <span>
+                      User has a valid NIP-05 identifier: <b>{nip05}</b>
+                    </span>
                   </>
                 ) : (
                   <>
-                    <AlternateEmail color="error" className="mr-2" />
-                    User has <b>NOT</b> set a NIP-05 identifier for themselves.
+                    <AlternateEmail
+                      color="error"
+                      className="mr-2"
+                      fontSize="large"
+                    />
+                    <span>
+                      User has <b>NOT</b> set a NIP-05 identifier for
+                      themselves.
+                    </span>
                   </>
                 )}
                 <HelpOutline
@@ -819,28 +868,31 @@ const Profile = () => {
                   }
                 />
               </div>
-              <div className="my-2 flex">
+              <div className="my-2 flex items-center">
                 {tweet.donated ? (
                   <>
                     <Avatar
-                      sx={{ width: 24, height: 24, bgcolor: 'orange' }}
+                      sx={{ width: 35, height: 35, bgcolor: 'orange' }}
                       className="mr-2 inline-flex"
                     >
-                      <CurrencyBitcoinIcon htmlColor="white" />
+                      <CurrencyBitcoinIcon htmlColor="white" fontSize="large" />
                     </Avatar>
-                    User has sent a 1000+ sats donation to nostr.directory with
-                    their nostr pubkey.
+                    <span>
+                      User has sent a 1000+ sats donation to nostr.directory.
+                    </span>
                   </>
                 ) : (
                   <>
                     <Avatar
-                      sx={{ width: 24, height: 24, bgcolor: '#d32f2f' }}
+                      sx={{ width: 35, height: 35, bgcolor: '#d32f2f' }}
                       className="mr-2 inline-flex"
                     >
-                      <CurrencyBitcoinIcon htmlColor="white" />
+                      <CurrencyBitcoinIcon htmlColor="white" fontSize="large" />
                     </Avatar>
-                    User has <b className="mx-1"> NOT</b> sent a 1000+ sats
-                    donation to nostr.directory with their nostr pubkey.
+                    <span>
+                      User has <b>NOT</b> sent a 1000+ sats donation to
+                      nostr.directory.
+                    </span>
                   </>
                 )}
                 <HelpOutline
@@ -870,7 +922,7 @@ const Profile = () => {
                             className="font-bold underline"
                           >
                             {' '}
-                            message
+                            message/comment/payer.
                           </a>
                           .
                         </>
