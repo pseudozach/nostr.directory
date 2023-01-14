@@ -5,8 +5,8 @@ import { Footer } from './Footer';
 import { Hero } from './Hero';
 import { List } from './List';
 import { Navbar } from './Navbar';
+import { VerticalFeatures } from './VerticalFeatures';
 // import { Search } from './Search';
-// import { VerticalFeatures } from './VerticalFeatures';
 
 const Base = () => (
   <div className="antialiased text-gray-600">
@@ -15,7 +15,7 @@ const Base = () => (
     <Hero />
     {/* <Search /> */}
     <List />
-    {/* <VerticalFeatures /> */}
+    <VerticalFeatures />
     <Banner />
     <Footer />
   </div>
