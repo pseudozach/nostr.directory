@@ -58,6 +58,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import { Background } from '../background/Background';
 import { OutlinedButton } from '../button/OutlinedButton';
 import { Section } from '../layout/Section';
+import { AppConfig } from '../utils/AppConfig';
 import { db } from '../utils/firebase';
 import { defaultRelays, hexToNpub, npubToHex } from '../utils/helpers';
 
@@ -84,6 +85,7 @@ const Profile = () => {
     telegram: '',
     telegramUserName: '',
     telegramMsgId: '',
+    telegramEvent: '',
   });
   const [wotScore, setWotScore] = useState(0);
   const [fetching, setFetching] = useState(false);
@@ -274,15 +276,6 @@ const Profile = () => {
       duplicates.find((x: any) => x.verified === true) || duplicates[0];
 
     console.log('got data ', tweetObj, fetching);
-
-    // calculate wotScore
-    let tmpWot = wotScore;
-    if (tweetObj.verified) tmpWot += 10;
-    if (tweetObj.mastodon) tmpWot += 10;
-    if (tweetObj.donated) tmpWot += 10;
-    if (tweetObj.telegram) tmpWot += 10;
-    setWotScore(tmpWot);
-
     setTweet(tweetObj);
     // console.log(`setTweet to `, tweetObj);
 
@@ -451,10 +444,19 @@ const Profile = () => {
   }, [userRelays]);
 
   useEffect(() => {
-    if (nip05 === '')
+    if (nip05 === '') {
       // increment wotscore
       setWotScore((ws) => ws + 10);
+    }
   }, [nip05]);
+
+  useEffect(() => {
+    // calculate wotScore
+    if (tweet.verified) setWotScore((ws) => ws + 10);
+    if (tweet.mastodon) setWotScore((ws) => ws + 10);
+    if (tweet.donated) setWotScore((ws) => ws + 10);
+    if (tweet.telegram) setWotScore((ws) => ws + 10);
+  }, [tweet]);
 
   useEffect(() => {
     if (validPFP || !tweet.profileImageUrl) return;
@@ -557,7 +559,22 @@ const Profile = () => {
                 </Avatar>
               </Tooltip>
             }
-            title={tweet.screenName}
+            title={
+              <>
+                {tweet.screenName}{' '}
+                <IconButton
+                  aria-label="copy profile link"
+                  onClick={() => {
+                    navigator.clipboard.writeText(
+                      `${AppConfig.domain}/p/${tweet.screenName || ''}`
+                    );
+                  }}
+                  size="small"
+                >
+                  <ContentCopy />
+                </IconButton>
+              </>
+            }
             titleTypographyProps={{ fontSize: 'x-large' }}
             subheader={`${tweet.nPubKey.slice(0, 8)}...${tweet.nPubKey.slice(
               -8
