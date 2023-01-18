@@ -19,15 +19,27 @@ jobs:
         npm i
         GOOGLE_APPLICATION_CREDENTIALS='gcp.json' npx backfire export gs://nostrdb-backups/ndjson/$(date +'%Y-%m-%d').ndjson --gcpProject nostrdirectory --gcpKeyFile gcp.json --paths twitter --project nostrdirectory --keyFile fb.json
 
-    - uses: senmu/download-json-property-action@v1.0.0
-      id: get-stats
-      with:
-        url: 'https://firestore.googleapis.com/v1/projects/nostrdirectory/databases/(default)/documents/stats/data'
-        property_path: fields
+    - name: pretty-stats
+      id: pretty-stats
+      run: |
+        stats=$(curl 'https://firestore.googleapis.com/v1/projects/nostrdirectory/databases/(default)/documents/stats/data')
+        tweetCount=`echo $stats | jq '.fields.tweetCount.integerValue'`
+        verifiedCount=`echo $stats | jq '.fields.verifiedCount.integerValue'`
+        mastodonCount=`echo $stats | jq '.fields.mastodonCount.integerValue'`
+        telegramCount=`echo $stats | jq '.fields.telegramCount.integerValue'`
+        donationBalance=`echo $stats | jq '.fields.donationBalance.integerValue'`
+        donatedCount=`echo $stats | jq '.fields.donatedCount.integerValue'`
+        output=`echo tweetCount $tweetCount, verifiedCount $verifiedCount, telegramCount $telegramCount, mastodonCount $mastodonCount, donatedCount $donatedCount, donationBalance $donationBalance`
+        echo "prettystats=$output" >> $GITHUB_OUTPUT
+
+    - name: publish-stats
+      id: publish-stats
+      run: |
+        echo "🤖 Latest stats -> ${{ steps.pretty-stats.outputs.prettystats }}"
 
     - name: publish stats
       uses: theborakompanioni/nostr-action@v1
       with:
         key: ${{ secrets.NOSTR_KEY }}
         relay: wss://nostr-pub.wellorder.net
-        content: 🤖 Latest stats ${{ steps.get-stats.outputs.value }}
+        content: 🤖 Latest stats -> ${{ steps.pretty-stats.outputs.prettystats }}
