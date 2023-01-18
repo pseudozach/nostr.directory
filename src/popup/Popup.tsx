@@ -119,7 +119,8 @@ export default function AlertDialog(props: PopupProps) {
       initNostr({
         relayUrls: [
           'wss://nostr.zebedee.cloud',
-          'wss://nostr-relay.wlvs.space',
+          'wss://nostr-pub.wellorder.net',
+          // 'wss://nostr-relay.wlvs.space',
           // 'wss://nostr-relay.untethr.me',
         ],
         onConnect: (relayUrl, sendEvent) => {
