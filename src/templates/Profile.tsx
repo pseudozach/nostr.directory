@@ -47,6 +47,7 @@ import {
   Link,
   LinearProgress,
 } from '@mui/material';
+import { initNostr, SendMsgType } from '@nostrgg/client';
 import axios from 'axios';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -56,11 +57,15 @@ import type { ProfilePointer } from 'nostr-tools/nip19';
 import { QRCodeSVG } from 'qrcode.react';
 
 import { Background } from '../background/Background';
-import { OutlinedButton } from '../button/OutlinedButton';
 import { Section } from '../layout/Section';
 import { AppConfig } from '../utils/AppConfig';
 import { db } from '../utils/firebase';
 import { defaultRelays, hexToNpub, npubToHex } from '../utils/helpers';
+
+interface CustomWindow extends Window {
+  nostr?: any;
+}
+declare const window: CustomWindow;
 
 const Profile = () => {
   const [tweet, setTweet] = useState({
@@ -102,13 +107,17 @@ const Profile = () => {
     open: false,
     title: '',
     text: <></>,
-    button1: '',
+    button1: <></>,
     button2: '',
   });
   const [validPFP, setValidPFP] = useState(false);
   const [newerKeyExists, setNewerKeyExists] = useState(false);
   const [idNotFound, setIdNotFound] = useState(false);
   const [tweetExists, setTweetExists] = useState(true);
+  const [tgVerificationText, setTgVerificationText] = useState('');
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [tgVerificationDialogOpen, setTgVerificationDialogOpen] =
+    useState(false);
   const router = useRouter();
 
   const handleClose = () => {
@@ -116,6 +125,16 @@ const Profile = () => {
       ...dialog,
       open: false,
     });
+  };
+
+  const handleAlertClose = (
+    event?: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (event && reason === 'clickaway') {
+      return;
+    }
+    setAlertOpen(false);
   };
 
   const handleErrorAlertClose = (
@@ -128,7 +147,7 @@ const Profile = () => {
 
     setErrorAlert({
       open: false,
-      text: 'Error while doing stuff',
+      text: '',
     });
   };
 
@@ -415,6 +434,82 @@ const Profile = () => {
     setFetching(false);
   };
 
+  const signWithNip07 = async () => {
+    console.log('enter signWithNip07 tgVerificationText ', tgVerificationText);
+    if (!window.nostr) {
+      // alert('You need to have a browser extension with nostr support!');
+      setErrorAlert({
+        open: true,
+        text: 'You need to have a browser extension with nostr support!',
+      });
+      return;
+    }
+
+    if (!tgVerificationText) {
+      // alert('Please enter your twitter handle first!');
+      setErrorAlert({
+        open: true,
+        text: 'Please paste the string returned to you by @nostrdirectory bot!',
+      });
+      return;
+    }
+
+    try {
+      const content = tgVerificationText;
+      const pubkey = await window.nostr.getPublicKey();
+      const unsignedEvent: any = {
+        pubkey,
+        created_at: Math.floor(Date.now() / 1000),
+        kind: 1,
+        tags: [
+          [
+            'p',
+            '5e7ae588d7d11eac4c25906e6da807e68c6498f49a38e4692be5a089616ceb18',
+          ],
+        ],
+        content,
+      };
+      unsignedEvent.id = nostrTools.getEventHash(unsignedEvent);
+      // console.log('unsignedEvent ', unsignedEvent);
+
+      const signedEvent = await window.nostr.signEvent(unsignedEvent);
+      // console.log('signedEvent ', signedEvent);
+
+      // publish to some relays via API
+      initNostr({
+        relayUrls: [
+          'wss://nostr.zebedee.cloud',
+          // 'wss://nostr-relay.wlvs.space',
+          'wss://nostr-pub.wellorder.net',
+          // 'wss://nostr-relay.untethr.me',
+        ],
+        onConnect: (relayUrl, sendEvent) => {
+          console.log(
+            'Nostr connected to:',
+            relayUrl,
+            // sendEvent,
+            'sending signedEvent ',
+            signedEvent
+          );
+
+          // Send a REQ event to start listening to events from that relayer:
+          sendEvent([SendMsgType.EVENT, signedEvent], relayUrl);
+        },
+        onEvent: (relayUrl: any, event: any) => {
+          console.log('Nostr received event:', relayUrl, event);
+          setAlertOpen(true);
+          setTgVerificationDialogOpen(false);
+        },
+        onError(relayUrl, err) {
+          console.log('nostr error ', relayUrl, err);
+        },
+        debug: true, // Enable logs
+      });
+    } catch (error: any) {
+      console.log('signWithNip07 error ', error.message);
+    }
+  };
+
   useEffect(() => {
     if (router.isReady) fetchInitialData();
   }, [router.isReady]);
@@ -546,7 +641,7 @@ const Profile = () => {
                         </a>
                       </>
                     ),
-                    button1: '',
+                    button1: <></>,
                     button2: 'ok',
                   })
                 }
@@ -634,7 +729,7 @@ const Profile = () => {
                           format on the nostr.directory homepage.
                         </>
                       ),
-                      button1: '',
+                      button1: <></>,
                       button2: 'ok',
                     })
                   }
@@ -674,62 +769,7 @@ const Profile = () => {
                 )}
                 <HelpOutline
                   className="cursor-pointer !ml-1 align-middle"
-                  onClick={() =>
-                    setDialog({
-                      open: true,
-                      title: 'Telegram Verification',
-                      text: (
-                        <>
-                          User is expected to; <br />
-                          <b>1.</b> Join{' '}
-                          <a
-                            href="https://t.me/nostrdirectory"
-                            target="_blank"
-                            rel="noreferrer"
-                            className="underline"
-                          >
-                            @nostrdirectory telegram group
-                          </a>
-                          <br />
-                          <br />
-                          <b>2.</b> Post a public message in the telegram group
-                          in below format:
-                          <br />
-                          <div className="mt-1">
-                            <code className="break-all mb-4">{`Verifying My Public Key: "Paste your public key here"`}</code>
-                          </div>
-                          <br />
-                          <b>3.</b> nostrdirectorybot will auto-reply to your
-                          message and provide you with your verification string.
-                          <b>
-                            Copy the verification string and publish it on nostr
-                          </b>{' '}
-                          as a public (kind 1) note, it should look like the
-                          below:
-                          <br />
-                          <div className="mt-1">
-                            <code className="break-all mb-4">{`@npub1teawtzxh6y02cnp9jphxm2q8u6xxfx85nguwg6ftuksgjctvavvqnsgq5u Verifying My Public Key for telegram: "${'Your telegram screenName:Your telegram user ID'}"`}</code>
-                          </div>
-                        </>
-                      ),
-                      button1: '',
-                      // (
-                      //   <div
-                      //     className="cursor-pointer"
-                      //     onClick={() => {
-                      //       navigator.clipboard.writeText(
-                      //         `@5e7ae588d7d11eac4c25906e6da807e68c6498f49a38e4692be5a089616ceb18 Verifying My Public Key for mastodon: "${'Your mastodon profile link e.g. https://mastodon.social/@melvincarvalho'}"`
-                      //       );
-                      //     }}
-                      //   >
-                      //     <OutlinedButton>
-                      //       Copy Verification Text
-                      //     </OutlinedButton>
-                      //   </div>
-                      // ),
-                      button2: 'ok',
-                    })
-                  }
+                  onClick={() => setTgVerificationDialogOpen(true)}
                 />
               </div>
               <div className="my-2 flex items-center">
@@ -788,7 +828,7 @@ const Profile = () => {
                           </div>
                         </>
                       ),
-                      button1: '',
+                      button1: <></>,
                       // (
                       //   <div
                       //     className="cursor-pointer"
@@ -862,7 +902,7 @@ const Profile = () => {
                           </a>
                         </>
                       ),
-                      button1: '',
+                      button1: <></>,
                       button2: 'ok',
                     })
                   }
@@ -927,7 +967,7 @@ const Profile = () => {
                           .
                         </>
                       ),
-                      button1: '',
+                      button1: <></>,
                       button2: 'ok',
                     })
                   }
@@ -961,7 +1001,7 @@ const Profile = () => {
                               size={256}
                             />
                           ),
-                          button1: '',
+                          button1: <></>,
                           button2: 'ok',
                         });
                       }}
@@ -1000,7 +1040,7 @@ const Profile = () => {
                           text: (
                             <QRCodeSVG value={tweet.nPubKey || ''} size={256} />
                           ),
-                          button1: '',
+                          button1: <></>,
                           button2: 'ok',
                         });
                       }}
@@ -1037,7 +1077,7 @@ const Profile = () => {
                           open: true,
                           title: 'nProfile QR Code',
                           text: <QRCodeSVG value={nProfile} size={256} />,
-                          button1: '',
+                          button1: <></>,
                           button2: 'ok',
                         });
                       }}
@@ -1266,19 +1306,91 @@ const Profile = () => {
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            {dialog.button1 && (
-              <div
-                className="cursor-pointer"
-                onClick={() => {
-                  navigator.clipboard.writeText(`asd`);
-                }}
-              >
-                <OutlinedButton>{dialog.button1}</OutlinedButton>
-              </div>
-            )}
+            {dialog.button1 && dialog.button1}
 
             <div className="cursor-pointer">
               <Button onClick={handleClose}>{dialog.button2}</Button>
+            </div>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
+          open={tgVerificationDialogOpen}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          fullWidth
+        >
+          <DialogTitle id="tg-popup">Telegram Verification</DialogTitle>
+          <DialogContent>
+            <DialogContentText
+              id="tg-popup-description"
+              className="flex justify-center"
+            >
+              <Typography className="mt-4">
+                <>
+                  User is expected to; <br />
+                  <b>1.</b> Join{' '}
+                  <a
+                    href="https://t.me/nostrdirectory"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="underline"
+                  >
+                    @nostrdirectory telegram group
+                  </a>
+                  <br />
+                  <br />
+                  <b>2.</b> Post a public message in the telegram group in below
+                  format:
+                  <br />
+                  <div className="mt-1">
+                    <code className="break-all mb-4">{`Verifying My Public Key: "Paste your public key here"`}</code>
+                  </div>
+                  nostrdirectorybot will auto-reply to your message and provide
+                  you with your verification text.
+                  <br />
+                  <br />
+                  <b>3.</b> If you have Alby or nos2x extension installed, paste
+                  your verification text below to publish your note from here by
+                  clicking &quot;Publish with Extension&quot;
+                  <TextField
+                    id="telegram-string"
+                    className="!my-4"
+                    required
+                    label="Telegram Verification Text"
+                    variant="outlined"
+                    placeholder={`@npub1tea...nsgq5u Verifying My Public Key for telegram: "pseudozach:123123123"`}
+                    onChange={(e) => setTgVerificationText(e.target.value)}
+                    value={tgVerificationText}
+                    fullWidth
+                  />
+                  <br />
+                  <b>OR</b> Publish the telegram verification text on nostr as a
+                  public (kind 1) note from your favorite client.
+                  {/* , it should look
+                  like the below:
+                  <br />
+                  <div className="mt-1">
+                    <code className="break-all mb-4">{`@npub1teawtzxh6y02cnp9jphxm2q8u6xxfx85nguwg6ftuksgjctvavvqnsgq5u Verifying My Public Key for telegram: "${'Your telegram screenName:Your telegram user ID'}"`}</code>
+                  </div> */}
+                </>
+              </Typography>
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <div className="cursor-pointer">
+              <Button onClick={signWithNip07}>Publish with Extension</Button>
+            </div>
+
+            <div className="cursor-pointer">
+              <Button
+                onClick={() => {
+                  setTgVerificationDialogOpen(false);
+                }}
+              >
+                ok
+              </Button>
             </div>
           </DialogActions>
         </Dialog>
@@ -1296,6 +1408,25 @@ const Profile = () => {
             {errorAlert.text}
           </Alert>
         </Snackbar>
+        <Snackbar
+          open={alertOpen}
+          autoHideDuration={10000}
+          onClose={handleAlertClose}
+        >
+          <Alert
+            onClose={handleAlertClose}
+            severity="success"
+            sx={{ width: '100%' }}
+          >
+            Note published successfully.
+          </Alert>
+        </Snackbar>
+
+        {/* <AlertSnackbar
+          open={alertOpen}
+          severity="success"
+          text="Note published successfully."
+        /> */}
       </Section>
     </Background>
   );
