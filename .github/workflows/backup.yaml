@@ -32,11 +32,6 @@ jobs:
         output=`echo tweetCount $tweetCount, verifiedCount $verifiedCount, telegramCount $telegramCount, mastodonCount $mastodonCount, donatedCount $donatedCount, donationBalance $donationBalance`
         echo "prettystats=$output" >> $GITHUB_OUTPUT
 
-    - name: publish-stats
-      id: publish-stats
-      run: |
-        echo "🤖 Latest stats -> ${{ steps.pretty-stats.outputs.prettystats }}"
-
     - name: publish stats
       uses: theborakompanioni/nostr-action@v1
       with:
