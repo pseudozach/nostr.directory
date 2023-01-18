@@ -1,0 +1,10 @@
+tasks:
+  - init: |
+      npm install
+      cp .env.sample .env.local
+    command: npm run dev
+
+ports:
+  - name: Web App
+    port: 3000
+    onOpen: open-browser
