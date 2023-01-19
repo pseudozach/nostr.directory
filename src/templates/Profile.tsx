@@ -103,6 +103,7 @@ const Profile = () => {
   });
   const [nProfile, setNProfile] = useState('');
   const [nip05, setNip05] = useState('');
+  const [nip05Error, setNip05Error] = useState('');
   const [dialog, setDialog] = useState({
     open: false,
     title: '',
@@ -393,21 +394,29 @@ const Profile = () => {
               // console.log('got 0 ', event);
               const metadata = JSON.parse(event.content);
               if (metadata.nip05 && nip05 === '') {
-                // validate nip05
-                const response = await axios.get(
-                  `https://${
-                    metadata.nip05.split('@')[1]
-                  }/.well-known/nostr.json?name=${metadata.nip05.split('@')[0]}`
-                );
+                try {
+                  // validate nip05
+                  const response = await axios.get(
+                    `https://${
+                      metadata.nip05.split('@')[1]
+                    }/.well-known/nostr.json?name=${
+                      metadata.nip05.split('@')[0]
+                    }`
+                  );
 
-                if (
-                  response.data.names[metadata.nip05.split('@')[0]] ===
-                  tweetObj.hexPubKey
-                ) {
-                  const formattedNip5 = metadata.nip05.startsWith('_@')
-                    ? `@${metadata.nip05.split('@')[1]}`
-                    : metadata.nip05;
-                  setNip05(formattedNip5);
+                  if (
+                    response.data.names[metadata.nip05.split('@')[0]] ===
+                    tweetObj.hexPubKey
+                  ) {
+                    const formattedNip5 = metadata.nip05.startsWith('_@')
+                      ? `@${metadata.nip05.split('@')[1]}`
+                      : metadata.nip05;
+                    setNip05(formattedNip5);
+                  }
+                } catch (error: any) {
+                  console.log('nip5 error ', error.message);
+                  // if (error.message === 'Network Error')
+                  setNip05Error('Possible CORS issue');
                 }
               }
             }
@@ -880,6 +889,11 @@ const Profile = () => {
                       themselves.
                     </span>
                   </>
+                )}
+                {nip05Error && (
+                  <Tooltip title="Possible CORS issue for user's NIP-05 domain">
+                    <Close color="error" />
+                  </Tooltip>
                 )}
                 <HelpOutline
                   className="cursor-pointer !ml-1 align-middle"
