@@ -1,8 +1,10 @@
+import { ReactNode } from 'react';
+
 import className from 'classnames';
 
 type IButtonProps = {
   xl?: boolean;
-  children: string;
+  children: string | ReactNode;
 };
 
 const OutlinedButton = (props: IButtonProps) => {

@@ -245,10 +245,10 @@ const FollowList = () => {
         // {"#p":[pubkey],kinds:[3]}
 
         const relay = nostrTools.relayInit(
-          // 'wss://nostr-pub.wellorder.net'
+          'wss://nostr-pub.wellorder.net'
           // 'wss://nostr.zebedee.cloud'
           // 'wss://nostr-2.zebedee.cloud'
-          'wss://nostr-relay.wlvs.space'
+          // 'wss://nostr-relay.wlvs.space'
           // 'wss://nostr.rocks'
         );
         setRelayConnection(relay);

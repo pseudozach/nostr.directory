@@ -7,7 +7,7 @@ import { AppConfig } from '../utils/AppConfig';
 const Index = () => (
   <div className="antialiased text-gray-600">
     <Meta title={AppConfig.title} description={AppConfig.description} />
-    <Navbar />
+    <Navbar hideLogin="true" />
     <FollowList />
     <Footer />
   </div>

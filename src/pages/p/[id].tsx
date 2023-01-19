@@ -9,7 +9,7 @@ const Page = () => (
       title={'Nostr Profile Page'}
       description={'Social Media Connections'}
     />
-    <Navbar />
+    <Navbar hideLogin="true" />
     <Profile />
     {/* <Banner /> */}
     <Footer />
