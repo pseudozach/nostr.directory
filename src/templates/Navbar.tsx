@@ -67,7 +67,7 @@ const Navbar = (props: any) => {
       <Section yPadding="py-6">
         <NavbarTwoColumns logo={<Logo xl />}>
           {!props.hideLogin && (
-            <li>
+            <li className="hidden md:block">
               <div
                 style={{
                   display: 'flex',
