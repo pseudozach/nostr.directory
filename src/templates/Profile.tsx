@@ -548,7 +548,7 @@ const Profile = () => {
   }, [userRelays]);
 
   useEffect(() => {
-    if (nip05 === '') {
+    if (nip05 !== '') {
       // increment wotscore
       setWotScore((ws) => ws + 10);
     }
