@@ -1,7 +1,11 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
-import { ArrowCircleRightOutlined } from '@mui/icons-material';
+import {
+  ArrowCircleRightOutlined,
+  Telegram,
+  Twitter,
+} from '@mui/icons-material';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -12,6 +16,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import firebase from 'firebase/app';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
@@ -26,6 +31,10 @@ const List = () => {
     tweetCount: 1000,
     verifiedCount: 100,
     donatedCount: 0,
+    donationBalance: 1000,
+    telegramCount: 100,
+    mastodonCount: 100,
+    opreturnCount: 0,
   });
   // const [searchText, setSearchText] = useState('');
   const [fetching, setFetching] = useState(false);
@@ -294,7 +303,11 @@ const List = () => {
         title="Nostr Public Key Database"
         // description={`Here is a list of ${stats.tweetCount!} twitter accounts that tweeted their nostr public keys. ${stats.verifiedCount!} verified those keys on nostr.`}
       >
-        <Stack direction="row" spacing={2} className="justify-center m-4 p-2">
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={2}
+          className="justify-center m-4 p-2"
+        >
           <Paper className="!p-2 text-center">
             <Typography
               variant="h6"
@@ -317,7 +330,7 @@ const List = () => {
               color="text.secondary"
               className="!text-center !m-2"
             >
-              Verifications
+              <Twitter htmlColor="#1DA1F2" />
             </Typography>{' '}
             <Typography
               variant="h5"
@@ -333,14 +346,57 @@ const List = () => {
               color="text.secondary"
               className="!text-center !m-2"
             >
-              Donations
+              <Telegram htmlColor="#2AABEE" />
             </Typography>{' '}
             <Typography
               variant="h5"
               color="text.secondary"
               className="!text-center !m-2 !text-nostr-light"
             >
-              {stats.donatedCount}
+              {stats.telegramCount}
+            </Typography>
+          </Paper>
+          <Paper className="!p-2 !text-center">
+            <Typography
+              variant="h6"
+              color="text.secondary"
+              className="!text-center !m-2 flex justify-center min-h-[32px]"
+            >
+              <Image
+                src={'/assets/images/Mastodonlogo.svg'}
+                alt="mastodon logo"
+                width={24}
+                height={24}
+                // className="!m-2"
+              />
+            </Typography>{' '}
+            <Typography
+              variant="h5"
+              color="text.secondary"
+              className="!text-center !m-2 !text-nostr-light"
+            >
+              {stats.mastodonCount}
+            </Typography>
+          </Paper>
+          <Paper className="!p-2 !text-center">
+            <Typography
+              variant="h6"
+              color="text.secondary"
+              className="!text-center !m-2"
+            >
+              <Image
+                src={'/assets/images/mempool.png'}
+                alt="OP_RETURN timestamped npub count"
+                width={24}
+                height={24}
+              />
+            </Typography>{' '}
+            <Typography
+              variant="h5"
+              color="text.secondary"
+              className="!text-center !m-2 !text-nostr-light"
+            >
+              {stats.opreturnCount}
             </Typography>
           </Paper>
         </Stack>
