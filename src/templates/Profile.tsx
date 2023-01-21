@@ -91,6 +91,8 @@ const Profile = () => {
     telegramUserName: '',
     telegramMsgId: '',
     telegramEvent: '',
+    opreturn: false,
+    opreturnTx: '',
   });
   const [wotScore, setWotScore] = useState(0);
   const [fetching, setFetching] = useState(false);
@@ -1218,6 +1220,24 @@ const Profile = () => {
                   rel="noreferrer"
                 >
                   Proof Link
+                </a>
+              </div>
+            )}
+            {tweet.opreturn && (
+              <div className="my-4 flex items-center">
+                <Image
+                  src={'/assets/images/mempool.png'}
+                  alt="OP_RETURN timestamped npub"
+                  width={40}
+                  height={40}
+                />
+                <a
+                  href={`https://mempool.space/tx/${tweet.opreturnTx}`}
+                  className="mx-2 underline"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  OP_RETURN Timestamp
                 </a>
               </div>
             )}
