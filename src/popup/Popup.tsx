@@ -185,7 +185,7 @@ export default function AlertDialog(props: PopupProps) {
   return (
     <>
       <span onClick={handleClickOpen} className="cursor-pointer">
-        <OutlinedButton xl>{props.buttonText}</OutlinedButton>
+        <OutlinedButton main>{props.buttonText}</OutlinedButton>
       </span>
       <Dialog
         open={open}

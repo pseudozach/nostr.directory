@@ -1,41 +1,63 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { Background } from '../background/Background';
-import { CenteredFooter } from '../footer/CenteredFooter';
-import { Section } from '../layout/Section';
+import { FooterCopyright } from '../footer/FooterCopyright';
 
 const Footer = () => (
-  <Background color="bg-gray-100">
-    <Section>
-      <CenteredFooter
-        // <Logo />
-        logo={<></>}
-        iconList={
-          <>
-            <Link href="https://www.nostr.guru/p/5e7ae588d7d11eac4c25906e6da807e68c6498f49a38e4692be5a089616ceb18">
-              <a target="_blank">
-                <Image
-                  src="/assets/images/nostrlogo.webp"
-                  alt="follow us on nostr"
-                  height="20"
+  <footer>
+    <div className="max-w-screen-xl mx-auto px-3 py-6 container">
+      <div className=" text-sm">
+        <FooterCopyright />
+      </div>
+      <div className="icon-list">
+        <>
+          <Link href="https://www.nostr.guru/p/5e7ae588d7d11eac4c25906e6da807e68c6498f49a38e4692be5a089616ceb18">
+            <a target="_blank">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect
+                  x="2"
+                  y="2"
                   width="20"
+                  height="20"
+                  rx="5"
+                  fill="#182029"
                 />
-                {/* <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="8" width="20" height="4" fill="#87C7F4" />
+              </svg>
+
+              {/* <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path d="M19.199 24C19.199 13.467 10.533 4.8 0 4.8V0c13.165 0 24 10.835 24 24h-4.801zM3.291 17.415a3.3 3.3 0 013.293 3.295A3.303 3.303 0 013.283 24C1.47 24 0 22.526 0 20.71s1.475-3.294 3.291-3.295zM15.909 24h-4.665c0-6.169-5.075-11.245-11.244-11.245V8.09c8.727 0 15.909 7.184 15.909 15.91z" />
                 </svg> */}
-              </a>
-            </Link>
+            </a>
+          </Link>
 
-            <Link href="https://github.com/pseudozach/nostr.directory">
-              <a target="_blank">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
-                </svg>
-              </a>
-            </Link>
+          <Link href="https://github.com/pseudozach/nostr.directory">
+            <a target="_blank">
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 22 22"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M13.2039 20.547C13.2039 20.7971 13.4028 20.9999 13.6482 20.9999C13.6903 20.9999 13.7322 20.9938 13.7726 20.9818C19.0774 19.4211 22.1365 13.7729 20.6053 8.36619C19.074 2.95948 13.5322 -0.158348 8.22739 1.40233C2.92255 2.96301 -0.136521 8.6112 1.39474 14.0179C2.34733 17.3813 4.92732 20.0109 8.22738 20.9818C8.46296 21.0518 8.70964 20.9139 8.77835 20.6738C8.79014 20.6326 8.79612 20.5899 8.79612 20.547V18.4186C7.53069 18.8082 6.18653 18.1252 5.73025 16.8607C5.48183 16.0899 5.0691 15.3847 4.52167 14.7957C7.05435 15.4206 7.09878 17.0962 8.82278 16.3082C8.87489 15.7205 9.06708 15.1546 9.38264 14.6598C7.42759 14.4334 5.3659 14.1164 5.3659 10.6746C5.34893 9.78526 5.66695 8.92308 6.25456 8.26538C5.9869 7.49166 6.01868 6.64305 6.34342 5.89238C6.34342 5.89238 7.08101 5.64783 8.76946 6.7981C10.2233 6.38882 11.7589 6.38882 13.2128 6.7981C14.8923 5.63878 15.6299 5.89238 15.6299 5.89238C15.9547 6.64305 15.9864 7.49166 15.7188 8.26538C16.3072 8.92259 16.6253 9.7851 16.6074 10.6746C16.6074 14.1254 14.5457 14.4334 12.5818 14.6507C13.0024 15.2688 13.2145 16.0095 13.1861 16.7611L13.2039 20.547Z"
+                  stroke="#455D65"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </a>
+          </Link>
 
-            {/* <Link href="/">
+          {/* <Link href="/">
               <a>
                 <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path d="M23.998 12c0-6.628-5.372-12-11.999-12C5.372 0 0 5.372 0 12c0 5.988 4.388 10.952 10.124 11.852v-8.384H7.078v-3.469h3.046V9.356c0-3.008 1.792-4.669 4.532-4.669 1.313 0 2.686.234 2.686.234v2.953H15.83c-1.49 0-1.955.925-1.955 1.874V12h3.328l-.532 3.469h-2.796v8.384c5.736-.9 10.124-5.864 10.124-11.853z" />
@@ -43,15 +65,27 @@ const Footer = () => (
               </a>
             </Link> */}
 
-            <Link href="https://twitter.com/nostrdirectory">
-              <a target="_blank">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M23.954 4.569a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.691 8.094 4.066 6.13 1.64 3.161a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.061a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.937 4.937 0 004.604 3.417 9.868 9.868 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.054 0 13.999-7.496 13.999-13.986 0-.209 0-.42-.015-.63a9.936 9.936 0 002.46-2.548l-.047-.02z" />
-                </svg>
-              </a>
-            </Link>
+          <Link href="https://twitter.com/nostrdirectory">
+            <a target="_blank">
+              <svg
+                width="22"
+                height="18"
+                viewBox="0 0 22 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M21 4.26751L19.1208 3.46182L20.1051 1.31332L17.8143 2.07425L17.8143 2.07425C17.0847 1.39383 16.1272 1.01069 15.1298 1V1C12.9078 1.00492 11.1078 2.80564 11.1029 5.02844V5.92365C7.93512 6.57715 5.17002 4.8494 2.60179 1.89521C2.15436 4.28244 2.60179 6.07285 3.94407 7.26646L1 6.81886L1 6.81886C1.23474 8.77576 2.83638 10.2838 4.80313 10.3997L2.34228 11.2949C3.23714 13.0853 4.86577 13.3628 7.04027 13.5329L7.04027 13.5329C5.26293 14.7456 3.15085 15.3717 1 15.3233C12.4183 20.3992 19.1208 12.9421 19.1208 6.37125V5.62823L21 4.26751Z"
+                  stroke="#455D65"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </a>
+          </Link>
 
-            {/* <Link href="/">
+          {/* <Link href="/">
               <a>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                   <path d="M23.495 6.205a3.007 3.007 0 00-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 00.527 6.205a31.247 31.247 0 00-.522 5.805 31.247 31.247 0 00.522 5.783 3.007 3.007 0 002.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 002.088-2.088 31.247 31.247 0 00.5-5.783 31.247 31.247 0 00-.5-5.805zM9.609 15.601V8.408l6.264 3.602z" />
@@ -67,50 +101,52 @@ const Footer = () => (
               </a>
             </Link> */}
 
-            <Link href="mailto:hello@nostr.directory">
-              <a>
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M11.585 5.267c1.834 0 3.558.811 4.824 2.08v.004c0-.609.41-1.068.979-1.068h.145c.891 0 1.073.842 1.073 1.109l.005 9.475c-.063.621.64.941 1.029.543 1.521-1.564 3.342-8.038-.946-11.79-3.996-3.497-9.357-2.921-12.209-.955-3.031 2.091-4.971 6.718-3.086 11.064 2.054 4.74 7.931 6.152 11.424 4.744 1.769-.715 2.586 1.676.749 2.457-2.776 1.184-10.502 1.064-14.11-5.188C-.977 13.521-.847 6.093 5.62 2.245 10.567-.698 17.09.117 21.022 4.224c4.111 4.294 3.872 12.334-.139 15.461-1.816 1.42-4.516.037-4.498-2.031l-.019-.678c-1.265 1.256-2.948 1.988-4.782 1.988-3.625 0-6.813-3.189-6.813-6.812 0-3.659 3.189-6.885 6.814-6.885zm4.561 6.623c-.137-2.653-2.106-4.249-4.484-4.249h-.09c-2.745 0-4.268 2.159-4.268 4.61 0 2.747 1.842 4.481 4.256 4.481 2.693 0 4.464-1.973 4.592-4.306l-.006-.536z" />
-                </svg>
-              </a>
-            </Link>
-
-            <Link href="https://getalby.com/p/nostrdirectory">
-              <a target="_blank">
-                <Image
-                  src="/assets/images/alby.svg"
-                  alt="donate to support nostr.directory"
-                  height="20"
-                  width="20"
-                />
-              </a>
-            </Link>
-          </>
+          <Link href="https://getalby.com/p/nostrdirectory">
+            <a target="_blank">
+              <Image
+                src="/assets/images/alby.svg"
+                alt="donate to support nostr.directory"
+                height="20"
+                width="20"
+              />
+            </a>
+          </Link>
+          <Link href="mailto:hello@nostr.directory">
+            <a target="_blank">
+              <p className="py-2 px-6 rounded-full text-base font-medium text-[#27363A] bg-[#5f338414]">
+                Contact us
+              </p>
+            </a>
+          </Link>
+        </>
+      </div>
+    </div>
+    <style jsx>
+      {`
+        .icon-list {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 32px;
         }
-      >
-        <li>
-          <Link href="https://github.com/nostr-protocol/nostr">
-            <a target="_blank">nostr Protocol</a>
-          </Link>
-        </li>
-        <li>
-          <Link href="https://usenostr.org/">
-            <a target="_blank">What is nostr?</a>
-          </Link>
-        </li>
-        <li>
-          <Link href="https://www.nostr.net/#clients">
-            <a target="_blank">nostr Clients</a>
-          </Link>
-        </li>
-        <li>
-          <Link href="https://storage.googleapis.com/storage/v1/b/nostrdb-backups/o?prefix=ndjson">
-            <a target="_blank">Daily DB Exports</a>
-          </Link>
-        </li>
-      </CenteredFooter>
-    </Section>
-  </Background>
+        .icon-list a {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+        }
+        footer {
+          border-top: 1px solid #d3edeb;
+        }
+        .container {
+          display: flex;
+          width: 100%;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+        }
+      `}
+    </style>
+  </footer>
 );
 
 export { Footer };

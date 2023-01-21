@@ -10,6 +10,11 @@ const FooterIconList = (props: IFooterIconListProps) => (
 
     <style jsx>
       {`
+        .footer-icon-list a {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
         .footer-icon-list :global(a:not(:last-child)) {
           @apply mr-3;
         }
@@ -23,7 +28,7 @@ const FooterIconList = (props: IFooterIconListProps) => (
         }
 
         .footer-icon-list :global(svg) {
-          @apply fill-current w-5 h-5;
+          @apply w-5 h-5;
         }
       `}
     </style>

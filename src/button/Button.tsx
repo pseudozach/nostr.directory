@@ -3,12 +3,14 @@ import className from 'classnames';
 type IButtonProps = {
   xl?: boolean;
   children: string;
+  main?: boolean;
 };
 
 const Button = (props: IButtonProps) => {
   const btnClass = className({
     btn: true,
     'btn-xl': props.xl,
+    'btn-2xl': props.main,
     'btn-base': !props.xl,
     'btn-primary': true,
   });
@@ -37,6 +39,9 @@ const Button = (props: IButtonProps) => {
 
           .btn-primary:hover {
             @apply bg-primary-600;
+          }
+          .btn-2xl {
+            @apply bg-gradient-to-t from-[#5684C9] to-[#D3A7FF] text-xl py-2 px-6 text-base;
           }
         `}
       </style>

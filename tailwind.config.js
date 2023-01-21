@@ -1,6 +1,9 @@
 module.exports = {
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
+    fontFamily: {
+      sans: ['Inter', 'sans-serif'],
+    },
     fontSize: {
       xs: '0.75rem',
       sm: '0.875rem',
@@ -40,6 +43,7 @@ module.exports = {
         'nostr-light': '#46bfee',
         'nostr-dark': '#193240',
         'nostr-darker': '#13202b',
+        'nostr-solid-darker': '#27363A',
       },
       lineHeight: {
         hero: '4.5rem',

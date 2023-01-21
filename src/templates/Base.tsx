@@ -1,22 +1,22 @@
 import { Meta } from '../layout/Meta';
 import { AppConfig } from '../utils/AppConfig';
-import { Banner } from './Banner';
 import { Footer } from './Footer';
 import { Hero } from './Hero';
+import InformationCards from './InformationCards';
 import { List } from './List';
 import { Navbar } from './Navbar';
-import { VerticalFeatures } from './VerticalFeatures';
 // import { Search } from './Search';
 
 const Base = () => (
-  <div className="antialiased text-gray-600">
+  <div className="antialiased text-gray-600 bg-[url('/assets/images/bg.svg')] bg-no-repeat bg-contain bg-top">
     <Meta title={AppConfig.title} description={AppConfig.description} />
     <Navbar />
     <Hero />
     {/* <Search /> */}
     <List />
-    <VerticalFeatures />
-    <Banner />
+    {/* <VerticalFeatures /> */}
+    {/* <Banner /> */}
+    <InformationCards />
     <Footer />
   </div>
 );

@@ -1,11 +1,8 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
-import { ArrowCircleRightOutlined } from '@mui/icons-material';
-import CancelIcon from '@mui/icons-material/Cancel';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import { Paper, Stack, Tooltip, Typography } from '@mui/material';
+import { Search, ContentCopyRounded } from '@mui/icons-material';
+import { Stack, Tooltip } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -15,9 +12,8 @@ import firebase from 'firebase/app';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
-import { Background } from '../background/Background';
-import { Button as PrimaryButton } from '../button/Button';
 import { Section } from '../layout/Section';
+import SignTw from '../signTw/signTw';
 import { auth, db, twitterProvider } from '../utils/firebase';
 
 const List = () => {
@@ -61,7 +57,7 @@ const List = () => {
     {
       field: 'profileImageUrl',
       headerName: '',
-      maxWidth: 50,
+      maxWidth: 70,
       align: 'center',
       renderCell: (params: GridRenderCellParams) => (
         <Avatar src={params.value}>
@@ -72,14 +68,14 @@ const List = () => {
     {
       field: 'screenName',
       headerName: 'Twitter Account',
-      maxWidth: 200,
+      maxWidth: 275,
       flex: 1,
     },
     {
       field: 'nPubKey',
       headerName: 'nPubKey',
-      width: 200,
-      flex: 1,
+      minWidth: 250,
+
       renderCell: (params: GridRenderCellParams) => (
         <>
           <IconButton
@@ -88,17 +84,22 @@ const List = () => {
               navigator.clipboard.writeText(params.value || '');
             }}
           >
-            <ContentCopyIcon />
+            <ContentCopyRounded />
           </IconButton>
-          <p>{params.value}</p>
+          <p>
+            {params.value
+              .substring(0, 8)
+              .concat('...')
+              .concat(params.value.substring(params.value.length - 8))}
+          </p>
         </>
       ),
     },
     {
       field: 'hexPubKey',
       headerName: 'Hex PubKey',
-      width: 200,
-      flex: 1,
+      minWidth: 250,
+
       renderCell: (params: GridRenderCellParams) =>
         params.value ? (
           <>
@@ -108,9 +109,14 @@ const List = () => {
                 navigator.clipboard.writeText(params.value || '');
               }}
             >
-              <ContentCopyIcon />
+              <ContentCopyRounded />
             </IconButton>
-            <p>{params.value}</p>
+            <p style={{ marginLeft: '5px' }}>
+              {params.value
+                .substring(0, 8)
+                .concat('...')
+                .concat(params.value.substring(params.value.length - 8))}
+            </p>
           </>
         ) : (
           <span style={{ width: '100%', textAlign: 'center' }}>-</span>
@@ -132,21 +138,63 @@ const List = () => {
     // },
     {
       field: 'verifyEvent',
-      headerName: 'verified?',
+      headerName: 'Status',
       headerAlign: 'center',
-      maxWidth: 100,
+      maxWidth: 250,
       flex: 1,
       align: 'center',
       renderCell: (params: GridRenderCellParams) =>
         params.value ? (
           <Link href={`https://www.nostr.guru/e/${params.value}`}>
             <a target="_blank">
-              <CheckCircleIcon htmlColor="green" />
+              <div>
+                <img src="/assets/images/verified.png" alt="" />
+                <p>Verified</p>
+                <style jsx>{`
+                  div {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    padding: 4px 12px;
+                    gap: 6px;
+                    background: rgba(58, 204, 142, 0.08);
+                    border-radius: 24px;
+                  }
+                  p {
+                    font-weight: 500;
+                    font-size: 13px;
+                    color: #3acc8e;
+                    display: flex;
+                    align-items: center;
+                  }
+                `}</style>
+              </div>
             </a>
           </Link>
         ) : (
           <Tooltip title="Pubkey is not verified on nostr." placement="top">
-            <CancelIcon htmlColor="red" />
+            <div>
+              <img src="/assets/images/not verified.png" alt="" />
+              <p>Verified</p>
+              <style jsx>{`
+                div {
+                  display: flex;
+                  flex-direction: row;
+                  align-items: center;
+                  padding: 4px 12px;
+                  gap: 6px;
+                  background: rgba(230, 80, 80, 0.08);
+                  border-radius: 24px;
+                }
+                p {
+                  font-weight: 500;
+                  font-size: 13px;
+                  color: #e65050;
+                  display: flex;
+                  align-items: center;
+                }
+              `}</style>
+            </div>
           </Tooltip>
         ),
     },
@@ -167,13 +215,39 @@ const List = () => {
       field: 'profile',
       headerName: 'Profile',
       headerAlign: 'center',
-      maxWidth: 100,
+      maxWidth: 150,
       flex: 1,
       align: 'center',
       renderCell: (params: GridRenderCellParams) => (
         <Link href={params.value}>
           <a>
-            <ArrowCircleRightOutlined className="text-nostr-light" />
+            <div>
+              <p>Visit Profile</p>
+              <style jsx>{`
+                div {
+                  flex-direction: row;
+                  align-items: center;
+                  padding: 4px 12px;
+                  border-radius: 24px;
+                }
+                div:hover {
+                  background: rgba(29, 67, 88, 0.08);
+                }
+                p {
+                  font-weight: 500;
+                  font-size: 13px;
+                  background: linear-gradient(
+                    158.74deg,
+                    #46bfee 14.86%,
+                    #1adace 102.75%
+                  );
+                  -webkit-background-clip: text;
+                  -webkit-text-fill-color: transparent;
+                  background-clip: text;
+                  text-fill-color: transparent;
+                }
+              `}</style>
+            </div>
           </a>
         </Link>
       ),
@@ -289,156 +363,214 @@ const List = () => {
   };
 
   return (
-    <Background color="bg-gray-100">
-      <Section
-        title="Nostr Public Key Database"
-        // description={`Here is a list of ${stats.tweetCount!} twitter accounts that tweeted their nostr public keys. ${stats.verifiedCount!} verified those keys on nostr.`}
+    <Section
+      yPadding="pt-0"
+      title="Nostr Public Key Database"
+      description={`Here is a list of ${stats.tweetCount!} twitter accounts that tweeted their nostr public keys. ${stats.verifiedCount!} verified those keys on nostr.`}
+    >
+      {/* <Stack direction="row" spacing={2} className="justify-center m-4 p-2">
+        <Paper className="!p-2 text-center">
+          <Typography
+            variant="h6"
+            color="text.secondary"
+            className="!text-center !m-2"
+          >
+            Tweets
+          </Typography>
+          <Typography
+            variant="h5"
+            color="text.secondary"
+            className="!text-center !m-2 !text-nostr-light"
+          >
+            {stats.tweetCount}
+          </Typography>
+        </Paper>
+        <Paper className="!p-2 !text-center">
+          <Typography
+            variant="h6"
+            color="text.secondary"
+            className="!text-center !m-2"
+          >
+            Verifications
+          </Typography>{' '}
+          <Typography
+            variant="h5"
+            color="text.secondary"
+            className="!text-center !m-2 !text-nostr-light"
+          >
+            {stats.verifiedCount}
+          </Typography>
+        </Paper>
+        <Paper className="!p-2 !text-center">
+          <Typography
+            variant="h6"
+            color="text.secondary"
+            className="!text-center !m-2"
+          >
+            Donations
+          </Typography>{' '}
+          <Typography
+            variant="h5"
+            color="text.secondary"
+            className="!text-center !m-2 !text-nostr-light"
+          >
+            {stats.donatedCount}
+          </Typography>
+        </Paper>
+      </Stack> */}
+      <SignTw popup={popupSignIn} />
+
+      {/* <TextField
+        id="profile-basic"
+        // label="Outlined"
+        variant="outlined"
+        placeholder="Search by twitter name or public key on nostr"
+        // onChange={handleChange}
+        onChange={(event) => {
+          setInputText(event.target.value);
+        }}
+        onKeyPress={(event) => {
+          if (event.key === 'Enter') {
+            router.push(`/p/${inputText}`);
+          }
+        }}
+        value={inputText}
+        fullWidth
+        InputProps={{
+          // startAdornment: (
+          //   <InputAdornment sx={{ backgroundColor: 'gray' }} position="start">
+          //     twitter.com/
+          //   </InputAdornment>
+          // ),
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton
+                aria-label="go to profile"
+                disabled={!inputText}
+                onClick={() => router.push(`/p/${inputText}`)}
+              >
+                <ArrowCircleRightOutlined
+                  className={inputText && 'text-nostr-light'}
+                />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+      /> */}
+      {/* <Typography
+        variant="h4"
+        color="text.primary"
+        className="text-center !mb-2 !mt-4"
       >
-        <Stack direction="row" spacing={2} className="justify-center m-4 p-2">
-          <Paper className="!p-2 text-center">
-            <Typography
-              variant="h6"
-              color="text.secondary"
-              className="!text-center !m-2"
-            >
-              Tweets
-            </Typography>
-            <Typography
-              variant="h5"
-              color="text.secondary"
-              className="!text-center !m-2 !text-nostr-light"
-            >
-              {stats.tweetCount}
-            </Typography>
-          </Paper>
-          <Paper className="!p-2 !text-center">
-            <Typography
-              variant="h6"
-              color="text.secondary"
-              className="!text-center !m-2"
-            >
-              Verifications
-            </Typography>{' '}
-            <Typography
-              variant="h5"
-              color="text.secondary"
-              className="!text-center !m-2 !text-nostr-light"
-            >
-              {stats.verifiedCount}
-            </Typography>
-          </Paper>
-          <Paper className="!p-2 !text-center">
-            <Typography
-              variant="h6"
-              color="text.secondary"
-              className="!text-center !m-2"
-            >
-              Donations
-            </Typography>{' '}
-            <Typography
-              variant="h5"
-              color="text.secondary"
-              className="!text-center !m-2 !text-nostr-light"
-            >
-              {stats.donatedCount}
-            </Typography>
-          </Paper>
-        </Stack>
-        <TextField
-          id="profile-basic"
-          // label="Outlined"
-          variant="outlined"
-          placeholder="Search by twitter screen name or pubkey e.g. jack or npub1melv..."
-          // onChange={handleChange}
-          onChange={(event) => {
-            setInputText(event.target.value);
+        Popular Accounts
+      </Typography> */}
+      <TextField
+        id="profile-basic"
+        // label="Outlined"
+
+        placeholder="Search by twitter name or public key on nostr"
+        // onChange={handleChange}
+        onChange={(event) => {
+          setInputText(event.target.value);
+        }}
+        onKeyPress={(event) => {
+          if (event.key === 'Enter') {
+            router.push(`/p/${inputText}`);
+          }
+        }}
+        value={inputText}
+        fullWidth
+        InputProps={{
+          // startAdornment: (
+          //   <InputAdornment sx={{ backgroundColor: 'gray' }} position="start">
+          //     twitter.com/
+          //   </InputAdornment>
+          // ),
+          style: {
+            borderRadius: '12px',
+            borderBottomLeftRadius: '0px',
+            borderBottomRightRadius: '0px',
+          },
+          startAdornment: (
+            <InputAdornment position="start">
+              <IconButton
+                aria-label="go to profile"
+                disabled={!inputText}
+                onClick={() => router.push(`/p/${inputText}`)}
+              >
+                <Search className={inputText && 'text-nostr-light'} />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+      />
+      <div style={{ height: '1200px', width: '100%' }}>
+        <DataGrid
+          disableColumnMenu
+          disableColumnFilter
+          sx={{
+            'box-shadow': ' 0px 12px 40px rgba(69, 93, 101, 0.12)',
+            borderTopLeftRadius: '0px',
+            borderTopRightRadius: '0px',
+            borderBottomLeftRadius: '12px',
+            borderBottomRightRadius: '12px',
+            '& .MuiDataGrid-virtualScroller': {
+              overflowX: 'scroll',
+              '&::-webkit-scrollbar': {
+                width: 0,
+              },
+            },
+            '& .MuiDataGrid-iconButtonContainer': {
+              display: 'none',
+            },
+            '& .css-yrdy0g-MuiDataGrid-columnHeaderRow': {
+              background: '#DEF0EF1F',
+            },
+            '&.MuiDataGrid-root .MuiDataGrid-cell:focus': {
+              outline: 'none',
+            },
+            '&.MuiDataGrid-columnHeader:focus, &.css-anrt9z-MuiDataGrid-root .MuiDataGrid-cell:focus':
+              {
+                outline: 'none !important',
+              },
+            '.MuiDataGrid-columnHeader:focus-within, &.MuiDataGrid-cell:focus-within':
+              {
+                outline: 'none !important',
+              },
+            '& .MuiDataGrid-columnSeparator , .MuiDataGrid-columnSeparator--sideRight':
+              {
+                opacity: '0 !important',
+              },
           }}
-          onKeyPress={(event) => {
-            if (event.key === 'Enter') {
-              router.push(`/p/${inputText}`);
-            }
-          }}
-          value={inputText}
-          fullWidth
-          InputProps={{
-            // startAdornment: (
-            //   <InputAdornment sx={{ backgroundColor: 'gray' }} position="start">
-            //     twitter.com/
-            //   </InputAdornment>
-            // ),
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="go to profile"
-                  disabled={!inputText}
-                  onClick={() => router.push(`/p/${inputText}`)}
-                >
-                  <ArrowCircleRightOutlined
-                    className={inputText && 'text-nostr-light'}
-                  />
-                </IconButton>
-              </InputAdornment>
+          rows={row}
+          columns={columns}
+          pageSize={100}
+          // rowsPerPageOptions={[50]}
+          hideFooter
+          loading={row.length === 0 && fetching}
+          disableSelectionOnClick
+          disableColumnSelector
+          disableDensitySelector
+          components={{
+            NoRowsOverlay: () => (
+              <Stack height="100%" alignItems="center" justifyContent="center">
+                No entries found
+              </Stack>
             ),
           }}
+          // Toolbar: GridToolbar,
+          // components={{ FilterPanel: GridFilterPanel }}
+          // componentsProps={{
+          //   toolbar: {
+          //     showQuickFilter: true,
+          //     quickFilterProps: {
+          //       debounceMs: 500,
+          //     },
+          //   },
+          // }}
         />
-        <Typography
-          variant="h4"
-          color="text.primary"
-          className="text-center !mb-2 !mt-4"
-        >
-          Popular Accounts
-        </Typography>
-
-        <div style={{ height: 600, width: '100%' }}>
-          <DataGrid
-            rows={row}
-            columns={columns}
-            pageSize={100}
-            // rowsPerPageOptions={[50]}
-            hideFooter
-            loading={row.length === 0 && fetching}
-            disableSelectionOnClick
-            disableColumnFilter
-            disableColumnSelector
-            disableDensitySelector
-            components={{
-              NoRowsOverlay: () => (
-                <Stack
-                  height="100%"
-                  alignItems="center"
-                  justifyContent="center"
-                >
-                  No entries found
-                </Stack>
-              ),
-            }}
-            // Toolbar: GridToolbar,
-            // components={{ FilterPanel: GridFilterPanel }}
-            // componentsProps={{
-            //   toolbar: {
-            //     showQuickFilter: true,
-            //     quickFilterProps: {
-            //       debounceMs: 500,
-            //     },
-            //   },
-            // }}
-          />
-        </div>
-
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'end',
-          }}
-          className="text-xl my-4"
-          onClick={popupSignIn}
-        >
-          To add your twitter follows to your nostr contact list{' '}
-          <PrimaryButton>Sign in with Twitter</PrimaryButton>
-        </div>
-      </Section>
-    </Background>
+      </div>
+    </Section>
   );
 };
 
