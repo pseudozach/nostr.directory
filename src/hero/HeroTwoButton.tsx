@@ -13,7 +13,7 @@ const HeroTwoButton = (props: IHeroTwoButtonProps) => (
     <h1 className="text-[56px] text-nostr-solid-darker font-black tracking-tighter whitespace-pre-line leading-hero">
       {props.title}
     </h1>
-    <div className="text-2xl font-semibold mt-4 mb-4 text-nostr-solid-darker">
+    <div className="text-2xl font-semibold mt-4 mb-4 text-nostr-solid-darker max-w-[820px] m-auto">
       {props.description}
     </div>
 

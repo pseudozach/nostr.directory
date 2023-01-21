@@ -364,7 +364,7 @@ const List = () => {
 
   return (
     <Section
-      yPadding="pt-0"
+      yPadding="pt-0 max-w-screen-lg"
       title="Nostr Public Key Database"
       description={`Here is a list of ${stats.tweetCount!} twitter accounts that tweeted their nostr public keys. ${stats.verifiedCount!} verified those keys on nostr.`}
     >
@@ -526,9 +526,10 @@ const List = () => {
             '& .css-yrdy0g-MuiDataGrid-columnHeaderRow': {
               background: '#DEF0EF1F',
             },
-            '&.MuiDataGrid-root .MuiDataGrid-cell:focus': {
-              outline: 'none',
-            },
+            '&.MuiDataGrid-root .MuiDataGrid-cell:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus-within':
+              {
+                outline: 'none',
+              },
             '&.MuiDataGrid-columnHeader:focus, &.css-anrt9z-MuiDataGrid-root .MuiDataGrid-cell:focus':
               {
                 outline: 'none !important',

@@ -27,7 +27,7 @@ const SignTw = (props: any) => {
           );
           border-radius: 12px;
           border: 1px solid #46bfee;
-          padding: 15px 24px;
+          padding: 15px 8px 15px 24px;
         }
         p {
           background: linear-gradient(
@@ -43,6 +43,7 @@ const SignTw = (props: any) => {
           font-size: 14px;
         }
         button {
+          width: 169px;
           position: relative;
           font-weight: 500;
           font-size: 13px;
