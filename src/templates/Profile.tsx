@@ -323,7 +323,7 @@ const Profile = () => {
       setPreviousKeys(screenNameKeys);
 
       const newerKey = screenNameKeys.find(
-        (y: any) => y.created_at > tweetObj.created_at
+        (y: any) => new Date(y.created_at) > new Date(tweetObj.created_at)
       );
       if (newerKey) setNewerKeyExists(true);
     } catch (error) {
