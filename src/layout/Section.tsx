@@ -22,7 +22,7 @@ const Section = (props: ISectionProps) => (
           </h1>
         )}
         {props.description && (
-          <div className="mt-4 text-xl md:px-20 max-w-[820px] m-auto">
+          <div className="mt-4 text-xl md:px-20 text-[14px] max-w-[820px] m-auto">
             {props.description}
           </div>
         )}

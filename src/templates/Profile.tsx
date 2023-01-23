@@ -620,11 +620,16 @@ const Profile = () => {
             sx={{
               background:
                 'linear-gradient(180deg, #ECE5F9 0%, rgba(255, 255, 255, 0) 100%)',
-              paddingTop: '100px',
-              padding: '100px 40px 24px 40px',
+
               alignItems: 'start',
               '&.MuiPaper-root .MuiPaper-elevation': {
                 background: '#202028',
+              },
+              '@media (min-width: 0)': {
+                padding: '100px 16px 24px 16px',
+              },
+              '@media (min-width: 700px)': {
+                padding: '100px 40px 24px 40px',
               },
             }}
             avatar={
@@ -640,7 +645,7 @@ const Profile = () => {
             action={
               <Tooltip
                 title="WoT Score"
-                className="!my-2 !mx-3"
+                className="!my-2 !-ml-9"
                 onClick={() =>
                   setDialog({
                     open: true,
@@ -677,6 +682,7 @@ const Profile = () => {
                     background: '#3ACC8E',
                     'border-radius': '24px',
                     padding: '4px 12px',
+                    marginLeft: '-20px;',
                   }}
                   variant="rounded"
                 >
@@ -690,46 +696,48 @@ const Profile = () => {
               </Tooltip>
             }
             title={
-              <>
+              <div className="headerContainer">
                 <p className="headerTitle">Twitter Account</p>
                 <div className="user">
                   @{tweet.screenName}{' '}
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 14 14"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M10.3333 4.99996C10.3333 4.65875 10.2031 4.31753 9.9428 4.05719C9.68247 3.79684 9.3412 3.66667 9 3.66667M9 9C11.2091 9 13 7.20913 13 5C13 2.79086 11.2091 1 9 1C6.79087 1 5 2.79086 5 5C5 5.18245 5.01221 5.36205 5.03587 5.53803C5.07479 5.82747 5.09424 5.9722 5.08115 6.06373C5.0675 6.15913 5.05013 6.21047 5.00313 6.2946C4.958 6.37533 4.87847 6.45487 4.71942 6.61393L1.31242 10.0209C1.19712 10.1362 1.13947 10.1939 1.09824 10.2611C1.06169 10.3208 1.03475 10.3858 1.01842 10.4539C1 10.5306 1 10.6121 1 10.7751V11.9333C1 12.3067 1 12.4934 1.07266 12.636C1.13658 12.7615 1.23857 12.8634 1.36401 12.9273C1.50661 13 1.6933 13 2.06667 13H3.66667V11.6667H5V10.3333H6.33333L7.38607 9.2806C7.54513 9.12153 7.62467 9.042 7.7054 8.99687C7.78953 8.94987 7.84087 8.93247 7.93627 8.91887C8.0278 8.90573 8.17253 8.9252 8.462 8.96413C8.63793 8.9878 8.81753 9 9 9V9Z"
-                      stroke="url(#paint0_linear_15_2592)"
-                      strokeWidth="1.33333"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <defs>
-                      <linearGradient
-                        id="paint0_linear_15_2592"
-                        x1="13.0141"
-                        y1="-2.85366"
-                        x2="1.09003"
-                        y2="13.7553"
-                        gradientUnits="userSpaceOnUse"
-                      >
-                        <stop stopColor="#5684C9" />
-                        <stop offset="1" stopColor="#D3A7FF" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                  <span>
-                    {tweet.nPubKey.slice(0, 8)}...${tweet.nPubKey.slice(-8)}
-                  </span>
+                  <div className="key">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 14 14"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M10.3333 4.99996C10.3333 4.65875 10.2031 4.31753 9.9428 4.05719C9.68247 3.79684 9.3412 3.66667 9 3.66667M9 9C11.2091 9 13 7.20913 13 5C13 2.79086 11.2091 1 9 1C6.79087 1 5 2.79086 5 5C5 5.18245 5.01221 5.36205 5.03587 5.53803C5.07479 5.82747 5.09424 5.9722 5.08115 6.06373C5.0675 6.15913 5.05013 6.21047 5.00313 6.2946C4.958 6.37533 4.87847 6.45487 4.71942 6.61393L1.31242 10.0209C1.19712 10.1362 1.13947 10.1939 1.09824 10.2611C1.06169 10.3208 1.03475 10.3858 1.01842 10.4539C1 10.5306 1 10.6121 1 10.7751V11.9333C1 12.3067 1 12.4934 1.07266 12.636C1.13658 12.7615 1.23857 12.8634 1.36401 12.9273C1.50661 13 1.6933 13 2.06667 13H3.66667V11.6667H5V10.3333H6.33333L7.38607 9.2806C7.54513 9.12153 7.62467 9.042 7.7054 8.99687C7.78953 8.94987 7.84087 8.93247 7.93627 8.91887C8.0278 8.90573 8.17253 8.9252 8.462 8.96413C8.63793 8.9878 8.81753 9 9 9V9Z"
+                        stroke="url(#paint0_linear_15_2592)"
+                        strokeWidth="1.33333"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <defs>
+                        <linearGradient
+                          id="paint0_linear_15_2592"
+                          x1="13.0141"
+                          y1="-2.85366"
+                          x2="1.09003"
+                          y2="13.7553"
+                          gradientUnits="userSpaceOnUse"
+                        >
+                          <stop stopColor="#5684C9" />
+                          <stop offset="1" stopColor="#D3A7FF" />
+                        </linearGradient>
+                      </defs>
+                    </svg>
+                    <span>
+                      {tweet.nPubKey.slice(0, 8)}...${tweet.nPubKey.slice(-8)}
+                    </span>
+                  </div>
                 </div>
                 <div className="mt-2 mb-4 flex items-center gap-2">
                   <a
                     href={`https://twitter.com/${tweet.screenName}`}
-                    className="py-2 px-6 rounded-full text-base font-medium bg-[#5f338414] cursor-pointer flex flex-row items-center gap-2"
+                    className="py-2 md:px-6 px-3 min-w-fit rounded-full text-base font-medium bg-[#5f338414] cursor-pointer flex flex-row items-center gap-2"
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -751,7 +759,7 @@ const Profile = () => {
                   </a>
                   <a
                     href={`https://twitter.com/${tweet.screenName}/status/${tweet.id_str}`}
-                    className="py-2 px-6 rounded-full text-base font-medium bg-[#5f338414] cursor-pointer flex flex-row items-center gap-2"
+                    className="py-2 md:px-6 px-3 min-w-fit rounded-full text-base font-medium bg-[#5f338414] cursor-pointer flex flex-row items-center gap-2"
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -789,18 +797,23 @@ const Profile = () => {
                 >
                   <ContentCopy />
                 </IconButton> */}
-              </>
+              </div>
             }
           />
           <CardContent
             sx={{
-              padding: '0 40px',
+              '@media (min-width: 0)': {
+                padding: '0 16px',
+              },
+              '@media (min-width: 700px)': {
+                padding: '0 40px',
+              },
             }}
           >
             <h6 className="font-semibold text-base text-nostr-darker">
               Badges
             </h6>
-            <div className="mt-2 mb-4 mx-auto flex-row flex items-center gap-4 justify-between">
+            <div className="mt-2 mb-4 mx-auto flex-col md:flex-row flex items-center gap-4 justify-between">
               <div className="my-2 flex items-center">
                 <BadgeCard
                   variant={'twitter'}
@@ -1538,8 +1551,6 @@ const Profile = () => {
           color: #27363a;
           display: flex;
           flex-direction: row;
-          align-items: center;
-          gap: 10px;
         }
         .user span {
           font-weight: 400;
@@ -1567,6 +1578,29 @@ const Profile = () => {
         }
         .iconFalse {
           color: #455d655e;
+        }
+         {
+          /* .headerContainer {
+          display: flex;
+        } */
+        }
+        @media (min-width: 0) {
+          .user {
+            flex-direction: column;
+          }
+          .key {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 5px;
+          }
+        }
+        @media (min-width: 700px) {
+          .user {
+            flex-direction: row;
+            gap: 10px;
+            align-items: center;
+          }
         }
       `}</style>
     </Section>

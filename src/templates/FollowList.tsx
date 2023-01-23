@@ -40,6 +40,7 @@ const columns: GridColDef[] = [
     field: 'screenName',
     headerName: 'Twitter Account',
     maxWidth: 275,
+    minWidth: 200,
     flex: 1,
   },
   {
@@ -112,6 +113,7 @@ const columns: GridColDef[] = [
     headerName: 'Status',
     headerAlign: 'center',
     maxWidth: 250,
+    minWidth: 150,
     flex: 1,
     align: 'center',
     renderCell: (params: GridRenderCellParams) =>
@@ -187,6 +189,7 @@ const columns: GridColDef[] = [
     headerName: 'Proof URL',
     headerAlign: 'center',
     maxWidth: 150,
+    minWidth: 150,
     flex: 1,
     align: 'center',
     renderCell: (params: GridRenderCellParams) => (
@@ -488,10 +491,10 @@ const FollowList = () => {
   return (
     <>
       <Section yPadding="pt-20 max-w-screen-xl">
-        <h1 className="font-black text-[56px] text-nostr-solid-darker tracking-tight text-center leading-[68px]">
+        <h1 className="font-black md:text-[56px] text-[40px] text-nostr-solid-darker tracking-tight text-center leading-[48px] md:leading-[68px]">
           Here are your follows, <span>@{screenName}</span>
         </h1>
-        <p className="text-center font-medium	mt-4 mb-8 text-[22px] text-nostr-solid-darker max-w-2xl mx-auto">
+        <p className="text-center font-medium	mt-4 mb-8 text-[16px] md:text-[22px] text-nostr-solid-darker max-w-2xl mx-auto">
           Here is a list of accounts you follow on twitter that are also on
           nostr. Select the ones you want to follow and update your contact
           list.
@@ -524,6 +527,8 @@ const FollowList = () => {
                 borderRadius: '12px',
                 borderBottomLeftRadius: '0px',
                 borderBottomRightRadius: '0px',
+
+                fontSize: '13px',
               },
               startAdornment: (
                 <InputAdornment position="start">
@@ -531,6 +536,9 @@ const FollowList = () => {
                     aria-label="go to profile"
                     disabled={!inputText}
                     onClick={() => router.push(`/p/${inputText}`)}
+                    sx={{
+                      width: '10px',
+                    }}
                   >
                     <Search className={inputText && 'text-nostr-light'} />
                   </IconButton>
@@ -707,10 +715,20 @@ const FollowList = () => {
             display: flex;
             flex-direction: row;
             align-items: center;
-            padding: 12px 32px;
+
             color: #27363a;
             justify-content: flex-end;
             gap: 12px;
+          }
+          @media (min-width: 0) {
+            .updateList {
+              padding: 12px;
+            }
+          }
+          @media (min-width: 700px) {
+            .updateList {
+              padding: 12px 32px;
+            }
           }
           .gridContainer {
             box-shadow: 0px 12px 40px rgba(69, 93, 101, 0.12);

@@ -51,6 +51,16 @@ const OutlinedButton = (props: IButtonProps) => {
           .btn-2xl {
             @apply text-nostr-solid-darker text-base  bg-[#EDF0F2];
           }
+          @media (min-width: 0) {
+            .btn-2xl {
+              width: 300px;
+            }
+          }
+          @media (min-width: 700px) {
+            .btn-2xl {
+              width: unset;
+            }
+          }
         `}
       </style>
     </div>

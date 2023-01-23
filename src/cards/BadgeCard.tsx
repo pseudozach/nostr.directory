@@ -162,7 +162,6 @@ const BadgeCard = (props: IProps) => {
           border-radius: 12px;
           border: 1px solid #eaeeee;
 
-          width: 213px;
           height: 245px;
           padding: 44px 16px 33px 16px;
           display: flex;
@@ -223,6 +222,16 @@ const BadgeCard = (props: IProps) => {
           text-align: center;
 
           color: #455d65;
+        }
+        @media (min-width: 0) {
+          .badgeContainer {
+            width: 100%;
+          }
+        }
+        @media (min-width: 700px) {
+          .badgeContainer {
+            width: 213px;
+          }
         }
       `}</style>
     </div>

@@ -144,6 +144,16 @@ const Footer = () => (
           justify-content: space-between;
           align-items: center;
         }
+        @media (min-width: 0) {
+          .container {
+            flex-direction: column;
+          }
+        }
+        @media (min-width: 700px) {
+          .container {
+            flex-direction: row;
+          }
+        }
       `}
     </style>
   </footer>

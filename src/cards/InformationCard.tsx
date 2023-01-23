@@ -26,13 +26,14 @@ const InformationCard = (props: IProps) => {
         div {
           display: flex;
           flex: 1;
-          height: 232px;
+          min-height: 232px;
           border-radius: 12px;
           position: relative;
           flex-direction: column;
           padding: 24px;
           z-index: 1;
           justify-content: space-between;
+          gap: 12px;
         }
         h3 {
           font-weight: 800;
@@ -75,9 +76,20 @@ const InformationCard = (props: IProps) => {
         .bg-card p {
           color: #7e85ce;
         }
+
+        @media (min-width: 0) {
+          .bg-card::before {
+            background: url('/assets/images/circles2.svg');
+          }
+        }
+        @media (min-width: 700px) {
+          .bg-card::before {
+            background: url('/assets/images/circles2.svg');
+          }
+        }
         .bg-card::before {
           content: '';
-          background: url('/assets/images/circles.svg');
+
           background-position: right;
           background-repeat: no-repeat;
           position: absolute;

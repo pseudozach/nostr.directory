@@ -19,7 +19,7 @@ const SignTw = (props: any) => {
           align-items: center;
           justify-content: space-between;
           width: 100%;
-          height: 52px;
+
           background: linear-gradient(
             158.74deg,
             rgba(70, 191, 238, 0.08) 14.86%,
@@ -27,7 +27,6 @@ const SignTw = (props: any) => {
           );
           border-radius: 12px;
           border: 1px solid #46bfee;
-          padding: 15px 8px 15px 24px;
         }
         p {
           background: linear-gradient(
@@ -43,7 +42,6 @@ const SignTw = (props: any) => {
           font-size: 14px;
         }
         button {
-          width: 169px;
           position: relative;
           font-weight: 500;
           font-size: 13px;
@@ -68,11 +66,40 @@ const SignTw = (props: any) => {
         span {
           position: absolute;
           left: 0;
-          top: -20px;
-          width: 184px;
-          height: 73px;
-          background: url('/assets/images/stars.png');
+
           z-index: 1;
+        }
+        @media (min-width: 0) {
+          div {
+            flex-direction: column;
+            height: 119px;
+            padding: 15px 8px 15px 8px;
+          }
+          button {
+            width: 100%;
+          }
+          span {
+            width: 100%;
+            background: url('/assets/images/stars2.png');
+            top: -10px;
+            height: 60px;
+          }
+        }
+        @media (min-width: 700px) {
+          div {
+            flex-direction: row;
+            height: 52px;
+            padding: 15px 8px 15px 24px;
+          }
+          button {
+            width: 169px;
+          }
+          span {
+            width: 184px;
+            background: url('/assets/images/stars.png');
+            top: -20px;
+            height: 73px;
+          }
         }
       `}</style>
     </div>

@@ -42,7 +42,7 @@ const DynamicButton = (props: IProps) => {
           font-size: 13px;
           color: white;
           border-radius: 8px;
-          padding: 8px 24px;
+
           background: linear-gradient(
             158.74deg,
             #46bfee 14.86%,
@@ -56,6 +56,16 @@ const DynamicButton = (props: IProps) => {
           justify-content: space-between;
           gap: 10px;
           transition: all 0.3s;
+        }
+        @media (min-width: 0) {
+          a {
+            padding: 8px;
+          }
+        }
+        @media (min-width: 700px) {
+          a {
+            padding: 8px 24px;
+          }
         }
         svg {
           width: 10px;
@@ -82,6 +92,16 @@ const DynamicButton = (props: IProps) => {
           background: linear-gradient(95.09deg, #bdb0de 0%, #e7e2f3 100%);
           border-radius: 56px;
           color: #27363a;
+        }
+        @media (min-width: 0) {
+          .absolute {
+            left: 16px;
+          }
+        }
+        @media (min-width: 700px) {
+          .absolute {
+            left: 40px;
+          }
         }
       `}</style>
     </a>

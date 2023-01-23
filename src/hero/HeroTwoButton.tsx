@@ -10,10 +10,10 @@ type IHeroTwoButtonProps = {
 
 const HeroTwoButton = (props: IHeroTwoButtonProps) => (
   <header className="text-center">
-    <h1 className="text-[56px] text-nostr-solid-darker font-black tracking-tighter whitespace-pre-line leading-hero">
+    <h1 className="md:text-[56px] text-[40px] text-nostr-solid-darker font-black tracking-tighter whitespace-pre-line md:leading-hero leading-[48px]">
       {props.title}
     </h1>
-    <div className="text-2xl font-semibold mt-4 mb-4 text-nostr-solid-darker max-w-[820px] m-auto">
+    <div className="md:text-2xl text-lg font-medium md:font-semibold mt-4 mb-4 text-nostr-solid-darker max-w-[820px] m-auto">
       {props.description}
     </div>
 

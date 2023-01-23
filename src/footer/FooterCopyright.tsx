@@ -2,7 +2,7 @@ import { AppConfig } from '../utils/AppConfig';
 
 const FooterCopyright = () => (
   <div className="footer-copyright">
-    <img src="/assets/images/Icon.png" alt="" />
+    <img src="/assets/images/Icon.png" alt="nostr icon" />
     <p>
       <span>
         {new Date().getFullYear()} {AppConfig.site_name}
@@ -19,7 +19,7 @@ const FooterCopyright = () => (
       {`
         .footer-copyright {
           display: flex;
-          flex-direction: row;
+
           align-items: center;
           gap: 16px;
         }
@@ -35,6 +35,17 @@ const FooterCopyright = () => (
 
         .footer-copyright :global(a:hover) {
           @apply underline;
+        }
+        @media (min-width: 0) {
+          .footer-copyright {
+            flex-direction: column;
+            margin-bottom: 20px;
+          }
+        }
+        @media (min-width: 700px) {
+          .footer-copyright {
+            flex-direction: row;
+          }
         }
       `}
     </style>

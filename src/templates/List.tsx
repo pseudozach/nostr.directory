@@ -67,6 +67,7 @@ const List = () => {
       field: 'screenName',
       headerName: 'Twitter Account',
       maxWidth: 275,
+      minWidth: 200,
       flex: 1,
     },
     {
@@ -139,6 +140,7 @@ const List = () => {
       headerName: 'Status',
       headerAlign: 'center',
       maxWidth: 250,
+      minWidth: 150,
       flex: 1,
       align: 'center',
       renderCell: (params: GridRenderCellParams) =>
@@ -214,6 +216,7 @@ const List = () => {
       headerName: 'Profile',
       headerAlign: 'center',
       maxWidth: 150,
+      minWidth: 150,
       flex: 1,
       align: 'center',
       renderCell: (params: GridRenderCellParams) => (
@@ -395,6 +398,7 @@ const List = () => {
             borderRadius: '12px',
             borderBottomLeftRadius: '0px',
             borderBottomRightRadius: '0px',
+            fontSize: '13px',
           },
           startAdornment: (
             <InputAdornment position="start">
