@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 
 import { ContentCopyRounded, Search } from '@mui/icons-material';
+import TwitterIcon from '@mui/icons-material/Twitter';
 import {
   Alert,
   InputAdornment,
@@ -189,37 +190,9 @@ const columns: GridColDef[] = [
     flex: 1,
     align: 'center',
     renderCell: (params: GridRenderCellParams) => (
-      <Link href={params.value}>
-        <a>
-          <div>
-            <p>Visit Profile</p>
-            <style jsx>{`
-              div {
-                flex-direction: row;
-                align-items: center;
-                padding: 4px 12px;
-                border-radius: 24px;
-              }
-              div:hover {
-                background: rgba(29, 67, 88, 0.08);
-              }
-              p {
-                font-weight: 500;
-                font-size: 13px;
-                background: linear-gradient(
-                  158.74deg,
-                  #46bfee 14.86%,
-                  #1adace 102.75%
-                );
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                background-clip: text;
-                text-fill-color: transparent;
-              }
-            `}</style>
-          </div>
-        </a>
-      </Link>
+      <a href={params.value} target="_blank" rel="noreferrer">
+        <TwitterIcon htmlColor="#1DA1F2" />
+      </a>
     ),
   },
   // { field: 'createdAt', headerName: 'createdAt', width: 150 },

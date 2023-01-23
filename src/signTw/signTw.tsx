@@ -7,7 +7,7 @@ const SignTw = (props: any) => {
         To view and update your nostr contact list based on your twitter
         followers please sign in.
       </p>
-      <button onClick={props.popupSignIn}>
+      <button onClick={props.popup}>
         Sign in with Twitter <span />
       </button>
 

@@ -9,6 +9,7 @@ type IProps = {
   extra?: string;
   button: string;
   button_class?: string | undefined;
+  href?: string | undefined;
 };
 const InformationCard = (props: IProps) => {
   return (
@@ -19,7 +20,7 @@ const InformationCard = (props: IProps) => {
       <DynamicButton
         text={props.button}
         button_class={props.button_class}
-        href={''}
+        href={props.href}
       />
       <style jsx>{`
         div {

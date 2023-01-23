@@ -4,14 +4,31 @@ import NorthEastIcon from '@mui/icons-material/NorthEast';
 
 type IProps = {
   text: string;
-  href: string;
+  href: string | undefined;
   button_class?: string | undefined;
   variant?: string;
 };
 
 const DynamicButton = (props: IProps) => {
   return (
-    <a href="" className={props.button_class}>
+    <a href={props.href} className={props.button_class}>
+      {props.text === 'Go back' && (
+        <svg
+          width="12"
+          height="10"
+          viewBox="0 0 12 10"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M11.3332 5H0.666504M0.666504 5L4.6665 9M0.666504 5L4.6665 1"
+            stroke="#27363A"
+            strokeWidth="1.33333"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      )}
       {props.text}
       {props.variant !== 'roundUpdate' && (
         <NorthEastIcon sx={{ width: '17px' }} />
@@ -57,6 +74,14 @@ const DynamicButton = (props: IProps) => {
         .bg-card-b {
           height: 32px;
           border-radius: 24px;
+        }
+        .absolute {
+          position: absolute;
+          top: 40px;
+          left: 40px;
+          background: linear-gradient(95.09deg, #bdb0de 0%, #e7e2f3 100%);
+          border-radius: 56px;
+          color: #27363a;
         }
       `}</style>
     </a>

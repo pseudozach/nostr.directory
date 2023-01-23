@@ -7,9 +7,9 @@ import { auth, twitterProvider } from '../utils/firebase';
 import { Logo } from './Logo';
 
 const Links = [
-  { href: 'https://getalby.com/p/nostrdirectory', text: 'What is Nostr' },
-  { href: 'https://getalby.com/p/nostrdirectory', text: 'Nostr Protocol' },
-  { href: 'https://getalby.com/p/nostrdirectory', text: 'Clients' },
+  { href: 'https://usenostr.org/', text: 'What is Nostr' },
+  { href: 'https://github.com/nostr-protocol/nostr', text: 'Nostr Protocol' },
+  { href: 'https://www.nostr.net/#clients', text: 'Clients' },
 ];
 
 const Navbar = () => {
