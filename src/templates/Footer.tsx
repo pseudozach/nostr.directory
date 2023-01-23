@@ -113,7 +113,7 @@ const Footer = () => (
           </Link>
           <Link href="mailto:hello@nostr.directory">
             <a target="_blank">
-              <p className="py-2 px-6 rounded-full text-base font-medium text-[#27363A] bg-[#5f338414]">
+              <p className="py-2 px-6 rounded-full text-base font-medium text-nostr-solid-darker bg-[#5f338414]">
                 Contact us
               </p>
             </a>

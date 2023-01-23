@@ -49,7 +49,7 @@ const OutlinedButton = (props: IButtonProps) => {
             @apply text-gray-600 border-2 border-gray-600;
           }
           .btn-2xl {
-            @apply text-[#27363A] text-base  bg-[#EDF0F2];
+            @apply text-nostr-solid-darker text-base  bg-[#EDF0F2];
           }
         `}
       </style>

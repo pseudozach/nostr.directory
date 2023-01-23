@@ -8,7 +8,7 @@ import { Navbar } from './Navbar';
 // import { Search } from './Search';
 
 const Base = () => (
-  <div className="antialiased text-gray-600 bg-[url('/assets/images/bg.svg')] bg-no-repeat bg-contain bg-top">
+  <div className="antialiased text-gray-600 overflow-hidden">
     <Meta title={AppConfig.title} description={AppConfig.description} />
     <Navbar />
     <Hero />

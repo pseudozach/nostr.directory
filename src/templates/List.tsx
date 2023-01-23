@@ -60,9 +60,7 @@ const List = () => {
       maxWidth: 70,
       align: 'center',
       renderCell: (params: GridRenderCellParams) => (
-        <Avatar src={params.value}>
-          {/* <img src={'/assets/images/nostrich.jpg'} alt="fallback image" /> */}
-        </Avatar>
+        <Avatar src={params.value} />
       ),
     },
     {
@@ -364,106 +362,13 @@ const List = () => {
 
   return (
     <Section
-      yPadding="pt-0 max-w-screen-lg"
+      mxWidth="max-w-screen-xl"
+      yPadding="pt-0"
       title="Nostr Public Key Database"
       description={`Here is a list of ${stats.tweetCount!} twitter accounts that tweeted their nostr public keys. ${stats.verifiedCount!} verified those keys on nostr.`}
     >
-      {/* <Stack direction="row" spacing={2} className="justify-center m-4 p-2">
-        <Paper className="!p-2 text-center">
-          <Typography
-            variant="h6"
-            color="text.secondary"
-            className="!text-center !m-2"
-          >
-            Tweets
-          </Typography>
-          <Typography
-            variant="h5"
-            color="text.secondary"
-            className="!text-center !m-2 !text-nostr-light"
-          >
-            {stats.tweetCount}
-          </Typography>
-        </Paper>
-        <Paper className="!p-2 !text-center">
-          <Typography
-            variant="h6"
-            color="text.secondary"
-            className="!text-center !m-2"
-          >
-            Verifications
-          </Typography>{' '}
-          <Typography
-            variant="h5"
-            color="text.secondary"
-            className="!text-center !m-2 !text-nostr-light"
-          >
-            {stats.verifiedCount}
-          </Typography>
-        </Paper>
-        <Paper className="!p-2 !text-center">
-          <Typography
-            variant="h6"
-            color="text.secondary"
-            className="!text-center !m-2"
-          >
-            Donations
-          </Typography>{' '}
-          <Typography
-            variant="h5"
-            color="text.secondary"
-            className="!text-center !m-2 !text-nostr-light"
-          >
-            {stats.donatedCount}
-          </Typography>
-        </Paper>
-      </Stack> */}
       <SignTw popup={popupSignIn} />
 
-      {/* <TextField
-        id="profile-basic"
-        // label="Outlined"
-        variant="outlined"
-        placeholder="Search by twitter name or public key on nostr"
-        // onChange={handleChange}
-        onChange={(event) => {
-          setInputText(event.target.value);
-        }}
-        onKeyPress={(event) => {
-          if (event.key === 'Enter') {
-            router.push(`/p/${inputText}`);
-          }
-        }}
-        value={inputText}
-        fullWidth
-        InputProps={{
-          // startAdornment: (
-          //   <InputAdornment sx={{ backgroundColor: 'gray' }} position="start">
-          //     twitter.com/
-          //   </InputAdornment>
-          // ),
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton
-                aria-label="go to profile"
-                disabled={!inputText}
-                onClick={() => router.push(`/p/${inputText}`)}
-              >
-                <ArrowCircleRightOutlined
-                  className={inputText && 'text-nostr-light'}
-                />
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-      /> */}
-      {/* <Typography
-        variant="h4"
-        color="text.primary"
-        className="text-center !mb-2 !mt-4"
-      >
-        Popular Accounts
-      </Typography> */}
       <TextField
         id="profile-basic"
         // label="Outlined"

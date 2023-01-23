@@ -6,13 +6,17 @@ type IProps = {
   text: string;
   href: string;
   button_class?: string | undefined;
+  variant?: string;
 };
 
 const DynamicButton = (props: IProps) => {
   return (
     <a href="" className={props.button_class}>
       {props.text}
-      <NorthEastIcon sx={{ width: '17px' }} />
+      {props.variant !== 'roundUpdate' && (
+        <NorthEastIcon sx={{ width: '17px' }} />
+      )}
+
       <style jsx>{`
         a {
           display: flex;
@@ -49,6 +53,10 @@ const DynamicButton = (props: IProps) => {
             #5684c9 -18.74%,
             #d3a7ff 103.35%
           );
+        }
+        .bg-card-b {
+          height: 32px;
+          border-radius: 24px;
         }
       `}</style>
     </a>
