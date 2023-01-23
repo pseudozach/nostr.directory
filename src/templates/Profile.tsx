@@ -93,6 +93,7 @@ const Profile = () => {
     telegramEvent: '',
     opreturn: false,
     opreturnTx: '',
+    opreturnAt: 0,
   });
   const [wotScore, setWotScore] = useState(0);
   const [fetching, setFetching] = useState(false);
@@ -345,6 +346,8 @@ const Profile = () => {
       // console.log('checktweet error ', error);
       if (error.response.status === 404) setTweetExists(false);
     }
+
+    // TODO: should connect to user's relays - not our own list of default relays!
 
     // get nostr profile of user to show users, followers, relays etc.
     for (let index = 0; index < defaultRelays.length; index += 1) {
@@ -1239,6 +1242,7 @@ const Profile = () => {
                 >
                   OP_RETURN Timestamp
                 </a>
+                {new Date(tweet.opreturnAt * 1000).toLocaleString()}
               </div>
             )}
             {previousKeys.length > 0 && (
