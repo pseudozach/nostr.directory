@@ -14,6 +14,7 @@ import {
   Check,
   Close,
   Telegram,
+  GitHub,
 } from '@mui/icons-material';
 import CurrencyBitcoinIcon from '@mui/icons-material/CurrencyBitcoin';
 import TwitterIcon from '@mui/icons-material/Twitter';
@@ -222,6 +223,7 @@ const Profile = () => {
     } catch (error) {}
 
     // convert twitter handle to pubkey as well
+    const tweetsByIdentifier: any = [];
     try {
       if (hexPubKey.length < 64) {
         // console.log(
@@ -230,7 +232,7 @@ const Profile = () => {
         //   nPubKey,
         //   hexPubKey
         // );
-        const tweetsByIdentifier: any = [];
+
         // setFetching(true);
         const tquerySnapshot = await db
           .collection('twitter')
@@ -245,6 +247,7 @@ const Profile = () => {
         //   tweetsByIdentifier
         // );
         if (tweetsByIdentifier.length < 1) {
+          // Not in tweet database - pull manual data from relays
           console.log('handle not found in DB!');
           setIdNotFound(true);
           setFetching(false);
@@ -294,81 +297,93 @@ const Profile = () => {
     // );
 
     // setUserRelays([]);
-    const duplicates: any = [];
     // setFetching(true);
-    const querySnapshot = await db
-      .collection('twitter')
-      .where('nPubKey', '==', nPubKey)
-      .get();
+
     let tweetObj: any;
-    querySnapshot.forEach((doc: { id: any; data: () => any }) => {
-      tweetObj = doc.data();
-      duplicates.push(doc.data());
-    });
-
-    if (!tweetObj) {
-      console.log('pubkey not found in DB!');
-      setIdNotFound(true);
-      setFetching(false);
-      return;
-    }
-
-    // console.log('got duplicates ', duplicates);
-    // prefer verified if exists
-    tweetObj =
-      duplicates.find((x: any) => x.verified === true) || duplicates[0];
-
-    console.log('got data ', tweetObj, fetching);
-    setTweet(tweetObj);
-    // console.log(`setTweet to `, tweetObj);
-
-    try {
-      // check if this screenName has older/revoked keys
-      // console.log(
-      //   'checking other keys for this screenName ',
-      //   tweetObj.screenName
-      // );
-      let screenNameKeys: any = [];
-      const skquerySnapshot = await db
+    if (tweetsByIdentifier.length > 0) {
+      const duplicates: any = [];
+      const querySnapshot = await db
         .collection('twitter')
-        .where('lcScreenName', '==', tweetObj.screenName.toLowerCase())
+        .where('nPubKey', '==', nPubKey)
         .get();
-      skquerySnapshot.forEach((doc: any) => {
-        screenNameKeys.push(doc.data());
+
+      querySnapshot.forEach((doc: { id: any; data: () => any }) => {
+        tweetObj = doc.data();
+        duplicates.push(doc.data());
       });
 
-      screenNameKeys = screenNameKeys.filter(
-        (x: any) => x.nPubKey !== tweetObj.nPubKey
-      );
-      // console.log('got other keys for this screenName ', screenNameKeys);
-      setPreviousKeys(screenNameKeys);
-
-      const newerKey = screenNameKeys.find(
-        (y: any) => new Date(y.created_at) > new Date(tweetObj.created_at)
-      );
-      if (newerKey) setNewerKeyExists(true);
-    } catch (error) {
-      console.log('otherKeys error ', error);
-    }
-
-    // check tweetURL if it still exists
-    try {
-      const response = await axios.get(
-        `/api/checktweet?tweetId=${tweetObj.id_str}`
-      );
-      // console.log('checktweet response ', response.data);
-      if (response.data.status === 'OK') {
-        setTweetExists(true);
-      } else {
-        setTweetExists(false);
+      if (!tweetObj) {
+        console.log('pubkey not found in DB!');
+        setIdNotFound(true);
+        setFetching(false);
+        return;
       }
-    } catch (error: any) {
-      // console.log('checktweet error ', error);
-      if (error.response.status === 404) setTweetExists(false);
+
+      console.log('got duplicates ', duplicates);
+      // prefer verified if exists
+      tweetObj =
+        duplicates.find((x: any) => x.verified === true) || duplicates[0];
+
+      console.log('got data ', tweetObj, fetching);
+      setTweet(tweetObj);
+      console.log(`setTweet to `, tweetObj);
+
+      try {
+        // check if this screenName has older/revoked keys
+        // console.log(
+        //   'checking other keys for this screenName ',
+        //   tweetObj.screenName
+        // );
+        let screenNameKeys: any = [];
+        const skquerySnapshot = await db
+          .collection('twitter')
+          .where('lcScreenName', '==', tweetObj.screenName.toLowerCase())
+          .get();
+        skquerySnapshot.forEach((doc: any) => {
+          screenNameKeys.push(doc.data());
+        });
+
+        screenNameKeys = screenNameKeys.filter(
+          (x: any) => x.nPubKey !== tweetObj.nPubKey
+        );
+        // console.log('got other keys for this screenName ', screenNameKeys);
+        setPreviousKeys(screenNameKeys);
+
+        const newerKey = screenNameKeys.find(
+          (y: any) => new Date(y.created_at) > new Date(tweetObj.created_at)
+        );
+        if (newerKey) setNewerKeyExists(true);
+      } catch (error) {
+        console.log('otherKeys error ', error);
+      }
+
+      // check tweetURL if it still exists
+      try {
+        const response = await axios.get(
+          `/api/checktweet?tweetId=${tweetObj.id_str}`
+        );
+        // console.log('checktweet response ', response.data);
+        if (response.data.status === 'OK') {
+          setTweetExists(true);
+        } else {
+          setTweetExists(false);
+        }
+      } catch (error: any) {
+        // console.log('checktweet error ', error);
+        if (error.response.status === 404) setTweetExists(false);
+      }
+    } else {
+      tweetObj = {
+        ...tweet,
+        hexPubKey,
+        nPubKey,
+        screenName: `${nPubKey.slice(0, 8)}...${nPubKey.slice(-8)}`,
+      };
+      setTweet(tweetObj);
+      // console.log('set manual tweetObj from path ', tweetObj);
     }
 
     // TODO: should connect to user's relays - not our own list of default relays!
-
     // get nostr profile of user to show users, followers, relays etc.
     for (let index = 0; index < defaultRelays.length; index += 1) {
       const element = defaultRelays[index];
@@ -392,14 +407,24 @@ const Profile = () => {
             //   'got event and setUserRelays:  ',
             //   event.content,
             //   'adding to ',
-            //   userRelays,
-            //   '\nparsed: ',
-            //   JSON.parse(event.content)
+            //   userRelays
+            //   // '\nparsed: ',
+            //   // JSON.parse(event.content)
             // );
 
+            // // contact list!
+            // if (event.kind === 2) {
+            //   try {
+            //     console.log('got kind2 ', event);
+            //   } catch (error: any) {
+            //     console.log('error processing kind3 ', error.message);
+            //   }
+            // }
+
+            // contact list!
             if (event.kind === 3) {
               try {
-                // console.log('got 3 ', event);
+                // console.log('got kind3 ', event);
                 const relayList = JSON.parse(event.content);
                 Object.keys(relayList).forEach((k) => {
                   // console.log(
@@ -415,10 +440,11 @@ const Profile = () => {
                   });
                 });
               } catch (error: any) {
-                console.log('error processing kind3 ', error.message);
+                // console.log('error processing kind3 ', error.message);
               }
             }
 
+            // metadata
             if (event.kind === 0) {
               try {
                 // console.log(
@@ -768,7 +794,7 @@ const Profile = () => {
       >
         {idNotFound && (
           <Alert severity="error" sx={{ width: '100%' }}>
-            {router.query.id} is not found in our database.
+            {router.query.id} is not found.
           </Alert>
         )}
 
@@ -838,7 +864,11 @@ const Profile = () => {
                   aria-label="copy profile link"
                   onClick={() => {
                     navigator.clipboard.writeText(
-                      `${AppConfig.domain}/p/${tweet.screenName || ''}`
+                      `${AppConfig.domain}/p/${
+                        tweet.screenName.includes('...')
+                          ? tweet.nPubKey
+                          : tweet.screenName || ''
+                      }`
                     );
                   }}
                   size="small"
@@ -1351,30 +1381,32 @@ const Profile = () => {
             <Typography variant="h6" color="text.secondary" className="!mt-2">
               Social Proofs
             </Typography>
-            <div className="mt-2 mb-4 flex items-center">
-              <TwitterIcon sx={{ height: '40px', width: '40px' }} />
-              <a
-                href={`https://twitter.com/${tweet.screenName}`}
-                className="mx-2 underline"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Profile Link
-              </a>
-              <a
-                href={`https://twitter.com/${tweet.screenName}/status/${tweet.id_str}`}
-                className="mx-2 underline"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Proof Link
-                {tweetExists ? (
-                  <Check color="success" />
-                ) : (
-                  <Close color="error" />
-                )}
-              </a>
-            </div>
+            {tweet.id_str && (
+              <div className="mt-2 mb-4 flex items-center">
+                <TwitterIcon sx={{ height: '40px', width: '40px' }} />
+                <a
+                  href={`https://twitter.com/${tweet.screenName}`}
+                  className="mx-2 underline"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Profile Link
+                </a>
+                <a
+                  href={`https://twitter.com/${tweet.screenName}/status/${tweet.id_str}`}
+                  className="mx-2 underline"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Proof Link
+                  {tweetExists ? (
+                    <Check color="success" />
+                  ) : (
+                    <Close color="error" />
+                  )}
+                </a>
+              </div>
+            )}
             {tweet.mastodon && (
               <div className="my-4 flex items-center">
                 <Image
@@ -1418,6 +1450,29 @@ const Profile = () => {
                 </a>
                 <a
                   href={`https://t.me/nostrdirectory/${tweet.telegramMsgId}`}
+                  className="mx-2 underline"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Proof Link
+                </a>
+              </div>
+            )}
+            {githubIdentity.verified && (
+              <div className="my-4 flex items-center">
+                <GitHub sx={{ height: '40px', width: '40px' }} />
+                <a>
+                  <a
+                    href={`${githubIdentity.proof}`}
+                    className="mx-2 underline"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Profile Link
+                  </a>
+                </a>
+                <a
+                  href={`${githubIdentity.proof}`}
                   className="mx-2 underline"
                   target="_blank"
                   rel="noreferrer"
