@@ -60,7 +60,13 @@ import { Background } from '../background/Background';
 import { Section } from '../layout/Section';
 import { AppConfig } from '../utils/AppConfig';
 import { db } from '../utils/firebase';
-import { defaultRelays, hexToNpub, npubToHex } from '../utils/helpers';
+import {
+  corsProxy,
+  defaultRelays,
+  hexToNpub,
+  nPubRegex,
+  npubToHex,
+} from '../utils/helpers';
 
 interface CustomWindow extends Window {
   nostr?: any;
@@ -107,6 +113,20 @@ const Profile = () => {
   const [nProfile, setNProfile] = useState('');
   const [nip05, setNip05] = useState('');
   const [nip05Error, setNip05Error] = useState('');
+  const [userMetadata, setUserMetadata] = useState({
+    id: 0,
+    created_at: 0,
+    content: '{}',
+    pubkey: '',
+    tags: [],
+  });
+  const [githubIdentity, setGithubIdentity] = useState({
+    verified: false,
+    proof: '',
+  });
+  const [ghVerificationText, setGhVerificationText] = useState('');
+  const [ghVerificationDialogOpen, setGhVerificationDialogOpen] =
+    useState(false);
   const [dialog, setDialog] = useState({
     open: false,
     title: '',
@@ -378,51 +398,73 @@ const Profile = () => {
             // );
 
             if (event.kind === 3) {
-              // console.log('got 3 ', event);
-              const relayList = JSON.parse(event.content);
-              Object.keys(relayList).forEach((k) => {
-                // console.log(
-                //   'calling checkAdd with k, ',
-                //   k,
-                //   relayList[k],
-                //   userRelays
-                // );
-                checkAdd({
-                  url: k,
-                  read: relayList[k].read,
-                  write: relayList[k].write,
+              try {
+                // console.log('got 3 ', event);
+                const relayList = JSON.parse(event.content);
+                Object.keys(relayList).forEach((k) => {
+                  // console.log(
+                  //   'calling checkAdd with k, ',
+                  //   k,
+                  //   relayList[k],
+                  //   userRelays
+                  // );
+                  checkAdd({
+                    url: k,
+                    read: relayList[k].read,
+                    write: relayList[k].write,
+                  });
                 });
-              });
+              } catch (error: any) {
+                console.log('error processing kind3 ', error.message);
+              }
             }
 
             if (event.kind === 0) {
-              // console.log('got 0 ', event);
-              const metadata = JSON.parse(event.content);
-              if (metadata.nip05 && nip05 === '') {
-                try {
-                  // validate nip05
-                  const response = await axios.get(
-                    `https://${
-                      metadata.nip05.split('@')[1]
-                    }/.well-known/nostr.json?name=${
-                      metadata.nip05.split('@')[0]
-                    }`
-                  );
-
+              try {
+                // console.log(
+                //   'got&set kind0 userMetadata event ',
+                //   event,
+                //   'from relay ',
+                //   relay
+                // );
+                setUserMetadata((previousMetadata) => {
                   if (
-                    response.data.names[metadata.nip05.split('@')[0]] ===
-                    tweetObj.hexPubKey
+                    previousMetadata &&
+                    event.created_at < previousMetadata.created_at
                   ) {
-                    const formattedNip5 = metadata.nip05.startsWith('_@')
-                      ? `@${metadata.nip05.split('@')[1]}`
-                      : metadata.nip05;
-                    setNip05(formattedNip5);
+                    return previousMetadata;
                   }
-                } catch (error: any) {
-                  console.log('nip5 error ', error.message);
-                  // if (error.message === 'Network Error')
-                  setNip05Error('Possible CORS issue');
+                  return event;
+                });
+                const metadata = JSON.parse(event.content);
+                if (metadata.nip05 && nip05 === '') {
+                  try {
+                    // validate nip05
+                    const response = await axios.get(
+                      `https://${
+                        metadata.nip05.split('@')[1]
+                      }/.well-known/nostr.json?name=${
+                        metadata.nip05.split('@')[0]
+                      }`
+                    );
+
+                    if (
+                      response.data.names[metadata.nip05.split('@')[0]] ===
+                      tweetObj.hexPubKey
+                    ) {
+                      const formattedNip5 = metadata.nip05.startsWith('_@')
+                        ? `@${metadata.nip05.split('@')[1]}`
+                        : metadata.nip05;
+                      setNip05(formattedNip5);
+                    }
+                  } catch (error: any) {
+                    console.log('nip5 error ', error.message);
+                    // if (error.message === 'Network Error')
+                    setNip05Error('Possible CORS issue');
+                  }
                 }
+              } catch (error: any) {
+                console.log('error processing kind0 ', error.message);
               }
             }
           });
@@ -524,6 +566,89 @@ const Profile = () => {
     }
   };
 
+  const signMetadataWithNip07 = async () => {
+    // console.log(
+    //   'enter signMetadataWithNip07 ghVerificationText ',
+    //   userMetadata,
+    //   ghVerificationText
+    // );
+    if (!window.nostr) {
+      setErrorAlert({
+        open: true,
+        text: 'You need to have a browser extension with nostr support!',
+      });
+      return;
+    }
+
+    if (!ghVerificationText) {
+      setErrorAlert({
+        open: true,
+        text: 'Please type your github username',
+      });
+      return;
+    }
+
+    try {
+      const metadataContent = JSON.parse(userMetadata.content);
+      const identityArray = [
+        ...(metadataContent.identities || []),
+        {
+          type: 'github',
+          claim: ghVerificationText,
+          proof: `https://github.com/${ghVerificationText}`,
+        },
+      ];
+      metadataContent.identities = identityArray;
+      const updatedContent = JSON.stringify(metadataContent);
+      const pubkey = await window.nostr.getPublicKey();
+      const unsignedEvent: any = {
+        pubkey,
+        created_at: Math.floor(Date.now() / 1000),
+        kind: 0,
+        tags: userMetadata.tags,
+        content: updatedContent,
+      };
+      unsignedEvent.id = nostrTools.getEventHash(unsignedEvent);
+      console.log('unsignedEvent ', unsignedEvent);
+
+      const signedEvent = await window.nostr.signEvent(unsignedEvent);
+      // console.log('signedEvent ', signedEvent);
+
+      // publish to some relays via API
+      initNostr({
+        relayUrls: [
+          'wss://nostr.zebedee.cloud',
+          // 'wss://nostr-relay.wlvs.space',
+          'wss://nostr-pub.wellorder.net',
+          // 'wss://nostr-relay.untethr.me',
+        ],
+        onConnect: (relayUrl, sendEvent) => {
+          // console.log(
+          //   'Nostr connected to:',
+          //   relayUrl,
+          //   // sendEvent,
+          //   'sending signedEvent ',
+          //   signedEvent
+          // );
+
+          // Send a REQ event to start listening to events from that relayer:
+          sendEvent([SendMsgType.EVENT, signedEvent], relayUrl);
+        },
+        onEvent: (relayUrl: any, event: any) => {
+          console.log('Nostr received event:', relayUrl, event);
+          setAlertOpen(true);
+          setGhVerificationDialogOpen(false);
+        },
+        onError(relayUrl, err) {
+          console.log('nostr error ', relayUrl, err);
+        },
+        debug: true, // Enable logs
+      });
+    } catch (error: any) {
+      console.log('signMetadataWithNip07 error ', error.message);
+    }
+  };
+
   useEffect(() => {
     if (router.isReady) fetchInitialData();
   }, [router.isReady]);
@@ -560,12 +685,50 @@ const Profile = () => {
   }, [nip05]);
 
   useEffect(() => {
+    async function checkGithubIdentity() {
+      const metadataContent = JSON.parse(userMetadata.content);
+      if (metadataContent?.identities?.length > 0) {
+        try {
+          // check and validate github from userMetaData.identities array
+          const ghIdentity: any = metadataContent.identities.find(
+            (i: any) => i.type === 'github'
+          );
+          if (ghIdentity?.proof?.startsWith('https://github.com/')) {
+            const response = await axios.get(
+              `${corsProxy}/?${ghIdentity.proof}`
+            );
+            const match = response.data.match(nPubRegex);
+            // console.log(
+            //   'got match and userMetadata here ',
+            //   match,
+            //   userMetadata.pubkey,
+            //   hexToNpub(userMetadata.pubkey)
+            // );
+            const foundNPub = match.find(
+              (x: string) => x === hexToNpub(userMetadata.pubkey)
+            );
+            if (foundNPub)
+              setGithubIdentity({ verified: true, proof: ghIdentity?.proof });
+          }
+        } catch (error: any) {
+          console.log('error checking github identity ', error);
+        }
+      }
+    }
+    checkGithubIdentity();
+  }, [userMetadata]);
+
+  useEffect(() => {
     // calculate wotScore
     if (tweet.verified) setWotScore((ws) => ws + 10);
     if (tweet.mastodon) setWotScore((ws) => ws + 10);
     if (tweet.donated) setWotScore((ws) => ws + 10);
     if (tweet.telegram) setWotScore((ws) => ws + 10);
   }, [tweet]);
+
+  useEffect(() => {
+    if (githubIdentity.verified) setWotScore((ws) => ws + 10);
+  }, [githubIdentity.verified]);
 
   useEffect(() => {
     if (validPFP || !tweet.profileImageUrl) return;
@@ -860,6 +1023,43 @@ const Profile = () => {
                       button2: 'ok',
                     })
                   }
+                />
+              </div>
+              <div className="my-2 flex items-center">
+                {githubIdentity.verified ? (
+                  <>
+                    <a
+                      href={`https://www.nostr.guru/e/${userMetadata.id}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <VerifiedUserIcon
+                        color="success"
+                        className="mr-2"
+                        fontSize="large"
+                      />
+                    </a>
+                    <span>
+                      User has signed their <b>github</b> profile with their
+                      nostr private key.
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <VerifiedUserIcon
+                      color="error"
+                      className="mr-2"
+                      fontSize="large"
+                    />
+                    <span>
+                      User has <b>NOT</b> signed their <b>github</b> profile
+                      with their nostr private key.
+                    </span>
+                  </>
+                )}
+                <HelpOutline
+                  className="cursor-pointer !ml-1 align-middle"
+                  onClick={() => setGhVerificationDialogOpen(true)}
                 />
               </div>
               <div className="my-2 flex items-center">
@@ -1425,6 +1625,68 @@ const Profile = () => {
               <Button
                 onClick={() => {
                   setTgVerificationDialogOpen(false);
+                }}
+              >
+                ok
+              </Button>
+            </div>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
+          open={ghVerificationDialogOpen}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          fullWidth
+        >
+          <DialogTitle id="tg-popup">Github Verification</DialogTitle>
+          <DialogContent>
+            <DialogContentText
+              id="tg-popup-description"
+              className="flex justify-center"
+            >
+              <Typography className="mt-4">
+                <>
+                  User is expected to; <br />
+                  1. add their nPubKey to their github profile description
+                  <br />
+                  2. add an entry in their nostr kind0 profile metadata
+                  identities array in this format:
+                  <br />
+                  <div className="mt-1">
+                    <code className="break-all mb-4">{`"identities": [{"type": "github", "claim": "pseudozach", "proof": "https://github.com/pseudozach"}]`}</code>
+                  </div>
+                  <br />
+                  If you have Alby or nos2x extension installed, type your
+                  github username below to publish an update to your profile
+                  metadata note by clicking &quot;Publish with Extension&quot;
+                  <TextField
+                    id="github-string"
+                    className="!my-4"
+                    required
+                    label="Github Username"
+                    variant="outlined"
+                    placeholder={`e.g. pseudozach`}
+                    onChange={(e) => setGhVerificationText(e.target.value)}
+                    value={ghVerificationText}
+                    fullWidth
+                  />
+                </>
+              </Typography>
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <div className="cursor-pointer">
+              <Button onClick={signMetadataWithNip07}>
+                Publish with Extension
+              </Button>
+            </div>
+
+            <div className="cursor-pointer">
+              <Button
+                onClick={() => {
+                  setGhVerificationDialogOpen(false);
                 }}
               >
                 ok
