@@ -319,12 +319,16 @@ const Profile = () => {
         return;
       }
 
-      console.log('got duplicates ', duplicates);
-      // prefer verified if exists
+      duplicates.sort(
+        (a: { createdAt: number }, b: { createdAt: number }) =>
+          a.createdAt - b.createdAt
+      );
+      // console.log('sorted duplicates ', duplicates);
+      // prefer verified if exists or pick the first one
       tweetObj =
         duplicates.find((x: any) => x.verified === true) || duplicates[0];
 
-      console.log('got data ', tweetObj, fetching);
+      // console.log('got data ', tweetObj, fetching);
       setTweet(tweetObj);
       console.log(`setTweet to `, tweetObj);
 
