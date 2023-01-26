@@ -40,13 +40,17 @@ export const defaultRelays = [
   // 'wss://expensive-relay.fiatjaf.com',
 
   // from melvin
-  'wss://nostr.ono.re',
+  // 'wss://nostr.ono.re',
   'wss://nostr.onsats.org',
   'wss://nostr-relay.digitalmob.ro',
   'wss://student.chadpolytechnic.com',
   'wss://nostr.lnorb.com',
   'wss://rsslay.nostr.moe',
   'wss://relay.snort.social',
+
+  // others
+  'wss://nostr.mom',
+  'wss://relay.realsearch.cc',
 
   // 'wss://nostr.zebedee.cloud',
   //   "wss://nostr.shadownode.org",
