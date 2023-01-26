@@ -10,8 +10,8 @@ import {
   QrCode,
   CheckCircle,
   Cancel,
-  Check,
   Close,
+  ContentCopyRounded,
 } from '@mui/icons-material';
 import {
   Card,
@@ -645,7 +645,7 @@ const Profile = () => {
             action={
               <Tooltip
                 title="WoT Score"
-                className="!my-2 !-ml-9"
+                className="!my-2 !-ml-[75px]"
                 onClick={() =>
                   setDialog({
                     open: true,
@@ -682,7 +682,7 @@ const Profile = () => {
                     background: '#3ACC8E',
                     'border-radius': '24px',
                     padding: '4px 12px',
-                    marginLeft: '-20px;',
+                    marginLeft: '-50px;',
                   }}
                   variant="rounded"
                 >
@@ -730,8 +730,16 @@ const Profile = () => {
                       </defs>
                     </svg>
                     <span>
-                      {tweet.nPubKey.slice(0, 8)}...${tweet.nPubKey.slice(-8)}
+                      {tweet.nPubKey.slice(0, 8)}...${tweet.nPubKey.slice(-8)}{' '}
                     </span>
+                    <IconButton
+                      aria-label="delete"
+                      onClick={() => {
+                        navigator.clipboard.writeText(tweet.nPubKey);
+                      }}
+                    >
+                      <ContentCopyRounded />
+                    </IconButton>
                   </div>
                 </div>
                 <div className="mt-2 mb-4 flex items-center gap-2">
@@ -780,7 +788,29 @@ const Profile = () => {
                     </svg>
                     Proof Link
                     {tweetExists ? (
-                      <Check color="success" />
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <circle
+                          cx="7"
+                          cy="7"
+                          r="6.3"
+                          fill="#3ACC8E"
+                          stroke="white"
+                          strokeWidth="0.6"
+                        />
+                        <path
+                          d="M9.8002 4.89999L5.9502 8.74999L4.2002 6.99999"
+                          stroke="white"
+                          strokeWidth="0.7"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
                     ) : (
                       <Close color="error" />
                     )}
