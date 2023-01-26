@@ -65,7 +65,7 @@ const InformationCards = () => {
   ];
 
   return (
-    <section className="max-w-screen-xl mx-auto px-3 pt-10 pb-10 md:flex-row flex-col flex gap-x-4">
+    <section className="max-w-screen-xl mx-auto px-3 pt-10 pb-10 md:flex-row flex-col flex gap-4">
       {cardInfo.map((card, index) => {
         return (
           <InformationCard

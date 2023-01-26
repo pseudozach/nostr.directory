@@ -813,8 +813,8 @@ const Profile = () => {
             <h6 className="font-semibold text-base text-nostr-darker">
               Badges
             </h6>
-            <div className="mt-2 mb-4 mx-auto flex-col md:flex-row flex items-center gap-4 justify-between">
-              <div className="my-2 flex items-center">
+            <div className="mt-2 mb-4 mx-auto flex-col md:flex-row flex items-center gap-4 justify flex-wrap">
+              <div className="my-2 flex items-center w-full md:w-max">
                 <BadgeCard
                   variant={'twitter'}
                   verified={tweet.verified}
@@ -844,6 +844,22 @@ const Profile = () => {
                         button2: 'ok',
                       })
                     }
+                  />
+                </BadgeCard>
+              </div>
+              <div className="my-2 flex items-center w-full md:w-max">
+                <BadgeCard
+                  variant={'telegram'}
+                  verified={!!tweet.telegram}
+                  href={
+                    tweet.telegram
+                      ? `https://www.nostr.guru/e/${tweet.telegramEvent}`
+                      : undefined
+                  }
+                >
+                  <HelpOutline
+                    className="cursor-pointer !ml-1 align-middle"
+                    onClick={() => setTgVerificationDialogOpen(true)}
                   />
                 </BadgeCard>
               </div>
@@ -884,7 +900,7 @@ const Profile = () => {
                   onClick={() => setTgVerificationDialogOpen(true)}
                 />
               </div> */}
-              <div className="my-2 flex items-center">
+              <div className="my-2 flex items-center w-full md:w-max">
                 <BadgeCard
                   variant={'mastodon'}
                   verified={!!tweet.mastodon}
@@ -939,7 +955,25 @@ const Profile = () => {
                   />
                 </BadgeCard>
               </div>
-              <div className="my-2 flex items-center">
+
+              {/* Add information for github */}
+              <div className="my-2 flex items-center w-full md:w-max">
+                <BadgeCard
+                  variant={'github'}
+                  verified={!!tweet.telegram}
+                  href={
+                    tweet.telegram
+                      ? `https://www.nostr.guru/e/${tweet.telegramEvent}`
+                      : undefined
+                  }
+                >
+                  <HelpOutline
+                    className="cursor-pointer !ml-1 align-middle"
+                    onClick={() => setTgVerificationDialogOpen(true)}
+                  />
+                </BadgeCard>
+              </div>
+              <div className="my-2 flex items-center w-full md:w-max">
                 <BadgeCard
                   text={nip05}
                   variant={'nip'}
@@ -981,7 +1015,7 @@ const Profile = () => {
                   />
                 </BadgeCard>
               </div>
-              <div className="my-2 flex items-center">
+              <div className="my-2 flex items-center w-full md:w-max">
                 <BadgeCard variant={'btc'} verified={!!tweet.donated}>
                   <HelpOutline
                     className="cursor-pointer !ml-1 align-middle"
@@ -1050,10 +1084,18 @@ const Profile = () => {
                           open: true,
                           title: 'hexPubKey QR Code',
                           text: (
-                            <QRCodeSVG
-                              value={tweet.hexPubKey || ''}
-                              size={256}
-                            />
+                            <div
+                              style={{
+                                width: '100%',
+                                display: 'grid',
+                                placeItems: 'center',
+                              }}
+                            >
+                              <QRCodeSVG
+                                value={tweet.hexPubKey || ''}
+                                size={256}
+                              />
+                            </div>
                           ),
                           button1: <></>,
                           button2: 'ok',
@@ -1162,15 +1204,16 @@ const Profile = () => {
                 ),
               }}
             />
-            <div className="my-4 flex-vertical items-center">
-              <h6 className="font-semibold text-base text-nostr-darker mb-2">
-                Relay
-              </h6>
-              <TableContainer component={Paper} className="my-2">
-                <Table
-                // sx={{ minWidth: 650 }}
-                >
-                  {/* <TableHead>
+            {filteredRelays.length > 0 && (
+              <div className="my-4 flex-vertical items-center">
+                <h6 className="font-semibold text-base text-nostr-darker mb-2">
+                  Relay
+                </h6>
+                <TableContainer component={Paper} className="my-2">
+                  <Table
+                  // sx={{ minWidth: 650 }}
+                  >
+                    {/* <TableHead>
                     <TableRow>
                       <TableCell>Relay URLs</TableCell>
                       <TableCell align="right">Read</TableCell>
@@ -1178,48 +1221,53 @@ const Profile = () => {
                     </TableRow>
                   </TableHead> */}
 
-                  <TableBody>
-                    {filteredRelays.map((row: any) => (
-                      <TableRow
-                        key={Math.random()}
-                        sx={{
-                          '&:last-child td, &:last-child th': { border: 0 },
-                        }}
-                      >
-                        <TableCell component="th" scope="row">
-                          <p style={{ marginBottom: '3px' }}>URL</p>
-                          {row.url}
-                        </TableCell>
-                        <TableCell
+                    <TableBody>
+                      {filteredRelays.map((row: any) => (
+                        <TableRow
+                          key={Math.random()}
                           sx={{
-                            padding: '0',
-                            width: '100px',
+                            '&:last-child td, &:last-child th': { border: 0 },
                           }}
-                          align="right"
                         >
-                          <p className={`iconTrue ${!row.read && 'iconFalse'}`}>
-                            Read
-                          </p>
-                        </TableCell>
-                        <TableCell
-                          sx={{
-                            padding: '0',
-                            width: '100px',
-                          }}
-                          align="right"
-                        >
-                          <p
-                            className={`iconTrue ${!row.write && 'iconFalse'}`}
+                          <TableCell component="th" scope="row">
+                            <p style={{ marginBottom: '3px' }}>URL</p>
+                            {row.url}
+                          </TableCell>
+                          <TableCell
+                            sx={{
+                              padding: '0',
+                              width: '100px',
+                            }}
+                            align="right"
                           >
-                            Write
-                          </p>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </div>
+                            <p
+                              className={`iconTrue ${!row.read && 'iconFalse'}`}
+                            >
+                              Read
+                            </p>
+                          </TableCell>
+                          <TableCell
+                            sx={{
+                              padding: '0',
+                              width: '100px',
+                            }}
+                            align="right"
+                          >
+                            <p
+                              className={`iconTrue ${
+                                !row.write && 'iconFalse'
+                              }`}
+                            >
+                              Write
+                            </p>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </div>
+            )}
 
             {/* <Typography variant="h6" color="text.secondary" className="!mt-2">
               Social Proofs
@@ -1417,12 +1465,41 @@ const Profile = () => {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
           fullWidth
+          PaperProps={{
+            style: {
+              background: '#202028',
+              boxShadow: '0px 12px 40px rgba(69, 93, 101, 0.12)',
+              borderRadius: '12px',
+              display: 'flex',
+              gap: '6px',
+              padding: ' 16px',
+              width: '370px',
+            },
+          }}
         >
-          <DialogTitle id="tg-popup">Telegram Verification</DialogTitle>
+          <DialogTitle
+            sx={{
+              color: 'white',
+              fontWeight: 800,
+              fontSize: '16px',
+              padding: 0,
+            }}
+            id="tg-popup"
+          >
+            Telegram Verification
+          </DialogTitle>
           <DialogContent>
             <DialogContentText
               id="tg-popup-description"
               className="flex justify-center"
+              sx={{
+                color: 'white',
+                fontWeight: 400,
+                fontSize: '13px',
+
+                display: 'flex',
+                flexDirection: 'column',
+              }}
             >
               <Typography className="mt-4">
                 <>
@@ -1453,7 +1530,7 @@ const Profile = () => {
                   clicking &quot;Publish with Extension&quot;
                   <TextField
                     id="telegram-string"
-                    className="!my-4"
+                    className="!my-4 text-[white]"
                     required
                     label="Telegram Verification Text"
                     variant="outlined"
@@ -1461,6 +1538,13 @@ const Profile = () => {
                     onChange={(e) => setTgVerificationText(e.target.value)}
                     value={tgVerificationText}
                     fullWidth
+                    inputProps={{ style: { color: 'white', outline: 'white' } }}
+                    InputLabelProps={{
+                      sx: {
+                        // set the color of the label when not shrinked
+                        color: 'white',
+                      },
+                    }}
                   />
                   <br />
                   <b>OR</b> Publish the telegram verification text on nostr as a
