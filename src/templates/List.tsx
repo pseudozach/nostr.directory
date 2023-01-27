@@ -2,7 +2,8 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 
 import { Search, ContentCopyRounded } from '@mui/icons-material';
-import { Stack, Tooltip } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import { Alert, Snackbar, Stack, Tooltip } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -34,6 +35,22 @@ const List = () => {
   // const [nPubKeyCopied, setNPubCopied] = useState(false);
   // const [hexPubKeyCopied, setHexPubCopied] = useState(false);
   const router = useRouter();
+  const [openToast, setOpenToast] = React.useState(true);
+
+  const handleClickToast = () => {
+    setOpenToast(true);
+  };
+
+  const handleCloseToast = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenToast(false);
+  };
 
   const dedupArray = (rawArray: any) => {
     let finalArray: any = [];
@@ -58,6 +75,327 @@ const List = () => {
     setRow(finalArray);
   };
 
+  // const columns: GridColDef[] = [
+  //   {
+  //     field: 'profileImageUrl',
+  //     headerName: '',
+  //     maxWidth: 70,
+  //     align: 'center',
+  //     renderCell: (params: GridRenderCellParams) => (
+  //       <Avatar src={params.value} />
+  //     ),
+  //   },
+  //   {
+  //     field: 'screenName',
+  //     headerName: 'Twitter Account',
+  //     maxWidth: 275,
+  //     minWidth: 200,
+  //     flex: 1,
+  //   },
+  //   {
+  //     field: 'nPubKey',
+  //     headerName: 'nPubKey',
+  //     minWidth: 250,
+
+  //     renderCell: (params: GridRenderCellParams) => (
+  //       <>
+  //         <IconButton
+  //           aria-label="delete"
+  //           onClick={() => {
+  //             navigator.clipboard.writeText(params.value || '');
+  //           }}
+  //         >
+  //           <ContentCopyRounded />
+  //         </IconButton>
+  //         <p>
+  //           {params.value
+  //             .substring(0, 8)
+  //             .concat('...')
+  //             .concat(params.value.substring(params.value.length - 8))}
+  //         </p>
+  //       </>
+  //     ),
+  //   },
+  //   {
+  //     field: 'hexPubKey',
+  //     headerName: 'Hex PubKey',
+  //     minWidth: 250,
+
+  //     renderCell: (params: GridRenderCellParams) =>
+  //       params.value ? (
+  //         <>
+  //           <IconButton
+  //             aria-label="delete"
+  //             onClick={() => {
+  //               navigator.clipboard.writeText(params.value || '');
+  //             }}
+  //           >
+  //             <ContentCopyRounded />
+  //           </IconButton>
+  //           <p style={{ marginLeft: '5px' }}>
+  //             {params.value
+  //               .substring(0, 8)
+  //               .concat('...')
+  //               .concat(params.value.substring(params.value.length - 8))}
+  //           </p>
+  //         </>
+  //       ) : (
+  //         <span style={{ width: '100%', textAlign: 'center' }}>-</span>
+  //       ),
+  //   },
+  //   // {
+  //   //   field: 'isValid',
+  //   //   headerName: 'valid?',
+  //   //   headerAlign: 'center',
+  //   //   maxWidth: 100,
+  //   //   flex: 1,
+  //   //   align: 'center',
+  //   //   renderCell: (params: GridRenderCellParams) =>
+  //   //     params.value ? (
+  //   //       <CheckCircleIcon htmlColor="green" />
+  //   //     ) : (
+  //   //       <CancelIcon htmlColor="red" />
+  //   //     ),
+  //   // },
+  //   {
+  //     field: 'verifyEvent',
+  //     headerName: 'Status',
+  //     headerAlign: 'center',
+  //     maxWidth: 250,
+  //     minWidth: 150,
+  //     flex: 1,
+  //     align: 'center',
+  //     renderCell: (params: GridRenderCellParams) =>
+  //       params.value ? (
+  //         <Link href={`https://www.nostr.guru/e/${params.value}`}>
+  //           <a target="_blank">
+  //             <div>
+  //               <img src="/assets/images/verified.png" alt="" />
+  //               <p>Verified</p>
+  //               <style jsx>{`
+  //                 div {
+  //                   display: flex;
+  //                   flex-direction: row;
+  //                   align-items: center;
+  //                   padding: 4px 12px;
+  //                   gap: 6px;
+  //                   background: rgba(58, 204, 142, 0.08);
+  //                   border-radius: 24px;
+  //                 }
+  //                 p {
+  //                   font-weight: 500;
+  //                   font-size: 13px;
+  //                   color: #3acc8e;
+  //                   display: flex;
+  //                   align-items: center;
+  //                 }
+  //               `}</style>
+  //             </div>
+  //           </a>
+  //         </Link>
+  //       ) : (
+  //         <Tooltip title="Pubkey is not verified on nostr." placement="top">
+  //           <div>
+  //             <img src="/assets/images/not verified.png" alt="" />
+  //             <p>Verified</p>
+  //             <style jsx>{`
+  //               div {
+  //                 display: flex;
+  //                 flex-direction: row;
+  //                 align-items: center;
+  //                 padding: 4px 12px;
+  //                 gap: 6px;
+  //                 background: rgba(230, 80, 80, 0.08);
+  //                 border-radius: 24px;
+  //               }
+  //               p {
+  //                 font-weight: 500;
+  //                 font-size: 13px;
+  //                 color: #e65050;
+  //                 display: flex;
+  //                 align-items: center;
+  //               }
+  //             `}</style>
+  //           </div>
+  //         </Tooltip>
+  //       ),
+  //   },
+  //   // {
+  //   //   field: 'url',
+  //   //   headerName: 'Proof URL',
+  //   //   headerAlign: 'center',
+  //   //   maxWidth: 100,
+  //   //   flex: 1,
+  //   //   align: 'center',
+  //   //   renderCell: (params: GridRenderCellParams) => (
+  //   //     <a href={params.value} target="_blank" rel="noreferrer">
+  //   //       <TwitterIcon htmlColor="#1DA1F2" />
+  //   //     </a>
+  //   //   ),
+  //   // },
+  //   {
+  //     field: 'profile',
+  //     headerName: 'Profile',
+  //     headerAlign: 'center',
+  //     maxWidth: 150,
+  //     minWidth: 150,
+  //     flex: 1,
+  //     align: 'center',
+  //     renderCell: (params: GridRenderCellParams) => (
+  //       <Link href={params.value}>
+  //         <a>
+  //           <div>
+  //             <p>Visit Profile</p>
+  //             <style jsx>{`
+  //               div {
+  //                 flex-direction: row;
+  //                 align-items: center;
+  //                 padding: 4px 12px;
+  //                 border-radius: 24px;
+  //               }
+  //               div:hover {
+  //                 background: rgba(29, 67, 88, 0.08);
+  //               }
+  //               p {
+  //                 font-weight: 500;
+  //                 font-size: 13px;
+  //                 background: linear-gradient(
+  //                   158.74deg,
+  //                   #46bfee 14.86%,
+  //                   #1adace 102.75%
+  //                 );
+  //                 -webkit-background-clip: text;
+  //                 -webkit-text-fill-color: transparent;
+  //                 background-clip: text;
+  //                 text-fill-color: transparent;
+  //               }
+  //             `}</style>
+  //           </div>
+  //         </a>
+  //       </Link>
+  //     ),
+  //   },
+  //   // { field: 'createdAt', headerName: 'createdAt', width: 150 },
+  // ];
+
+  const fetchInitialData = async () => {
+    // console.log('getting latest records...');
+    setRow([]);
+    setFetching(true);
+    const querySnapshot = await db
+      .collection('twitter')
+      // .orderBy('createdAt', 'desc')
+      .orderBy('user.followers_count', 'desc')
+      .limit(50)
+      .get();
+    const rawArray: any[] = [];
+    querySnapshot.forEach((doc: { id: any; data: () => any }) => {
+      // console.log(`${doc.id} => `, doc.data());
+      const rowData = doc.data();
+
+      if (!rowData.nPubKey && rowData.pubkey.includes('npub'))
+        rowData.nPubKey = rowData.pubkey;
+      if (
+        !rowData.hexPubKey &&
+        !rowData.pubkey.includes('npub') &&
+        !rowData.pubkey.includes('nsec')
+      )
+        rowData.hexPubKey = rowData.pubkey;
+      if (!rowData.nPubKey && !rowData.hexPubKey) return;
+
+      rowData.id = doc.id;
+      rowData.tweetId = rowData.id_str;
+      rowData.url = rowData.entities?.urls[0]?.url || '';
+      rowData.profile = `/p/${rowData.nPubKey}`;
+      rawArray.push(rowData);
+    });
+    // console.log('rawArray length: ', rawArray.length);
+    dedupArray(rawArray);
+    setFetching(false);
+  };
+
+  useEffect(() => {
+    fetchInitialData();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      db.collection('stats')
+        .doc('data')
+        .onSnapshot((doc: any) => {
+          const statsData: any = doc.data();
+          // console.log('got statsData ', statsData);
+          setStats(statsData);
+        });
+    };
+    fetchData();
+  }, []);
+
+  const popupSignIn = async () => {
+    auth
+      .signInWithPopup(twitterProvider)
+      .then((result) => {
+        if (!result.credential) {
+          alert('Error getting credentials from twitter API');
+          return;
+        }
+
+        // eslint-disable-next-line prefer-destructuring
+        const credential: firebase.auth.OAuthCredential = result.credential!;
+        // const token = credential.accessToken!;
+        // const { secret } = credential;
+        // The signed-in user info.
+        const { user }: any = result;
+        // console.log(
+        //   'logged in ',
+        //   result,
+        //   credential,
+        //   user,
+        //   `/twitter?accessToken=${credential.accessToken}&accessSecret=${credential.secret}&userId=${user?.providerData[0].uid}&screenName=${result?.additionalUserInfo?.profile?.screen_name}`
+        // );
+        // return;
+
+        if (
+          !credential.accessToken ||
+          !credential.secret ||
+          !user?.providerData[0].uid
+        ) {
+          alert('Error getting credentials from twitter API');
+          return;
+        }
+        // send credential to twitter page for a checkmark list of twitter follows that are already on nostr.
+        window.location.href = `/twitter?accessToken=${credential.accessToken}&accessSecret=${credential.secret}&userId=${user?.providerData[0].uid}&screenName=${result?.additionalUserInfo?.profile?.screen_name}`;
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const { email } = error;
+        // The firebase.auth.AuthCredential type that was used.
+        const { credential } = error;
+        // ...
+        console.log(
+          'signin error ',
+          errorCode,
+          errorMessage,
+          email,
+          credential
+        );
+      });
+  };
+  const action = (
+    <React.Fragment>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleCloseToast}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </React.Fragment>
+  );
   const columns: GridColDef[] = [
     {
       field: 'profileImageUrl',
@@ -86,6 +424,7 @@ const List = () => {
             aria-label="delete"
             onClick={() => {
               navigator.clipboard.writeText(params.value || '');
+              handleClickToast();
             }}
           >
             <ContentCopyRounded />
@@ -111,6 +450,7 @@ const List = () => {
               aria-label="delete"
               onClick={() => {
                 navigator.clipboard.writeText(params.value || '');
+                handleClickToast();
               }}
             >
               <ContentCopyRounded />
@@ -260,113 +600,6 @@ const List = () => {
     },
     // { field: 'createdAt', headerName: 'createdAt', width: 150 },
   ];
-
-  const fetchInitialData = async () => {
-    // console.log('getting latest records...');
-    setRow([]);
-    setFetching(true);
-    const querySnapshot = await db
-      .collection('twitter')
-      // .orderBy('createdAt', 'desc')
-      .orderBy('user.followers_count', 'desc')
-      .limit(50)
-      .get();
-    const rawArray: any[] = [];
-    querySnapshot.forEach((doc: { id: any; data: () => any }) => {
-      // console.log(`${doc.id} => `, doc.data());
-      const rowData = doc.data();
-
-      if (!rowData.nPubKey && rowData.pubkey.includes('npub'))
-        rowData.nPubKey = rowData.pubkey;
-      if (
-        !rowData.hexPubKey &&
-        !rowData.pubkey.includes('npub') &&
-        !rowData.pubkey.includes('nsec')
-      )
-        rowData.hexPubKey = rowData.pubkey;
-      if (!rowData.nPubKey && !rowData.hexPubKey) return;
-
-      rowData.id = doc.id;
-      rowData.tweetId = rowData.id_str;
-      rowData.url = rowData.entities?.urls[0]?.url || '';
-      rowData.profile = `/p/${rowData.nPubKey}`;
-      rawArray.push(rowData);
-    });
-    // console.log('rawArray length: ', rawArray.length);
-    dedupArray(rawArray);
-    setFetching(false);
-  };
-
-  useEffect(() => {
-    fetchInitialData();
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      db.collection('stats')
-        .doc('data')
-        .onSnapshot((doc: any) => {
-          const statsData: any = doc.data();
-          // console.log('got statsData ', statsData);
-          setStats(statsData);
-        });
-    };
-    fetchData();
-  }, []);
-
-  const popupSignIn = async () => {
-    auth
-      .signInWithPopup(twitterProvider)
-      .then((result) => {
-        if (!result.credential) {
-          alert('Error getting credentials from twitter API');
-          return;
-        }
-
-        // eslint-disable-next-line prefer-destructuring
-        const credential: firebase.auth.OAuthCredential = result.credential!;
-        // const token = credential.accessToken!;
-        // const { secret } = credential;
-        // The signed-in user info.
-        const { user }: any = result;
-        // console.log(
-        //   'logged in ',
-        //   result,
-        //   credential,
-        //   user,
-        //   `/twitter?accessToken=${credential.accessToken}&accessSecret=${credential.secret}&userId=${user?.providerData[0].uid}&screenName=${result?.additionalUserInfo?.profile?.screen_name}`
-        // );
-        // return;
-
-        if (
-          !credential.accessToken ||
-          !credential.secret ||
-          !user?.providerData[0].uid
-        ) {
-          alert('Error getting credentials from twitter API');
-          return;
-        }
-        // send credential to twitter page for a checkmark list of twitter follows that are already on nostr.
-        window.location.href = `/twitter?accessToken=${credential.accessToken}&accessSecret=${credential.secret}&userId=${user?.providerData[0].uid}&screenName=${result?.additionalUserInfo?.profile?.screen_name}`;
-      })
-      .catch((error) => {
-        // Handle Errors here.
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // The email of the user's account used.
-        const { email } = error;
-        // The firebase.auth.AuthCredential type that was used.
-        const { credential } = error;
-        // ...
-        console.log(
-          'signin error ',
-          errorCode,
-          errorMessage,
-          email,
-          credential
-        );
-      });
-  };
 
   return (
     <Section
@@ -710,6 +943,21 @@ const List = () => {
           // }}
         />
       </div>
+      <Snackbar
+        open={openToast}
+        autoHideDuration={2000}
+        message="Key copied"
+        action={action}
+        onClose={handleCloseToast}
+      >
+        <Alert
+          onClose={handleCloseToast}
+          severity="success"
+          sx={{ width: '100%' }}
+        >
+          Key copied!
+        </Alert>
+      </Snackbar>
     </Section>
   );
 };

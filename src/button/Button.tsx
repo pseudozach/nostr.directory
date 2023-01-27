@@ -43,6 +43,9 @@ const Button = (props: IButtonProps) => {
           .btn-2xl {
             @apply bg-gradient-to-t from-[#5684C9] to-[#D3A7FF] text-xl py-2 px-6 text-base;
           }
+          .btn-2xl:hover {
+            @apply bg-gradient-to-t from-[#1d2d44] to-[#49236e];
+          }
           @media (min-width: 0) {
             .btn-2xl {
               width: 300px;

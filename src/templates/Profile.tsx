@@ -13,6 +13,7 @@ import {
   Close,
   ContentCopyRounded,
 } from '@mui/icons-material';
+import CloseIcon from '@mui/icons-material/Close';
 import {
   Card,
   CardHeader,
@@ -85,6 +86,7 @@ const Profile = () => {
     telegramMsgId: '',
     telegramEvent: '',
   });
+
   const [wotScore, setWotScore] = useState(0);
   const [fetching, setFetching] = useState(false);
   const [userRelays, setUserRelays] = useState<Array<any>>([]);
@@ -112,6 +114,22 @@ const Profile = () => {
   const [tgVerificationDialogOpen, setTgVerificationDialogOpen] =
     useState(false);
   const router = useRouter();
+  const [openToast, setOpenToast] = React.useState(true);
+
+  const handleClickToast = () => {
+    setOpenToast(true);
+  };
+
+  const handleCloseToast = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenToast(false);
+  };
 
   const handleClose = () => {
     setDialog({
@@ -119,6 +137,19 @@ const Profile = () => {
       open: false,
     });
   };
+
+  const action = (
+    <React.Fragment>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleCloseToast}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </React.Fragment>
+  );
 
   const handleAlertClose = (
     event?: React.SyntheticEvent | Event,
@@ -614,7 +645,6 @@ const Profile = () => {
             text={'Go back'}
             button_class={'bg-card-a bg-card-b absolute'}
             variant={'roundUpdate'}
-            href={''}
           />
           <CardHeader
             sx={{
@@ -736,6 +766,7 @@ const Profile = () => {
                       aria-label="delete"
                       onClick={() => {
                         navigator.clipboard.writeText(tweet.nPubKey);
+                        handleClickToast();
                       }}
                     >
                       <ContentCopyRounded />
@@ -1443,7 +1474,7 @@ const Profile = () => {
           fullWidth
           PaperProps={{
             style: {
-              background: '#202028',
+              background: 'white',
               boxShadow: '0px 12px 40px rgba(69, 93, 101, 0.12)',
               borderRadius: '12px',
               display: 'flex',
@@ -1456,7 +1487,7 @@ const Profile = () => {
           <DialogTitle
             id="alert-dialog-title"
             sx={{
-              color: 'white',
+              color: '#27363A',
               fontWeight: 800,
               fontSize: '16px',
               padding: 0,
@@ -1469,7 +1500,7 @@ const Profile = () => {
               id="alert-dialog-description"
               className="flex justify-center"
               sx={{
-                color: 'white',
+                color: '#455D65',
                 fontWeight: 400,
                 fontSize: '13px',
 
@@ -1497,7 +1528,7 @@ const Profile = () => {
           fullWidth
           PaperProps={{
             style: {
-              background: '#202028',
+              background: 'white',
               boxShadow: '0px 12px 40px rgba(69, 93, 101, 0.12)',
               borderRadius: '12px',
               display: 'flex',
@@ -1509,7 +1540,7 @@ const Profile = () => {
         >
           <DialogTitle
             sx={{
-              color: 'white',
+              color: '#27363A',
               fontWeight: 800,
               fontSize: '16px',
               padding: 0,
@@ -1523,7 +1554,7 @@ const Profile = () => {
               id="tg-popup-description"
               className="flex justify-center"
               sx={{
-                color: 'white',
+                color: '#455D65',
                 fontWeight: 400,
                 fontSize: '13px',
 
@@ -1531,7 +1562,7 @@ const Profile = () => {
                 flexDirection: 'column',
               }}
             >
-              <Typography className="mt-4">
+              <Typography className="mt-4 text-[13px]">
                 <>
                   User is expected to; <br />
                   <b>1.</b> Join{' '}
@@ -1560,7 +1591,7 @@ const Profile = () => {
                   clicking &quot;Publish with Extension&quot;
                   <TextField
                     id="telegram-string"
-                    className="!my-4 text-[white]"
+                    className="!my-4 text-[#455D65]"
                     required
                     label="Telegram Verification Text"
                     variant="outlined"
@@ -1572,7 +1603,8 @@ const Profile = () => {
                     InputLabelProps={{
                       sx: {
                         // set the color of the label when not shrinked
-                        color: 'white',
+                        color: '#455D65',
+                        fontSize: '13px',
                       },
                     }}
                   />
@@ -1630,6 +1662,21 @@ const Profile = () => {
             sx={{ width: '100%' }}
           >
             Note published successfully.
+          </Alert>
+        </Snackbar>
+        <Snackbar
+          open={openToast}
+          autoHideDuration={2000}
+          message="Key copied"
+          action={action}
+          onClose={handleCloseToast}
+        >
+          <Alert
+            onClose={handleCloseToast}
+            severity="success"
+            sx={{ width: '100%' }}
+          >
+            Key copied!
           </Alert>
         </Snackbar>
 

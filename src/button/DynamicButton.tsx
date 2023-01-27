@@ -1,17 +1,27 @@
 import React from 'react';
 
 import NorthEastIcon from '@mui/icons-material/NorthEast';
+import { useRouter } from 'next/router';
 
 type IProps = {
   text: string;
-  href: string | undefined;
+  href?: string | undefined;
   button_class?: string | undefined;
   variant?: string;
 };
 
 const DynamicButton = (props: IProps) => {
+  const router = useRouter();
   return (
-    <a href={props.href} className={props.button_class}>
+    <a
+      href={props.href}
+      className={props.button_class}
+      onClick={() => {
+        if (props.text === 'Go back') {
+          router.back();
+        }
+      }}
+    >
       {props.text === 'Go back' && (
         <svg
           width="12"
@@ -42,7 +52,7 @@ const DynamicButton = (props: IProps) => {
           font-size: 13px;
           color: white;
           border-radius: 8px;
-
+          cursor: pointer;
           background: linear-gradient(
             158.74deg,
             #46bfee 14.86%,

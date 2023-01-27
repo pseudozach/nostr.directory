@@ -104,7 +104,7 @@ const BadgeCard = (props: IProps) => {
   return (
     <div className="wrapper">
       <div className="openModal">{props.children}</div>
-      <a href={props.href}>
+      <a href={props.href} target="_blank" rel="noreferrer">
         <div className="badgeContainer">
           <div className={`circle ${props.variant}`}>
             <span className={`verify ${!props.verified && 'not-verify'}`}>

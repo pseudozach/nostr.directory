@@ -83,7 +83,7 @@ const Navbar = () => {
         })}
 
         <li
-          className="py-2 px-6 rounded-full text-base font-medium bg-[#5f338414] cursor-pointer"
+          className="py-2 px-6 rounded-full text-base font-medium bg-[#5f338414] hover:bg-[#1d435836] cursor-pointer"
           onClick={popupSignIn}
         >
           Sign in with Twitter

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 
 import { ContentCopyRounded, Search } from '@mui/icons-material';
+import CloseIcon from '@mui/icons-material/Close';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import {
   Alert,
@@ -28,179 +29,6 @@ interface CustomWindow extends Window {
 }
 declare const window: CustomWindow;
 
-const columns: GridColDef[] = [
-  {
-    field: 'profileImageUrl',
-    headerName: '',
-    maxWidth: 70,
-    align: 'center',
-    renderCell: (params: GridRenderCellParams) => <Avatar src={params.value} />,
-  },
-  {
-    field: 'screenName',
-    headerName: 'Twitter Account',
-    maxWidth: 275,
-    minWidth: 200,
-    flex: 1,
-  },
-  {
-    field: 'nPubKey',
-    headerName: 'nPubKey',
-    minWidth: 250,
-
-    renderCell: (params: GridRenderCellParams) => (
-      <>
-        <IconButton
-          aria-label="delete"
-          onClick={() => {
-            navigator.clipboard.writeText(params.value || '');
-          }}
-        >
-          <ContentCopyRounded />
-        </IconButton>
-        <p>
-          {params.value
-            .substring(0, 8)
-            .concat('...')
-            .concat(params.value.substring(params.value.length - 8))}
-        </p>
-      </>
-    ),
-  },
-  {
-    field: 'hexPubKey',
-    headerName: 'Hex PubKey',
-    minWidth: 250,
-
-    renderCell: (params: GridRenderCellParams) =>
-      params.value ? (
-        <>
-          <IconButton
-            aria-label="delete"
-            onClick={() => {
-              navigator.clipboard.writeText(params.value || '');
-            }}
-          >
-            <ContentCopyRounded />
-          </IconButton>
-          <p style={{ marginLeft: '5px' }}>
-            {params.value
-              .substring(0, 8)
-              .concat('...')
-              .concat(params.value.substring(params.value.length - 8))}
-          </p>
-        </>
-      ) : (
-        <span style={{ width: '100%', textAlign: 'center' }}>-</span>
-      ),
-  },
-  // {
-  //   field: 'isValid',
-  //   headerName: 'valid?',
-  //   headerAlign: 'center',
-  //   maxWidth: 100,
-  //   flex: 1,
-  //   align: 'center',
-  //   renderCell: (params: GridRenderCellParams) =>
-  //     params.value ? (
-  //       <CheckCircleIcon htmlColor="green" />
-  //     ) : (
-  //       <CancelIcon htmlColor="red" />
-  //     ),
-  // },
-  {
-    field: 'verifyEvent',
-    headerName: 'Status',
-    headerAlign: 'center',
-    maxWidth: 250,
-    minWidth: 150,
-    flex: 1,
-    align: 'center',
-    renderCell: (params: GridRenderCellParams) =>
-      params.value ? (
-        <Link href={`https://www.nostr.guru/e/${params.value}`}>
-          <a target="_blank">
-            <div>
-              <img src="/assets/images/verified.png" alt="" />
-              <p>Verified</p>
-              <style jsx>{`
-                div {
-                  display: flex;
-                  flex-direction: row;
-                  align-items: center;
-                  padding: 4px 12px;
-                  gap: 6px;
-                  background: rgba(58, 204, 142, 0.08);
-                  border-radius: 24px;
-                }
-                p {
-                  font-weight: 500;
-                  font-size: 13px;
-                  color: #3acc8e;
-                  display: flex;
-                  align-items: center;
-                }
-              `}</style>
-            </div>
-          </a>
-        </Link>
-      ) : (
-        <Tooltip title="Pubkey is not verified on nostr." placement="top">
-          <div>
-            <img src="/assets/images/not verified.png" alt="" />
-            <p>Verified</p>
-            <style jsx>{`
-              div {
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                padding: 4px 12px;
-                gap: 6px;
-                background: rgba(230, 80, 80, 0.08);
-                border-radius: 24px;
-              }
-              p {
-                font-weight: 500;
-                font-size: 13px;
-                color: #e65050;
-                display: flex;
-                align-items: center;
-              }
-            `}</style>
-          </div>
-        </Tooltip>
-      ),
-  },
-  // {
-  //   field: 'url',
-  //   headerName: 'Proof URL',
-  //   headerAlign: 'center',
-  //   maxWidth: 100,
-  //   flex: 1,
-  //   align: 'center',
-  //   renderCell: (params: GridRenderCellParams) => (
-  //     <a href={params.value} target="_blank" rel="noreferrer">
-  //       <TwitterIcon htmlColor="#1DA1F2" />
-  //     </a>
-  //   ),
-  // },
-  {
-    field: 'ProofUrl',
-    headerName: 'Proof URL',
-    headerAlign: 'center',
-    maxWidth: 150,
-    minWidth: 150,
-    flex: 1,
-    align: 'center',
-    renderCell: (params: GridRenderCellParams) => (
-      <a href={params.value} target="_blank" rel="noreferrer">
-        <TwitterIcon htmlColor="#1DA1F2" />
-      </a>
-    ),
-  },
-  // { field: 'createdAt', headerName: 'createdAt', width: 150 },
-];
-
 const FollowList = () => {
   const [row, setRow] = useState<Array<any>>([]);
   const [selected, setSelected] = useState<Array<any>>([]);
@@ -216,7 +44,212 @@ const FollowList = () => {
   const [relayConnection, setRelayConnection] = useState<nostrTools.Relay>();
   const [beforeContacts, setBeforeContacts] = useState<nostrTools.Event>();
   const [screenName, setScreenName] = useState('');
+  const [openToast, setOpenToast] = React.useState(true);
   const router = useRouter();
+
+  const handleClickToast = () => {
+    setOpenToast(true);
+  };
+
+  const handleCloseToast = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpenToast(false);
+  };
+
+  const columns: GridColDef[] = [
+    {
+      field: 'profileImageUrl',
+      headerName: '',
+      maxWidth: 70,
+      align: 'center',
+      renderCell: (params: GridRenderCellParams) => (
+        <Avatar src={params.value} />
+      ),
+    },
+    {
+      field: 'screenName',
+      headerName: 'Twitter Account',
+      maxWidth: 275,
+      minWidth: 200,
+      flex: 1,
+    },
+    {
+      field: 'nPubKey',
+      headerName: 'nPubKey',
+      minWidth: 250,
+
+      renderCell: (params: GridRenderCellParams) => (
+        <>
+          <IconButton
+            aria-label="delete"
+            onClick={() => {
+              navigator.clipboard.writeText(params.value || '');
+              handleClickToast();
+            }}
+          >
+            <ContentCopyRounded />
+          </IconButton>
+          <p>
+            {params.value
+              .substring(0, 8)
+              .concat('...')
+              .concat(params.value.substring(params.value.length - 8))}
+          </p>
+        </>
+      ),
+    },
+    {
+      field: 'hexPubKey',
+      headerName: 'Hex PubKey',
+      minWidth: 250,
+
+      renderCell: (params: GridRenderCellParams) =>
+        params.value ? (
+          <>
+            <IconButton
+              aria-label="delete"
+              onClick={() => {
+                navigator.clipboard.writeText(params.value || '');
+              }}
+            >
+              <ContentCopyRounded />
+            </IconButton>
+            <p style={{ marginLeft: '5px' }}>
+              {params.value
+                .substring(0, 8)
+                .concat('...')
+                .concat(params.value.substring(params.value.length - 8))}
+            </p>
+          </>
+        ) : (
+          <span style={{ width: '100%', textAlign: 'center' }}>-</span>
+        ),
+    },
+    // {
+    //   field: 'isValid',
+    //   headerName: 'valid?',
+    //   headerAlign: 'center',
+    //   maxWidth: 100,
+    //   flex: 1,
+    //   align: 'center',
+    //   renderCell: (params: GridRenderCellParams) =>
+    //     params.value ? (
+    //       <CheckCircleIcon htmlColor="green" />
+    //     ) : (
+    //       <CancelIcon htmlColor="red" />
+    //     ),
+    // },
+    {
+      field: 'verifyEvent',
+      headerName: 'Status',
+      headerAlign: 'center',
+      maxWidth: 250,
+      minWidth: 150,
+      flex: 1,
+      align: 'center',
+      renderCell: (params: GridRenderCellParams) =>
+        params.value ? (
+          <Link href={`https://www.nostr.guru/e/${params.value}`}>
+            <a target="_blank">
+              <div>
+                <img src="/assets/images/verified.png" alt="" />
+                <p>Verified</p>
+                <style jsx>{`
+                  div {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    padding: 4px 12px;
+                    gap: 6px;
+                    background: rgba(58, 204, 142, 0.08);
+                    border-radius: 24px;
+                  }
+                  p {
+                    font-weight: 500;
+                    font-size: 13px;
+                    color: #3acc8e;
+                    display: flex;
+                    align-items: center;
+                  }
+                `}</style>
+              </div>
+            </a>
+          </Link>
+        ) : (
+          <Tooltip title="Pubkey is not verified on nostr." placement="top">
+            <div>
+              <img src="/assets/images/not verified.png" alt="" />
+              <p>Verified</p>
+              <style jsx>{`
+                div {
+                  display: flex;
+                  flex-direction: row;
+                  align-items: center;
+                  padding: 4px 12px;
+                  gap: 6px;
+                  background: rgba(230, 80, 80, 0.08);
+                  border-radius: 24px;
+                }
+                p {
+                  font-weight: 500;
+                  font-size: 13px;
+                  color: #e65050;
+                  display: flex;
+                  align-items: center;
+                }
+              `}</style>
+            </div>
+          </Tooltip>
+        ),
+    },
+    // {
+    //   field: 'url',
+    //   headerName: 'Proof URL',
+    //   headerAlign: 'center',
+    //   maxWidth: 100,
+    //   flex: 1,
+    //   align: 'center',
+    //   renderCell: (params: GridRenderCellParams) => (
+    //     <a href={params.value} target="_blank" rel="noreferrer">
+    //       <TwitterIcon htmlColor="#1DA1F2" />
+    //     </a>
+    //   ),
+    // },
+    {
+      field: 'ProofUrl',
+      headerName: 'Proof URL',
+      headerAlign: 'center',
+      maxWidth: 150,
+      minWidth: 150,
+      flex: 1,
+      align: 'center',
+      renderCell: (params: GridRenderCellParams) => (
+        <a href={params.value} target="_blank" rel="noreferrer">
+          <TwitterIcon htmlColor="#1DA1F2" />
+        </a>
+      ),
+    },
+    // { field: 'createdAt', headerName: 'createdAt', width: 150 },
+  ];
+
+  const action = (
+    <React.Fragment>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleCloseToast}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </React.Fragment>
+  );
 
   const dedupArray = (rawArray: any) => {
     let finalArray: any = [];
@@ -662,6 +695,21 @@ const FollowList = () => {
             accounts missing from this list.
           </Alert> */}
         </Section>
+        <Snackbar
+          open={openToast}
+          autoHideDuration={2000}
+          message="Key copied"
+          action={action}
+          onClose={handleCloseToast}
+        >
+          <Alert
+            onClose={handleCloseToast}
+            severity="success"
+            sx={{ width: '100%' }}
+          >
+            Key copied!
+          </Alert>
+        </Snackbar>
         <Snackbar
           open={alertOpen}
           autoHideDuration={10000}
