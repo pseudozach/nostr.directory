@@ -1,11 +1,15 @@
 import React from 'react';
 
+import { Close } from '@mui/icons-material';
+import { Tooltip } from '@mui/material';
+
 type IProps = {
   text?: string;
   verified?: boolean;
   variant?: string;
   href?: string | undefined;
   children: any;
+  error?: string;
 };
 
 export const TwitterIcon = (
@@ -106,6 +110,13 @@ const BadgeCard = (props: IProps) => {
       <div className="openModal">{props.children}</div>
       <a href={props.href} target="_blank" rel="noreferrer">
         <div className="badgeContainer">
+          {props.error && (
+            <div className="errorTooltip">
+              <Tooltip title="Possible CORS issue for user's NIP-05 domain">
+                <Close color="error" />
+              </Tooltip>
+            </div>
+          )}
           <div className={`circle ${props.variant}`}>
             <span className={`verify ${!props.verified && 'not-verify'}`}>
               {props.verified ? (
@@ -218,6 +229,11 @@ const BadgeCard = (props: IProps) => {
           height: 72px;
           border-radius: 100%;
           position: relative;
+        }
+        .errorTooltip {
+          position: absolute;
+          top: 16px;
+          left: 16px;
         }
         .twitter {
           background: linear-gradient(

@@ -86,7 +86,11 @@ const Profile = () => {
     telegramMsgId: '',
     telegramEvent: '',
   });
-
+  const [githubIdentity, setGithubIdentity] = useState({
+    verified: false,
+    proof: '',
+  });
+  const [ghVerificationText, setGhVerificationText] = useState('');
   const [wotScore, setWotScore] = useState(0);
   const [fetching, setFetching] = useState(false);
   const [userRelays, setUserRelays] = useState<Array<any>>([]);
@@ -98,6 +102,7 @@ const Profile = () => {
   });
   const [nProfile, setNProfile] = useState('');
   const [nip05, setNip05] = useState('');
+  const [nip05Error, setNip05Error] = useState('');
   const [dialog, setDialog] = useState({
     open: false,
     title: '',
@@ -105,6 +110,8 @@ const Profile = () => {
     button1: <></>,
     button2: '',
   });
+  const [ghVerificationDialogOpen, setGhVerificationDialogOpen] =
+    useState(false);
   const [validPFP, setValidPFP] = useState(false);
   const [newerKeyExists, setNewerKeyExists] = useState(false);
   const [idNotFound, setIdNotFound] = useState(false);
@@ -114,8 +121,14 @@ const Profile = () => {
   const [tgVerificationDialogOpen, setTgVerificationDialogOpen] =
     useState(false);
   const router = useRouter();
-  const [openToast, setOpenToast] = React.useState(true);
-
+  const [openToast, setOpenToast] = React.useState(false);
+  const [userMetadata, setUserMetadata] = useState({
+    id: 0,
+    created_at: 0,
+    content: '{}',
+    pubkey: '',
+    tags: [],
+  });
   const handleClickToast = () => {
     setOpenToast(true);
   };
@@ -414,25 +427,51 @@ const Profile = () => {
             }
 
             if (event.kind === 0) {
-              // console.log('got 0 ', event);
-              const metadata = JSON.parse(event.content);
-              if (metadata.nip05 && nip05 === '') {
-                // validate nip05
-                const response = await axios.get(
-                  `https://${
-                    metadata.nip05.split('@')[1]
-                  }/.well-known/nostr.json?name=${metadata.nip05.split('@')[0]}`
-                );
+              try {
+                // console.log(
+                //   'got&set kind0 userMetadata event ',
+                //   event,
+                //   'from relay ',
+                //   relay
+                // );
+                setUserMetadata((previousMetadata) => {
+                  if (
+                    previousMetadata &&
+                    event.created_at < previousMetadata.created_at
+                  ) {
+                    return previousMetadata;
+                  }
+                  return event;
+                });
+                const metadata = JSON.parse(event.content);
+                if (metadata.nip05 && nip05 === '') {
+                  try {
+                    // validate nip05
+                    const response = await axios.get(
+                      `https://${
+                        metadata.nip05.split('@')[1]
+                      }/.well-known/nostr.json?name=${
+                        metadata.nip05.split('@')[0]
+                      }`
+                    );
 
-                if (
-                  response.data.names[metadata.nip05.split('@')[0]] ===
-                  tweetObj.hexPubKey
-                ) {
-                  const formattedNip5 = metadata.nip05.startsWith('_@')
-                    ? `@${metadata.nip05.split('@')[1]}`
-                    : metadata.nip05;
-                  setNip05(formattedNip5);
+                    if (
+                      response.data.names[metadata.nip05.split('@')[0]] ===
+                      tweetObj.hexPubKey
+                    ) {
+                      const formattedNip5 = metadata.nip05.startsWith('_@')
+                        ? `@${metadata.nip05.split('@')[1]}`
+                        : metadata.nip05;
+                      setNip05(formattedNip5);
+                    }
+                  } catch (error: any) {
+                    console.log('nip5 error ', error.message);
+                    // if (error.message === 'Network Error')
+                    setNip05Error('Possible CORS issue');
+                  }
                 }
+              } catch (error: any) {
+                console.log('error processing kind0 ', error.message);
               }
             }
           });
@@ -534,9 +573,126 @@ const Profile = () => {
     }
   };
 
+  const signMetadataWithNip07 = async () => {
+    // console.log(
+    //   'enter signMetadataWithNip07 ghVerificationText ',
+    //   userMetadata,
+    //   ghVerificationText
+    // );
+    if (!window.nostr) {
+      setErrorAlert({
+        open: true,
+        text: 'You need to have a browser extension with nostr support!',
+      });
+      return;
+    }
+
+    if (!ghVerificationText) {
+      setErrorAlert({
+        open: true,
+        text: 'Please type your github username',
+      });
+      return;
+    }
+
+    try {
+      const metadataContent = JSON.parse(userMetadata.content);
+      const identityArray = [
+        ...(metadataContent.identities || []),
+        {
+          type: 'github',
+          claim: ghVerificationText,
+          proof: `https://github.com/${ghVerificationText}`,
+        },
+      ];
+      metadataContent.identities = identityArray;
+      const updatedContent = JSON.stringify(metadataContent);
+      const pubkey = await window.nostr.getPublicKey();
+      const unsignedEvent: any = {
+        pubkey,
+        created_at: Math.floor(Date.now() / 1000),
+        kind: 0,
+        tags: userMetadata.tags,
+        content: updatedContent,
+      };
+      unsignedEvent.id = nostrTools.getEventHash(unsignedEvent);
+      console.log('unsignedEvent ', unsignedEvent);
+
+      const signedEvent = await window.nostr.signEvent(unsignedEvent);
+      // console.log('signedEvent ', signedEvent);
+
+      // publish to some relays via API
+      initNostr({
+        relayUrls: [
+          'wss://nostr.zebedee.cloud',
+          // 'wss://nostr-relay.wlvs.space',
+          'wss://nostr-pub.wellorder.net',
+          // 'wss://nostr-relay.untethr.me',
+        ],
+        onConnect: (relayUrl, sendEvent) => {
+          // console.log(
+          //   'Nostr connected to:',
+          //   relayUrl,
+          //   // sendEvent,
+          //   'sending signedEvent ',
+          //   signedEvent
+          // );
+
+          // Send a REQ event to start listening to events from that relayer:
+          sendEvent([SendMsgType.EVENT, signedEvent], relayUrl);
+        },
+        onEvent: (relayUrl: any, event: any) => {
+          console.log('Nostr received event:', relayUrl, event);
+          setAlertOpen(true);
+          setGhVerificationDialogOpen(false);
+        },
+        onError(relayUrl, err) {
+          console.log('nostr error ', relayUrl, err);
+        },
+        debug: true, // Enable logs
+      });
+    } catch (error: any) {
+      console.log('signMetadataWithNip07 error ', error.message);
+    }
+  };
+
   useEffect(() => {
     if (router.isReady) fetchInitialData();
   }, [router.isReady]);
+
+  useEffect(() => {
+    async function checkGithubIdentity() {
+      const metadataContent = JSON.parse(userMetadata.content);
+      if (metadataContent?.identities?.length > 0) {
+        try {
+          // check and validate github from userMetaData.identities array
+          const ghIdentity: any = metadataContent.identities.find(
+            (i: any) => i.type === 'github'
+          );
+          if (ghIdentity?.proof?.startsWith('https://github.com/')) {
+            const response = await axios.get(
+              `${corsProxy}/?${ghIdentity.proof}`
+            );
+            const match = response.data.match(nPubRegex);
+            // console.log(
+            //   'got match and userMetadata here ',
+            //   match,
+            //   userMetadata.pubkey,
+            //   hexToNpub(userMetadata.pubkey)
+            // );
+            const foundNPub = match.find(
+              (x: string) => x === hexToNpub(userMetadata.pubkey)
+            );
+            if (foundNPub)
+              setGithubIdentity({ verified: true, proof: ghIdentity?.proof });
+          }
+        } catch (error: any) {
+          console.log('error checking github identity ', error);
+        }
+      }
+    }
+    checkGithubIdentity();
+  }, [userMetadata]);
 
   useEffect(() => {
     // console.log('userRelays updated! ', userRelays);
@@ -576,6 +732,10 @@ const Profile = () => {
     if (tweet.donated) setWotScore((ws) => ws + 10);
     if (tweet.telegram) setWotScore((ws) => ws + 10);
   }, [tweet]);
+
+  useEffect(() => {
+    if (githubIdentity.verified) setWotScore((ws) => ws + 10);
+  }, [githubIdentity.verified]);
 
   useEffect(() => {
     if (validPFP || !tweet.profileImageUrl) return;
@@ -1021,16 +1181,16 @@ const Profile = () => {
               <div className="my-2 flex items-center w-full md:w-max">
                 <BadgeCard
                   variant={'github'}
-                  verified={!!tweet.telegram}
+                  verified={!!githubIdentity.verified}
                   href={
-                    tweet.telegram
-                      ? `https://www.nostr.guru/e/${tweet.telegramEvent}`
+                    githubIdentity.verified
+                      ? `https://www.nostr.guru/e/${userMetadata.id}`
                       : undefined
                   }
                 >
                   <HelpOutline
                     className="cursor-pointer !ml-1 align-middle"
-                    onClick={() => setTgVerificationDialogOpen(true)}
+                    onClick={() => setGhVerificationDialogOpen(true)}
                   />
                 </BadgeCard>
               </div>
@@ -1039,6 +1199,7 @@ const Profile = () => {
                   text={nip05}
                   variant={'nip'}
                   verified={!!nip05}
+                  error={nip05Error}
                   href={
                     nip05
                       ? `https://${
@@ -1533,7 +1694,7 @@ const Profile = () => {
               borderRadius: '12px',
               display: 'flex',
               gap: '6px',
-              padding: ' 16px',
+              padding: '16px',
               width: '370px',
             },
           }}
@@ -1549,7 +1710,7 @@ const Profile = () => {
           >
             Telegram Verification
           </DialogTitle>
-          <DialogContent>
+          <DialogContent sx={{ padding: 0 }}>
             <DialogContentText
               id="tg-popup-description"
               className="flex justify-center"
@@ -1630,6 +1791,105 @@ const Profile = () => {
               <Button
                 onClick={() => {
                   setTgVerificationDialogOpen(false);
+                }}
+              >
+                ok
+              </Button>
+            </div>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
+          open={ghVerificationDialogOpen}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          fullWidth
+          PaperProps={{
+            style: {
+              background: 'white',
+              boxShadow: '0px 12px 40px rgba(69, 93, 101, 0.12)',
+              borderRadius: '12px',
+              display: 'flex',
+              gap: '6px',
+              padding: '16px',
+              width: '370px',
+            },
+          }}
+        >
+          <DialogTitle
+            sx={{
+              color: '#27363A',
+              fontWeight: 800,
+              fontSize: '16px',
+              padding: 0,
+            }}
+            id="tg-popup"
+          >
+            Github Verification
+          </DialogTitle>
+          <DialogContent sx={{ padding: 0 }}>
+            <DialogContentText
+              id="tg-popup-description"
+              className="flex justify-center"
+              sx={{
+                color: '#455D65',
+                fontWeight: 400,
+                fontSize: '13px',
+
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <Typography className="mt-4 text-[13px]">
+                <>
+                  User is expected to; <br />
+                  1. add their nPubKey to their github profile description
+                  <br />
+                  2. add an entry in their nostr kind0 profile metadata
+                  identities array in this format:
+                  <br />
+                  <div className="mt-1">
+                    <code className="break-all mb-4">{`"identities": [{"type": "github", "claim": "pseudozach", "proof": "https://github.com/pseudozach"}]`}</code>
+                  </div>
+                  <br />
+                  If you have Alby or nos2x extension installed, type your
+                  github username below to publish an update to your profile
+                  metadata note by clicking &quot;Publish with Extension&quot;
+                  <TextField
+                    id="github-string"
+                    className="!my-4"
+                    required
+                    label="Github Username"
+                    variant="outlined"
+                    placeholder={`e.g. pseudozach`}
+                    onChange={(e) => setGhVerificationText(e.target.value)}
+                    value={ghVerificationText}
+                    fullWidth
+                    inputProps={{ style: { color: 'white', outline: 'white' } }}
+                    InputLabelProps={{
+                      sx: {
+                        // set the color of the label when not shrinked
+                        color: '#455D65',
+                        fontSize: '13px',
+                      },
+                    }}
+                  />
+                </>
+              </Typography>
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <div className="cursor-pointer">
+              <Button onClick={signMetadataWithNip07}>
+                Publish with Extension
+              </Button>
+            </div>
+
+            <div className="cursor-pointer">
+              <Button
+                onClick={() => {
+                  setGhVerificationDialogOpen(false);
                 }}
               >
                 ok
