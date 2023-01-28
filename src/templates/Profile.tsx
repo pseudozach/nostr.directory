@@ -12,6 +12,7 @@ import {
   Cancel,
   Close,
   ContentCopyRounded,
+
 } from '@mui/icons-material';
 import CloseIcon from '@mui/icons-material/Close';
 import {
@@ -54,7 +55,13 @@ import DynamicButton from '../button/DynamicButton';
 import BadgeCard from '../cards/BadgeCard';
 import { Section } from '../layout/Section';
 import { db } from '../utils/firebase';
-import { defaultRelays, hexToNpub, npubToHex } from '../utils/helpers';
+import {
+  corsProxy,
+  defaultRelays,
+  hexToNpub,
+  nPubRegex,
+  npubToHex,
+} from '../utils/helpers';
 
 interface CustomWindow extends Window {
   nostr?: any;
@@ -85,6 +92,9 @@ const Profile = () => {
     telegramUserName: '',
     telegramMsgId: '',
     telegramEvent: '',
+    opreturn: false,
+    opreturnTx: '',
+    opreturnAt: 0,
   });
   const [githubIdentity, setGithubIdentity] = useState({
     verified: false,
@@ -103,6 +113,7 @@ const Profile = () => {
   const [nProfile, setNProfile] = useState('');
   const [nip05, setNip05] = useState('');
   const [nip05Error, setNip05Error] = useState('');
+
   const [dialog, setDialog] = useState({
     open: false,
     title: '',
@@ -235,6 +246,7 @@ const Profile = () => {
     } catch (error) {}
 
     // convert twitter handle to pubkey as well
+    const tweetsByIdentifier: any = [];
     try {
       if (hexPubKey.length < 64) {
         // console.log(
@@ -243,7 +255,7 @@ const Profile = () => {
         //   nPubKey,
         //   hexPubKey
         // );
-        const tweetsByIdentifier: any = [];
+
         // setFetching(true);
         const tquerySnapshot = await db
           .collection('twitter')
@@ -258,6 +270,7 @@ const Profile = () => {
         //   tweetsByIdentifier
         // );
         if (tweetsByIdentifier.length < 1) {
+          // Not in tweet database - pull manual data from relays
           console.log('handle not found in DB!');
           setIdNotFound(true);
           setFetching(false);
@@ -307,79 +320,97 @@ const Profile = () => {
     // );
 
     // setUserRelays([]);
-    const duplicates: any = [];
     // setFetching(true);
-    const querySnapshot = await db
-      .collection('twitter')
-      .where('nPubKey', '==', nPubKey)
-      .get();
+
     let tweetObj: any;
-    querySnapshot.forEach((doc: { id: any; data: () => any }) => {
-      tweetObj = doc.data();
-      duplicates.push(doc.data());
-    });
-
-    if (!tweetObj) {
-      console.log('pubkey not found in DB!');
-      setIdNotFound(true);
-      setFetching(false);
-      return;
-    }
-
-    // console.log('got duplicates ', duplicates);
-    // prefer verified if exists
-    tweetObj =
-      duplicates.find((x: any) => x.verified === true) || duplicates[0];
-
-    console.log('got data ', tweetObj, fetching);
-    setTweet(tweetObj);
-    // console.log(`setTweet to `, tweetObj);
-
-    try {
-      // check if this screenName has older/revoked keys
-      // console.log(
-      //   'checking other keys for this screenName ',
-      //   tweetObj.screenName
-      // );
-      let screenNameKeys: any = [];
-      const skquerySnapshot = await db
+    if (tweetsByIdentifier.length > 0) {
+      const duplicates: any = [];
+      const querySnapshot = await db
         .collection('twitter')
-        .where('lcScreenName', '==', tweetObj.screenName.toLowerCase())
+        .where('nPubKey', '==', nPubKey)
         .get();
-      skquerySnapshot.forEach((doc: any) => {
-        screenNameKeys.push(doc.data());
+
+      querySnapshot.forEach((doc: { id: any; data: () => any }) => {
+        tweetObj = doc.data();
+        duplicates.push(doc.data());
       });
 
-      screenNameKeys = screenNameKeys.filter(
-        (x: any) => x.nPubKey !== tweetObj.nPubKey
-      );
-      // console.log('got other keys for this screenName ', screenNameKeys);
-      setPreviousKeys(screenNameKeys);
-
-      const newerKey = screenNameKeys.find(
-        (y: any) => y.created_at > tweetObj.created_at
-      );
-      if (newerKey) setNewerKeyExists(true);
-    } catch (error) {
-      console.log('otherKeys error ', error);
-    }
-
-    // check tweetURL if it still exists
-    try {
-      const response = await axios.get(
-        `/api/checktweet?tweetId=${tweetObj.id_str}`
-      );
-      // console.log('checktweet response ', response.data);
-      if (response.data.status === 'OK') {
-        setTweetExists(true);
-      } else {
-        setTweetExists(false);
+      if (!tweetObj) {
+        console.log('pubkey not found in DB!');
+        setIdNotFound(true);
+        setFetching(false);
+        return;
       }
-    } catch (error: any) {
-      // console.log('checktweet error ', error);
-      if (error.response.status === 404) setTweetExists(false);
+
+      duplicates.sort(
+        (a: { createdAt: number }, b: { createdAt: number }) =>
+          a.createdAt - b.createdAt
+      );
+      // console.log('sorted duplicates ', duplicates);
+      // prefer verified if exists or pick the first one
+      tweetObj =
+        duplicates.find((x: any) => x.verified === true) || duplicates[0];
+
+      // console.log('got data ', tweetObj, fetching);
+      setTweet(tweetObj);
+      console.log(`setTweet to `, tweetObj);
+
+      try {
+        // check if this screenName has older/revoked keys
+        // console.log(
+        //   'checking other keys for this screenName ',
+        //   tweetObj.screenName
+        // );
+        let screenNameKeys: any = [];
+        const skquerySnapshot = await db
+          .collection('twitter')
+          .where('lcScreenName', '==', tweetObj.screenName.toLowerCase())
+          .get();
+        skquerySnapshot.forEach((doc: any) => {
+          screenNameKeys.push(doc.data());
+        });
+
+        screenNameKeys = screenNameKeys.filter(
+          (x: any) => x.nPubKey !== tweetObj.nPubKey
+        );
+        // console.log('got other keys for this screenName ', screenNameKeys);
+        setPreviousKeys(screenNameKeys);
+
+        const newerKey = screenNameKeys.find(
+          (y: any) => new Date(y.created_at) > new Date(tweetObj.created_at)
+        );
+        if (newerKey) setNewerKeyExists(true);
+      } catch (error) {
+        console.log('otherKeys error ', error);
+      }
+
+      // check tweetURL if it still exists
+      try {
+        const response = await axios.get(
+          `/api/checktweet?tweetId=${tweetObj.id_str}`
+        );
+        // console.log('checktweet response ', response.data);
+        if (response.data.status === 'OK') {
+          setTweetExists(true);
+        } else {
+          setTweetExists(false);
+        }
+      } catch (error: any) {
+        // console.log('checktweet error ', error);
+        if (error.response.status === 404) setTweetExists(false);
+      }
+    } else {
+      tweetObj = {
+        ...tweet,
+        hexPubKey,
+        nPubKey,
+        screenName: `${nPubKey.slice(0, 8)}...${nPubKey.slice(-8)}`,
+      };
+      setTweet(tweetObj);
+      // console.log('set manual tweetObj from path ', tweetObj);
     }
 
+    // TODO: should connect to user's relays - not our own list of default relays!
     // get nostr profile of user to show users, followers, relays etc.
     for (let index = 0; index < defaultRelays.length; index += 1) {
       const element = defaultRelays[index];
@@ -403,29 +434,44 @@ const Profile = () => {
             //   'got event and setUserRelays:  ',
             //   event.content,
             //   'adding to ',
-            //   userRelays,
-            //   '\nparsed: ',
-            //   JSON.parse(event.content)
+            //   userRelays
+            //   // '\nparsed: ',
+            //   // JSON.parse(event.content)
             // );
 
+            // // contact list!
+            // if (event.kind === 2) {
+            //   try {
+            //     console.log('got kind2 ', event);
+            //   } catch (error: any) {
+            //     console.log('error processing kind3 ', error.message);
+            //   }
+            // }
+
+            // contact list!
             if (event.kind === 3) {
-              // console.log('got 3 ', event);
-              const relayList = JSON.parse(event.content);
-              Object.keys(relayList).forEach((k) => {
-                // console.log(
-                //   'calling checkAdd with k, ',
-                //   k,
-                //   relayList[k],
-                //   userRelays
-                // );
-                checkAdd({
-                  url: k,
-                  read: relayList[k].read,
-                  write: relayList[k].write,
+              try {
+                // console.log('got kind3 ', event);
+                const relayList = JSON.parse(event.content);
+                Object.keys(relayList).forEach((k) => {
+                  // console.log(
+                  //   'calling checkAdd with k, ',
+                  //   k,
+                  //   relayList[k],
+                  //   userRelays
+                  // );
+                  checkAdd({
+                    url: k,
+                    read: relayList[k].read,
+                    write: relayList[k].write,
+                  });
                 });
-              });
+              } catch (error: any) {
+                // console.log('error processing kind3 ', error.message);
+              }
             }
 
+            // metadata
             if (event.kind === 0) {
               try {
                 // console.log(
@@ -719,11 +765,45 @@ const Profile = () => {
   }, [userRelays]);
 
   useEffect(() => {
-    if (nip05 === '') {
+    if (nip05 !== '') {
       // increment wotscore
       setWotScore((ws) => ws + 10);
     }
   }, [nip05]);
+
+  useEffect(() => {
+    async function checkGithubIdentity() {
+      const metadataContent = JSON.parse(userMetadata.content);
+      if (metadataContent?.identities?.length > 0) {
+        try {
+          // check and validate github from userMetaData.identities array
+          const ghIdentity: any = metadataContent.identities.find(
+            (i: any) => i.type === 'github'
+          );
+          if (ghIdentity?.proof?.startsWith('https://github.com/')) {
+            const response = await axios.get(
+              `${corsProxy}/?${ghIdentity.proof}`
+            );
+            const match = response.data.match(nPubRegex);
+            // console.log(
+            //   'got match and userMetadata here ',
+            //   match,
+            //   userMetadata.pubkey,
+            //   hexToNpub(userMetadata.pubkey)
+            // );
+            const foundNPub = match.find(
+              (x: string) => x === hexToNpub(userMetadata.pubkey)
+            );
+            if (foundNPub)
+              setGithubIdentity({ verified: true, proof: ghIdentity?.proof });
+          }
+        } catch (error: any) {
+          console.log('error checking github identity ', error);
+        }
+      }
+    }
+    checkGithubIdentity();
+  }, [userMetadata]);
 
   useEffect(() => {
     // calculate wotScore
@@ -776,7 +856,7 @@ const Profile = () => {
       <div className="profile-container">
         {idNotFound && (
           <Alert severity="error" sx={{ width: '100%' }}>
-            {router.query.id} is not found in our database.
+            {router.query.id} is not found.
           </Alert>
         )}
 
@@ -1011,7 +1091,11 @@ const Profile = () => {
                   aria-label="copy profile link"
                   onClick={() => {
                     navigator.clipboard.writeText(
-                      `${AppConfig.domain}/p/${tweet.screenName || ''}`
+                      `${AppConfig.domain}/p/${
+                        tweet.screenName.includes('...')
+                          ? tweet.nPubKey
+                          : tweet.screenName || ''
+                      }`
                     );
                   }}
                   size="small"
@@ -1177,6 +1261,7 @@ const Profile = () => {
                 </BadgeCard>
               </div>
 
+
               {/* Add information for github */}
               <div className="my-2 flex items-center w-full md:w-max">
                 <BadgeCard
@@ -1186,6 +1271,7 @@ const Profile = () => {
                     githubIdentity.verified
                       ? `https://www.nostr.guru/e/${userMetadata.id}`
                       : undefined
+
                   }
                 >
                   <HelpOutline
@@ -1545,7 +1631,9 @@ const Profile = () => {
                   Proof Link
                 </a>
               </div>
+
             )} */}
+
             {previousKeys.length > 0 && (
               <>
                 <Typography
@@ -1805,6 +1893,7 @@ const Profile = () => {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
           fullWidth
+
           PaperProps={{
             style: {
               background: 'white',
@@ -1842,6 +1931,7 @@ const Profile = () => {
               }}
             >
               <Typography className="mt-4 text-[13px]">
+
                 <>
                   User is expected to; <br />
                   1. add their nPubKey to their github profile description
@@ -1866,6 +1956,7 @@ const Profile = () => {
                     onChange={(e) => setGhVerificationText(e.target.value)}
                     value={ghVerificationText}
                     fullWidth
+
                     inputProps={{ style: { color: 'white', outline: 'white' } }}
                     InputLabelProps={{
                       sx: {
@@ -1874,6 +1965,7 @@ const Profile = () => {
                         fontSize: '13px',
                       },
                     }}
+
                   />
                 </>
               </Typography>

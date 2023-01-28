@@ -1,5 +1,9 @@
 import { bech32 } from 'bech32';
 
+export const nPubRegex = /npub1\w+/g;
+export const corsProxy =
+  'https://cloudflare-cors-anywhere.pseudozach.workers.dev';
+
 export function npubToHex(npub: string) {
   const { prefix, words } = bech32.decode(npub);
   if (prefix === 'npub') {
@@ -23,10 +27,10 @@ export function hexToNpub(hex: string) {
 }
 
 export const defaultRelays = [
-  'wss://nostr-relay.wlvs.space',
+  // 'wss://nostr-relay.wlvs.space',
   'wss://nostr-pub.wellorder.net',
-  'wss://nostr-2.zebedee.cloud',
-  // 'wss://relay.damus.io',
+  'wss://nostr.zebedee.cloud',
+  'wss://relay.damus.io',
   // 'wss://relay.nostr.ch',
   // 'wss://rsslay.nostr.net',
   // 'wss://nostr-relay.untethr.me',
@@ -34,6 +38,19 @@ export const defaultRelays = [
   // 'wss://nostr.rocks',
   // 'wss://astral.ninja',
   // 'wss://expensive-relay.fiatjaf.com',
+
+  // from melvin
+  // 'wss://nostr.ono.re',
+  'wss://nostr.onsats.org',
+  'wss://nostr-relay.digitalmob.ro',
+  'wss://student.chadpolytechnic.com',
+  'wss://nostr.lnorb.com',
+  'wss://rsslay.nostr.moe',
+  'wss://relay.snort.social',
+
+  // others
+  'wss://nostr.mom',
+  'wss://relay.realsearch.cc',
 
   // 'wss://nostr.zebedee.cloud',
   //   "wss://nostr.shadownode.org",

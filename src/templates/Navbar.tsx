@@ -1,10 +1,13 @@
+
 import firebase from 'firebase/app';
 import Link from 'next/link';
+
 
 import { Section } from '../layout/Section';
 import { NavbarTwoColumns } from '../navigation/NavbarTwoColumns';
 import { auth, twitterProvider } from '../utils/firebase';
 import { Logo } from './Logo';
+
 
 const Links = [
   { href: 'https://usenostr.org/', text: 'What is Nostr' },
@@ -13,6 +16,7 @@ const Links = [
 ];
 
 const Navbar = () => {
+
   const popupSignIn = async () => {
     auth
       .signInWithPopup(twitterProvider)
@@ -67,6 +71,7 @@ const Navbar = () => {
       });
   };
 
+
   return (
     <Section yPadding="py-6" mxWidth="max-w-screen-xl">
       <NavbarTwoColumns logo={<Logo xl />}>
@@ -90,6 +95,7 @@ const Navbar = () => {
         </li>
       </NavbarTwoColumns>
     </Section>
+
   );
 };
 
