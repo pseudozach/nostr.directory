@@ -12,7 +12,6 @@ import {
   Cancel,
   Close,
   ContentCopyRounded,
-
 } from '@mui/icons-material';
 import CloseIcon from '@mui/icons-material/Close';
 import {
@@ -323,25 +322,24 @@ const Profile = () => {
     // setFetching(true);
 
     let tweetObj: any;
-    if (tweetsByIdentifier.length > 0) {
-      const duplicates: any = [];
-      const querySnapshot = await db
-        .collection('twitter')
-        .where('nPubKey', '==', nPubKey)
-        .get();
+    const duplicates: any = [];
+    const querySnapshot = await db
+      .collection('twitter')
+      .where('nPubKey', '==', nPubKey)
+      .get();
 
-      querySnapshot.forEach((doc: { id: any; data: () => any }) => {
-        tweetObj = doc.data();
-        duplicates.push(doc.data());
-      });
+    querySnapshot.forEach((doc: { id: any; data: () => any }) => {
+      tweetObj = doc.data();
+      duplicates.push(doc.data());
+    });
 
-      if (!tweetObj) {
-        console.log('pubkey not found in DB!');
-        setIdNotFound(true);
-        setFetching(false);
-        return;
-      }
-
+    if (!tweetObj) {
+      console.log('pubkey not found in DB!');
+      setIdNotFound(true);
+      setFetching(false);
+      return;
+    }
+    if (duplicates.length > 0) {
       duplicates.sort(
         (a: { createdAt: number }, b: { createdAt: number }) =>
           a.createdAt - b.createdAt
@@ -1261,7 +1259,6 @@ const Profile = () => {
                 </BadgeCard>
               </div>
 
-
               {/* Add information for github */}
               <div className="my-2 flex items-center w-full md:w-max">
                 <BadgeCard
@@ -1271,7 +1268,6 @@ const Profile = () => {
                     githubIdentity.verified
                       ? `https://www.nostr.guru/e/${userMetadata.id}`
                       : undefined
-
                   }
                 >
                   <HelpOutline
@@ -1893,7 +1889,6 @@ const Profile = () => {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
           fullWidth
-
           PaperProps={{
             style: {
               background: 'white',
@@ -1931,7 +1926,6 @@ const Profile = () => {
               }}
             >
               <Typography className="mt-4 text-[13px]">
-
                 <>
                   User is expected to; <br />
                   1. add their nPubKey to their github profile description
@@ -1956,7 +1950,6 @@ const Profile = () => {
                     onChange={(e) => setGhVerificationText(e.target.value)}
                     value={ghVerificationText}
                     fullWidth
-
                     inputProps={{ style: { color: 'white', outline: 'white' } }}
                     InputLabelProps={{
                       sx: {
@@ -1965,7 +1958,6 @@ const Profile = () => {
                         fontSize: '13px',
                       },
                     }}
-
                   />
                 </>
               </Typography>
