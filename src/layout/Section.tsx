@@ -5,27 +5,32 @@ type ISectionProps = {
   description?: string;
   yPadding?: string;
   children: ReactNode;
+  mxWidth?: string;
 };
 
 const Section = (props: ISectionProps) => (
-  <div
-    className={`max-w-screen-lg mx-auto px-3 ${
-      props.yPadding ? props.yPadding : 'py-16'
-    }`}
+  <section
+    className={`${
+      props.mxWidth ? props.mxWidth : 'max-w-screen-xl'
+    } mx-auto px-3 ${props.yPadding ? props.yPadding : 'py-16'}`}
   >
     {(props.title || props.description) && (
       <div className="mb-6 text-center">
         {props.title && (
-          <h1 className="text-4xl text-gray-900 font-bold">{props.title}</h1>
+          <h1 className="text-2xl text-gray-900 font-black tracking-tight">
+            {props.title}
+          </h1>
         )}
         {props.description && (
-          <div className="mt-4 text-xl md:px-20">{props.description}</div>
+          <div className="mt-4 text-xl md:px-20 text-[14px] max-w-[820px] m-auto">
+            {props.description}
+          </div>
         )}
       </div>
     )}
 
     {props.children}
-  </div>
+  </section>
 );
 
 export { Section };

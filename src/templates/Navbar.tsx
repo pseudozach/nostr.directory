@@ -1,14 +1,22 @@
-import { Twitter } from '@mui/icons-material';
-import firebase from 'firebase/app';
 
-import { Background } from '../background/Background';
-import { OutlinedButton } from '../button/OutlinedButton';
+import firebase from 'firebase/app';
+import Link from 'next/link';
+
+
 import { Section } from '../layout/Section';
 import { NavbarTwoColumns } from '../navigation/NavbarTwoColumns';
 import { auth, twitterProvider } from '../utils/firebase';
 import { Logo } from './Logo';
 
-const Navbar = (props: any) => {
+
+const Links = [
+  { href: 'https://usenostr.org/', text: 'What is Nostr' },
+  { href: 'https://github.com/nostr-protocol/nostr', text: 'Nostr Protocol' },
+  { href: 'https://www.nostr.net/#clients', text: 'Clients' },
+];
+
+const Navbar = () => {
+
   const popupSignIn = async () => {
     auth
       .signInWithPopup(twitterProvider)
@@ -62,37 +70,32 @@ const Navbar = (props: any) => {
         );
       });
   };
+
+
   return (
-    <Background color="bg-gray-100">
-      <Section yPadding="py-6">
-        <NavbarTwoColumns logo={<Logo xl />}>
-          {!props.hideLogin && (
-            <li className="hidden md:block">
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'end',
-                }}
-                className="text-xl my-4 cursor-pointer"
-                onClick={popupSignIn}
-              >
-                <OutlinedButton>
-                  <>
-                    <Twitter /> Sign in with Twitter
-                  </>
-                </OutlinedButton>
-              </div>
-            </li>
-          )}
-          {/* <li>
-          <Link href="https://www.nostr.net/#clients">
-            <a target="_blank">Clients</a>
-          </Link>
-        </li> */}
-        </NavbarTwoColumns>
-      </Section>
-    </Background>
+    <Section yPadding="py-6" mxWidth="max-w-screen-xl">
+      <NavbarTwoColumns logo={<Logo xl />}>
+        {Links.map((link, index) => {
+          return (
+            <Link key={index} href={link.href}>
+              <a target="_blank">
+                <li className="py-2 px-6 text-base font-medium hover:bg-[#1d435814] rounded-full ease-in duration-100">
+                  {link.text}
+                </li>
+              </a>
+            </Link>
+          );
+        })}
+
+        <li
+          className="py-2 px-6 rounded-full text-base font-medium bg-[#5f338414] hover:bg-[#1d435836] cursor-pointer"
+          onClick={popupSignIn}
+        >
+          Sign in with Twitter
+        </li>
+      </NavbarTwoColumns>
+    </Section>
+
   );
 };
 

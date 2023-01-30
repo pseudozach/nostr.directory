@@ -4,15 +4,17 @@ import className from 'classnames';
 
 type IButtonProps = {
   xl?: boolean;
-  children: string | ReactNode;
+  children: string;
+  main?: boolean;
 };
 
 const OutlinedButton = (props: IButtonProps) => {
   const btnClass = className({
     btn: true,
     'btn-xl': props.xl,
+    'btn-2xl': props.main,
     'btn-base': !props.xl,
-    'btn-two': true,
+    'btn-two': !props.main,
   });
 
   return (
@@ -47,6 +49,22 @@ const OutlinedButton = (props: IButtonProps) => {
 
           .btn-two:hover {
             @apply text-gray-600 border-2 border-gray-600;
+          }
+          .btn-2xl {
+            @apply text-nostr-solid-darker text-base  bg-[#EDF0F2];
+          }
+          .btn-2xl:hover {
+            @apply bg-[#cfd3d6];
+          }
+          @media (min-width: 0) {
+            .btn-2xl {
+              width: 300px;
+            }
+          }
+          @media (min-width: 700px) {
+            .btn-2xl {
+              width: unset;
+            }
           }
         `}
       </style>

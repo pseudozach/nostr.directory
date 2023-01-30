@@ -3,3 +3,9 @@
 @tailwind components;
 
 @tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
+
+.data-grid__resposive .dx-datagrid .dx-datagrid-rowsview .dx-scrollable-scrollbar.dx-scrollbar-horizontal.dx-scrollbar-hoverable{  
+       display: none;  
+}  
