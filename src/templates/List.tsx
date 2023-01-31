@@ -3,7 +3,16 @@ import { useEffect, useState } from 'react';
 
 import { Search, ContentCopyRounded } from '@mui/icons-material';
 import CloseIcon from '@mui/icons-material/Close';
-import { Alert, Snackbar, Stack, Tooltip } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Snackbar,
+  Stack,
+  Tab,
+  Tabs,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -17,6 +26,32 @@ import Counter from '../counter/Counter';
 import { Section } from '../layout/Section';
 import SignTw from '../signTw/signTw';
 import { auth, db, twitterProvider } from '../utils/firebase';
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      // hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {/* {value === index && ( */}
+      <Box sx={{ p: 3 }}>
+        <Typography>{children}</Typography>
+      </Box>
+      {/* )} */}
+    </div>
+  );
+}
 
 const List = () => {
   const [row, setRow] = useState<Array<any>>([]);
@@ -36,6 +71,7 @@ const List = () => {
   // const [hexPubKeyCopied, setHexPubCopied] = useState(false);
   const router = useRouter();
   const [openToast, setOpenToast] = React.useState(false);
+  const [tabValue, setTabValue] = React.useState(0);
 
   const handleClickToast = () => {
     setOpenToast(true);
@@ -75,219 +111,34 @@ const List = () => {
     setRow(finalArray);
   };
 
-  // const columns: GridColDef[] = [
-  //   {
-  //     field: 'profileImageUrl',
-  //     headerName: '',
-  //     maxWidth: 70,
-  //     align: 'center',
-  //     renderCell: (params: GridRenderCellParams) => (
-  //       <Avatar src={params.value} />
-  //     ),
-  //   },
-  //   {
-  //     field: 'screenName',
-  //     headerName: 'Twitter Account',
-  //     maxWidth: 275,
-  //     minWidth: 200,
-  //     flex: 1,
-  //   },
-  //   {
-  //     field: 'nPubKey',
-  //     headerName: 'nPubKey',
-  //     minWidth: 250,
-
-  //     renderCell: (params: GridRenderCellParams) => (
-  //       <>
-  //         <IconButton
-  //           aria-label="delete"
-  //           onClick={() => {
-  //             navigator.clipboard.writeText(params.value || '');
-  //           }}
-  //         >
-  //           <ContentCopyRounded />
-  //         </IconButton>
-  //         <p>
-  //           {params.value
-  //             .substring(0, 8)
-  //             .concat('...')
-  //             .concat(params.value.substring(params.value.length - 8))}
-  //         </p>
-  //       </>
-  //     ),
-  //   },
-  //   {
-  //     field: 'hexPubKey',
-  //     headerName: 'Hex PubKey',
-  //     minWidth: 250,
-
-  //     renderCell: (params: GridRenderCellParams) =>
-  //       params.value ? (
-  //         <>
-  //           <IconButton
-  //             aria-label="delete"
-  //             onClick={() => {
-  //               navigator.clipboard.writeText(params.value || '');
-  //             }}
-  //           >
-  //             <ContentCopyRounded />
-  //           </IconButton>
-  //           <p style={{ marginLeft: '5px' }}>
-  //             {params.value
-  //               .substring(0, 8)
-  //               .concat('...')
-  //               .concat(params.value.substring(params.value.length - 8))}
-  //           </p>
-  //         </>
-  //       ) : (
-  //         <span style={{ width: '100%', textAlign: 'center' }}>-</span>
-  //       ),
-  //   },
-  //   // {
-  //   //   field: 'isValid',
-  //   //   headerName: 'valid?',
-  //   //   headerAlign: 'center',
-  //   //   maxWidth: 100,
-  //   //   flex: 1,
-  //   //   align: 'center',
-  //   //   renderCell: (params: GridRenderCellParams) =>
-  //   //     params.value ? (
-  //   //       <CheckCircleIcon htmlColor="green" />
-  //   //     ) : (
-  //   //       <CancelIcon htmlColor="red" />
-  //   //     ),
-  //   // },
-  //   {
-  //     field: 'verifyEvent',
-  //     headerName: 'Status',
-  //     headerAlign: 'center',
-  //     maxWidth: 250,
-  //     minWidth: 150,
-  //     flex: 1,
-  //     align: 'center',
-  //     renderCell: (params: GridRenderCellParams) =>
-  //       params.value ? (
-  //         <Link href={`https://www.nostr.guru/e/${params.value}`}>
-  //           <a target="_blank">
-  //             <div>
-  //               <img src="/assets/images/verified.png" alt="" />
-  //               <p>Verified</p>
-  //               <style jsx>{`
-  //                 div {
-  //                   display: flex;
-  //                   flex-direction: row;
-  //                   align-items: center;
-  //                   padding: 4px 12px;
-  //                   gap: 6px;
-  //                   background: rgba(58, 204, 142, 0.08);
-  //                   border-radius: 24px;
-  //                 }
-  //                 p {
-  //                   font-weight: 500;
-  //                   font-size: 13px;
-  //                   color: #3acc8e;
-  //                   display: flex;
-  //                   align-items: center;
-  //                 }
-  //               `}</style>
-  //             </div>
-  //           </a>
-  //         </Link>
-  //       ) : (
-  //         <Tooltip title="Pubkey is not verified on nostr." placement="top">
-  //           <div>
-  //             <img src="/assets/images/not verified.png" alt="" />
-  //             <p>Verified</p>
-  //             <style jsx>{`
-  //               div {
-  //                 display: flex;
-  //                 flex-direction: row;
-  //                 align-items: center;
-  //                 padding: 4px 12px;
-  //                 gap: 6px;
-  //                 background: rgba(230, 80, 80, 0.08);
-  //                 border-radius: 24px;
-  //               }
-  //               p {
-  //                 font-weight: 500;
-  //                 font-size: 13px;
-  //                 color: #e65050;
-  //                 display: flex;
-  //                 align-items: center;
-  //               }
-  //             `}</style>
-  //           </div>
-  //         </Tooltip>
-  //       ),
-  //   },
-  //   // {
-  //   //   field: 'url',
-  //   //   headerName: 'Proof URL',
-  //   //   headerAlign: 'center',
-  //   //   maxWidth: 100,
-  //   //   flex: 1,
-  //   //   align: 'center',
-  //   //   renderCell: (params: GridRenderCellParams) => (
-  //   //     <a href={params.value} target="_blank" rel="noreferrer">
-  //   //       <TwitterIcon htmlColor="#1DA1F2" />
-  //   //     </a>
-  //   //   ),
-  //   // },
-  //   {
-  //     field: 'profile',
-  //     headerName: 'Profile',
-  //     headerAlign: 'center',
-  //     maxWidth: 150,
-  //     minWidth: 150,
-  //     flex: 1,
-  //     align: 'center',
-  //     renderCell: (params: GridRenderCellParams) => (
-  //       <Link href={params.value}>
-  //         <a>
-  //           <div>
-  //             <p>Visit Profile</p>
-  //             <style jsx>{`
-  //               div {
-  //                 flex-direction: row;
-  //                 align-items: center;
-  //                 padding: 4px 12px;
-  //                 border-radius: 24px;
-  //               }
-  //               div:hover {
-  //                 background: rgba(29, 67, 88, 0.08);
-  //               }
-  //               p {
-  //                 font-weight: 500;
-  //                 font-size: 13px;
-  //                 background: linear-gradient(
-  //                   158.74deg,
-  //                   #46bfee 14.86%,
-  //                   #1adace 102.75%
-  //                 );
-  //                 -webkit-background-clip: text;
-  //                 -webkit-text-fill-color: transparent;
-  //                 background-clip: text;
-  //                 text-fill-color: transparent;
-  //               }
-  //             `}</style>
-  //           </div>
-  //         </a>
-  //       </Link>
-  //     ),
-  //   },
-  //   // { field: 'createdAt', headerName: 'createdAt', width: 150 },
-  // ];
-
   const fetchInitialData = async () => {
     // console.log('getting latest records...');
     setRow([]);
     setFetching(true);
-    const querySnapshot = await db
-      .collection('twitter')
-      // .orderBy('createdAt', 'desc')
-      .orderBy('user.followers_count', 'desc')
-      .limit(50)
-      .get();
+    let querySnapshot;
+    if (tabValue === 0) {
+      querySnapshot = await db
+        .collection('twitter')
+        // .orderBy('createdAt', 'desc')
+        .orderBy('user.followers_count', 'desc')
+        .limit(50)
+        .get();
+    } else if (tabValue === 1) {
+      querySnapshot = await db
+        .collection('twitter')
+        .orderBy('donated', 'desc')
+        .limit(50)
+        .get();
+    } else {
+      // tabValue === 2
+      // get highest follower count as kept up-to-date
+      querySnapshot = await db
+        .collection('twitter')
+        .orderBy('nFollowerCount', 'desc')
+        .limit(50)
+        .get();
+    }
+
     const rawArray: any[] = [];
     querySnapshot.forEach((doc: { id: any; data: () => any }) => {
       // console.log(`${doc.id} => `, doc.data());
@@ -307,6 +158,7 @@ const List = () => {
       rowData.tweetId = rowData.id_str;
       rowData.url = rowData.entities?.urls[0]?.url || '';
       rowData.profile = `/p/${rowData.nPubKey}`;
+      rowData.followersCount = rowData.user.followers_count;
       rawArray.push(rowData);
     });
     // console.log('rawArray length: ', rawArray.length);
@@ -314,9 +166,20 @@ const List = () => {
     setFetching(false);
   };
 
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+    // console.log('tab changed to ', newValue);
+    // // fetch and populate rows!
+    // fetchInitialData();
+  };
+
   useEffect(() => {
     fetchInitialData();
   }, []);
+
+  useEffect(() => {
+    fetchInitialData();
+  }, [tabValue]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -466,20 +329,51 @@ const List = () => {
           <span style={{ width: '100%', textAlign: 'center' }}>-</span>
         ),
     },
-    // {
-    //   field: 'isValid',
-    //   headerName: 'valid?',
-    //   headerAlign: 'center',
-    //   maxWidth: 100,
-    //   flex: 1,
-    //   align: 'center',
-    //   renderCell: (params: GridRenderCellParams) =>
-    //     params.value ? (
-    //       <CheckCircleIcon htmlColor="green" />
-    //     ) : (
-    //       <CancelIcon htmlColor="red" />
-    //     ),
-    // },
+    {
+      field: 'followersCount',
+      headerName: 'Followers',
+      headerAlign: 'center',
+      hide: tabValue !== 0,
+      maxWidth: 100,
+      flex: 1,
+      align: 'center',
+      renderCell: (params: GridRenderCellParams) => params.value,
+      //  ? (
+      //   <CheckCircleIcon htmlColor="green" />
+      // ) : (
+      //   <CancelIcon htmlColor="red" />
+      // ),
+    },
+    {
+      field: 'donated',
+      headerName: 'Donation',
+      headerAlign: 'center',
+      hide: tabValue !== 1,
+      maxWidth: 100,
+      flex: 1,
+      align: 'center',
+      renderCell: (params: GridRenderCellParams) => params.value,
+      //  ? (
+      //   <CheckCircleIcon htmlColor="green" />
+      // ) : (
+      //   <CancelIcon htmlColor="red" />
+      // ),
+    },
+    {
+      field: 'nFollowerCount',
+      headerName: 'Followers',
+      headerAlign: 'center',
+      hide: tabValue !== 2,
+      maxWidth: 100,
+      flex: 1,
+      align: 'center',
+      renderCell: (params: GridRenderCellParams) => params.value,
+      //  ? (
+      //   <CheckCircleIcon htmlColor="green" />
+      // ) : (
+      //   <CancelIcon htmlColor="red" />
+      // ),
+    },
     {
       field: 'verifyEvent',
       headerName: 'Status',
@@ -876,73 +770,110 @@ const List = () => {
           ),
         }}
       />
-      <div style={{ height: '1200px', width: '100%' }}>
-        <DataGrid
-          disableColumnMenu
-          disableColumnFilter
-          sx={{
-            'box-shadow': ' 0px 12px 40px rgba(69, 93, 101, 0.12)',
-            borderTopLeftRadius: '0px',
-            borderTopRightRadius: '0px',
-            borderBottomLeftRadius: '12px',
-            borderBottomRightRadius: '12px',
-            '& .MuiDataGrid-virtualScroller': {
-              overflowX: 'scroll',
-              '&::-webkit-scrollbar': {
-                width: 0,
-              },
+
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs
+          value={tabValue}
+          onChange={handleTabChange}
+          aria-label="table tabs"
+          variant="fullWidth"
+          // className="!text-nostr-gradient"
+          textColor="inherit"
+          TabIndicatorProps={{
+            style: {
+              backgroundColor: '#1ADACE',
+              color: '#1ADACE',
+              // background: '#46BFEE',
+              background: '#1ADACE',
             },
-            '& .MuiDataGrid-iconButtonContainer': {
-              display: 'none',
-            },
-            '& .css-yrdy0g-MuiDataGrid-columnHeaderRow': {
-              background: '#DEF0EF1F',
-            },
-            '&.MuiDataGrid-root .MuiDataGrid-cell:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus-within':
-              {
-                outline: 'none',
-              },
-            '&.MuiDataGrid-columnHeader:focus, &.css-anrt9z-MuiDataGrid-root .MuiDataGrid-cell:focus':
-              {
-                outline: 'none !important',
-              },
-            '.MuiDataGrid-columnHeader:focus-within, &.MuiDataGrid-cell:focus-within':
-              {
-                outline: 'none !important',
-              },
-            '& .MuiDataGrid-columnSeparator , .MuiDataGrid-columnSeparator--sideRight':
-              {
-                opacity: '0 !important',
-              },
+            // className: '!text-[#46BFEE]',
           }}
-          rows={row}
-          columns={columns}
-          pageSize={100}
-          // rowsPerPageOptions={[50]}
-          hideFooter
-          loading={row.length === 0 && fetching}
-          disableSelectionOnClick
-          disableColumnSelector
-          disableDensitySelector
-          components={{
-            NoRowsOverlay: () => (
-              <Stack height="100%" alignItems="center" justifyContent="center">
-                No entries found
-              </Stack>
-            ),
-          }}
-          // Toolbar: GridToolbar,
-          // components={{ FilterPanel: GridFilterPanel }}
-          // componentsProps={{
-          //   toolbar: {
-          //     showQuickFilter: true,
-          //     quickFilterProps: {
-          //       debounceMs: 500,
-          //     },
-          //   },
-          // }}
-        />
-      </div>
+        >
+          <Tab label="Popular on Twitter" />
+          <Tab label="Donation Leaderboard" />
+          <Tab label="Popular on Nostr" />
+        </Tabs>
+      </Box>
+      <TabPanel value={tabValue} index={0}>
+        <div style={{ height: '1200px', width: '100%' }}>
+          <DataGrid
+            disableColumnMenu
+            disableColumnFilter
+            sx={{
+              'box-shadow': ' 0px 12px 40px rgba(69, 93, 101, 0.12)',
+              borderTopLeftRadius: '0px',
+              borderTopRightRadius: '0px',
+              borderBottomLeftRadius: '12px',
+              borderBottomRightRadius: '12px',
+              '& .MuiDataGrid-virtualScroller': {
+                overflowX: 'scroll',
+                '&::-webkit-scrollbar': {
+                  width: 0,
+                },
+              },
+              '& .MuiDataGrid-iconButtonContainer': {
+                display: 'none',
+              },
+              '& .css-yrdy0g-MuiDataGrid-columnHeaderRow': {
+                background: '#DEF0EF1F',
+              },
+              '&.MuiDataGrid-root .MuiDataGrid-cell:focus, &.MuiDataGrid-root .MuiDataGrid-cell:focus-within':
+                {
+                  outline: 'none',
+                },
+              '&.MuiDataGrid-columnHeader:focus, &.css-anrt9z-MuiDataGrid-root .MuiDataGrid-cell:focus':
+                {
+                  outline: 'none !important',
+                },
+              '.MuiDataGrid-columnHeader:focus-within, &.MuiDataGrid-cell:focus-within':
+                {
+                  outline: 'none !important',
+                },
+              '& .MuiDataGrid-columnSeparator , .MuiDataGrid-columnSeparator--sideRight':
+                {
+                  opacity: '0 !important',
+                },
+            }}
+            rows={row}
+            columns={columns}
+            pageSize={100}
+            // rowsPerPageOptions={[50]}
+            hideFooter
+            loading={row.length === 0 && fetching}
+            disableSelectionOnClick
+            disableColumnSelector
+            disableDensitySelector
+            components={{
+              NoRowsOverlay: () => (
+                <Stack
+                  height="100%"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  No entries found
+                </Stack>
+              ),
+            }}
+            // Toolbar: GridToolbar,
+            // components={{ FilterPanel: GridFilterPanel }}
+            // componentsProps={{
+            //   toolbar: {
+            //     showQuickFilter: true,
+            //     quickFilterProps: {
+            //       debounceMs: 500,
+            //     },
+            //   },
+            // }}
+          />
+        </div>
+      </TabPanel>
+      {/* <TabPanel value={tabValue} index={1}>
+        Item Two
+      </TabPanel>
+      <TabPanel value={tabValue} index={2}>
+        Item Three
+      </TabPanel> */}
+
       <Snackbar
         open={openToast}
         autoHideDuration={2000}

@@ -44,6 +44,7 @@ module.exports = {
         'nostr-dark': '#193240',
         'nostr-darker': '#13202b',
         'nostr-solid-darker': '#27363A',
+        'nostr-gradient': '#1ADACE',
       },
       lineHeight: {
         hero: '4.5rem',
