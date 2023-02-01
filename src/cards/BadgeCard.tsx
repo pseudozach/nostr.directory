@@ -193,7 +193,8 @@ const BadgeCard = (props: IProps) => {
               </p>
             ) : (
               <p>
-                <b>User has NOT sent</b> a 1000+ sats donation to nostr.direc
+                <b>User has NOT sent</b> a 1000+ sats donation to
+                nostr.directory
               </p>
             ))}
         </div>
