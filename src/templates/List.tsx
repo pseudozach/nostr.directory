@@ -71,7 +71,7 @@ const List = () => {
   // const [hexPubKeyCopied, setHexPubCopied] = useState(false);
   const router = useRouter();
   const [openToast, setOpenToast] = React.useState(false);
-  const [tabValue, setTabValue] = React.useState(0);
+  const [tabValue, setTabValue] = React.useState(2);
 
   const handleClickToast = () => {
     setOpenToast(true);
