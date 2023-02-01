@@ -11,7 +11,7 @@ const Footer = () => (
       </div>
       <div className="icon-list">
         <>
-          <Link href="https://www.nostr.guru/p/5e7ae588d7d11eac4c25906e6da807e68c6498f49a38e4692be5a089616ceb18">
+          <Link href="nostr:npub1teawtzxh6y02cnp9jphxm2q8u6xxfx85nguwg6ftuksgjctvavvqnsgq5u">
             <a target="_blank">
               <svg
                 width="24"
