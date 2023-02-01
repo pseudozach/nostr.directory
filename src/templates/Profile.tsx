@@ -12,6 +12,7 @@ import {
   Cancel,
   Close,
   ContentCopyRounded,
+  OpenInNew,
 } from '@mui/icons-material';
 import CloseIcon from '@mui/icons-material/Close';
 import {
@@ -1384,6 +1385,14 @@ const Profile = () => {
                     <IconButton
                       aria-label="copy hex pubkey"
                       onClick={() => {
+                        window.location.href = `nostr:${tweet.hexPubKey}`;
+                      }}
+                    >
+                      <OpenInNew />
+                    </IconButton>
+                    <IconButton
+                      aria-label="copy hex pubkey"
+                      onClick={() => {
                         setDialog({
                           open: true,
                           title: 'hexPubKey QR Code',
@@ -1440,11 +1449,30 @@ const Profile = () => {
                     <IconButton
                       aria-label="copy hex pubkey"
                       onClick={() => {
+                        window.location.href = `nostr:${tweet.nPubKey}`;
+                      }}
+                    >
+                      <OpenInNew />
+                    </IconButton>
+                    <IconButton
+                      aria-label="copy npubkey"
+                      onClick={() => {
                         setDialog({
                           open: true,
                           title: 'nPubKey QR Code',
                           text: (
-                            <QRCodeSVG value={tweet.nPubKey || ''} size={256} />
+                            <div
+                              style={{
+                                width: '100%',
+                                display: 'grid',
+                                placeItems: 'center',
+                              }}
+                            >
+                              <QRCodeSVG
+                                value={tweet.nPubKey || ''}
+                                size={256}
+                              />
+                            </div>
                           ),
                           button1: <></>,
                           button2: 'ok',
@@ -1485,10 +1513,28 @@ const Profile = () => {
                     <IconButton
                       aria-label="copy hex pubkey"
                       onClick={() => {
+                        window.location.href = `nostr:${nProfile}`;
+                      }}
+                    >
+                      <OpenInNew />
+                    </IconButton>
+                    <IconButton
+                      aria-label="copy nprofile"
+                      onClick={() => {
                         setDialog({
                           open: true,
                           title: 'nProfile QR Code',
-                          text: <QRCodeSVG value={nProfile} size={256} />,
+                          text: (
+                            <div
+                              style={{
+                                width: '100%',
+                                display: 'grid',
+                                placeItems: 'center',
+                              }}
+                            >
+                              <QRCodeSVG value={nProfile} size={256} />{' '}
+                            </div>
+                          ),
                           button1: <></>,
                           button2: 'ok',
                         });
