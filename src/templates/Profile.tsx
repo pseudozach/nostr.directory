@@ -998,18 +998,29 @@ const Profile = () => {
                         </linearGradient>
                       </defs>
                     </svg>
-                    <span>
-                      {tweet.nPubKey.slice(0, 8)}...${tweet.nPubKey.slice(-8)}{' '}
-                    </span>
-                    <IconButton
-                      aria-label="delete"
-                      onClick={() => {
-                        navigator.clipboard.writeText(tweet.nPubKey);
-                        handleClickToast();
-                      }}
-                    >
-                      <ContentCopyRounded />
-                    </IconButton>
+                    <Tooltip title="open profile in nostr">
+                      <a
+                        href={`nostr:${tweet.nPubKey}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <span>
+                          {tweet.nPubKey.slice(0, 8)}...
+                          {tweet.nPubKey.slice(-8)}{' '}
+                        </span>
+                      </a>
+                    </Tooltip>
+                    <Tooltip title="copy npubkey">
+                      <IconButton
+                        aria-label="copy"
+                        onClick={() => {
+                          navigator.clipboard.writeText(tweet.nPubKey);
+                          handleClickToast();
+                        }}
+                      >
+                        <ContentCopyRounded />
+                      </IconButton>
+                    </Tooltip>
                   </div>
                 </div>
                 <div className="mt-2 mb-4 flex items-center gap-2">
