@@ -1,6 +1,16 @@
+import axios from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import { db } from '../../utils/firebase';
+
+const { POSTGREST_API, POSTGREST_USERNAME, POSTGREST_PASSWORD } = process.env;
+
+export const header = {
+  auth: {
+    username: POSTGREST_USERNAME || '',
+    password: POSTGREST_PASSWORD || '',
+  },
+};
 
 type ResponseData =
   | {
@@ -10,6 +20,10 @@ type ResponseData =
       error: string;
     };
 
+type NIP05 = {
+  names: object;
+  relays?: object;
+};
 // async function resolveNPubKey(screenName: string) {
 //   let nPubKey = '';
 //   const nPubKeyquery = await db
@@ -61,11 +75,29 @@ export default async function handler(
     // console.log('resolving screenName ', screenName);
     // const nPubKey = await resolveNPubKey(screenName);
     const hexPubKey = await resolveHexPubKey(screenName);
-    const nip5 = {
+
+    const nip5: NIP05 = {
       names: {
         [screenName]: hexPubKey,
       },
     };
+
+    try {
+      // get user's latest relay list and serve it as per NIP-05
+      const response = await axios.get(
+        `${POSTGREST_API}/events?select=event_content&event_kind=eq.2&event_pubkey=eq.\\x${hexPubKey}&order=event_created_at.desc&limit=1`,
+        header
+      );
+      if (response.data[0].event_content) {
+        const obj = {
+          [hexPubKey]: [response.data[0].event_content],
+        };
+        nip5.relays = obj;
+      }
+    } catch (error: any) {
+      // console.log('relay check error ', error.message);
+    }
+
     res.status(200).json(nip5);
   } catch (error: any) {
     // console.log('nostr nip05 api error ', error.message);
