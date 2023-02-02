@@ -51,10 +51,10 @@ export function Stats({
             <VictoryChart
               theme={VictoryTheme.material}
               domainPadding={10} // padding={{ left: 60 }}
-              widht={100}
+              // width={100}
               containerComponent={
                 <VictoryVoronoiContainer
-                  voronoiDimension="xl"
+                  voronoiDimension="x"
                   labels={({ datum }) => datum.y}
                   labelComponent={
                     <VictoryTooltip
@@ -87,7 +87,7 @@ export function Stats({
                     angle: 45,
                   },
                 }}
-                tickFormat={(x) => `${x}`.slice(0, -5)}
+                tickFormat={(x) => `${x}`.slice(0, -4) + `${x}`.slice(-2)}
               />
               <VictoryLine
                 style={{
@@ -142,6 +142,7 @@ export function Stats({
                 tickFormat={(x) => `${x / 1000}k`}
               />
               <VictoryAxis // label="Label"
+                tickFormat={(x) => `${x}`.slice(0, -4) + `${x}`.slice(-2)}
                 style={{
                   // axis: { stroke: '#756f6a' },
                   axisLabel: {
@@ -166,7 +167,7 @@ export function Stats({
               />
             </VictoryChart>
             <Typography variant="caption">
-              Only tracking event kinds: 0,2,3
+              Tracking event kinds: 0,1,2,3,5,7,40
             </Typography>
           </Stack>
         </CardContainer>
@@ -174,7 +175,7 @@ export function Stats({
         <CardContainer>
           <Stack direction="column" className="text-center">
             <div className="h-16">
-              <Typography variant="h5">Daily Event Count By Kind</Typography>
+              <Typography variant="h5">Daily Profile Event Counts</Typography>
             </div>
             <VictoryChart
               theme={VictoryTheme.material}
@@ -205,6 +206,7 @@ export function Stats({
                 tickFormat={(x) => `${x / 1000}k`}
               />
               <VictoryAxis // label="Label"
+                tickFormat={(x) => `${x}`.slice(0, -4) + `${x}`.slice(-2)}
                 style={{
                   // axis: { stroke: '#756f6a' },
                   axisLabel: {
@@ -236,7 +238,7 @@ export function Stats({
                     border: '1px solid #ccc',
                   },
                 }}
-                data={dailyEventsByKindStats[1]}
+                data={dailyEventsByKindStats[2]}
               />
               <VictoryLine
                 style={{
@@ -247,23 +249,24 @@ export function Stats({
                     border: '1px solid #ccc',
                   },
                 }}
-                data={dailyEventsByKindStats[2]}
+                data={dailyEventsByKindStats[3]}
               />
               <VictoryLegend
-                x={125}
+                x={0}
                 y={10}
+                centerTitle
                 orientation="horizontal"
                 gutter={20} // style={{ border: { stroke: 'black' } }}
                 colorScale={['#1ADACE', '#c43a31', 'black']}
                 data={[
                   {
-                    name: 'kind0',
+                    name: 'Metadata',
                   },
                   {
-                    name: 'kind2',
+                    name: 'Recommend Relay',
                   },
                   {
-                    name: 'kind3',
+                    name: 'Contacts',
                   },
                 ]}
               />
@@ -279,19 +282,14 @@ export function Stats({
         <CardContainer>
           <Stack direction="column" className="text-center">
             <div className="h-16">
-              <Typography variant="h5">Total Number of Public Keys</Typography>
-              <Typography color="success" variant="h6">
-                {cumulativePubKeyStats[cumulativePubKeyStats.length - 1]!.y ||
-                  0}
-              </Typography>
+              <Typography variant="h5">Daily Post Event Counts</Typography>
             </div>
             <VictoryChart
               theme={VictoryTheme.material}
-              domainPadding={10} // padding={{ left: 60 }}
-              widht={100}
+              domainPadding={20}
               containerComponent={
                 <VictoryVoronoiContainer
-                  voronoiDimension="xl"
+                  voronoiDimension="x"
                   labels={({ datum }) => datum.y}
                   labelComponent={
                     <VictoryTooltip
@@ -314,8 +312,10 @@ export function Stats({
                 }}
                 tickFormat={(x) => `${x / 1000}k`}
               />
-              <VictoryAxis
+              <VictoryAxis // label="Label"
+                tickFormat={(x) => `${x}`.slice(0, -4) + `${x}`.slice(-2)}
                 style={{
+                  // axis: { stroke: '#756f6a' },
                   axisLabel: {
                     fontSize: 10,
                     padding: 30,
@@ -324,24 +324,78 @@ export function Stats({
                     angle: 45,
                   },
                 }}
-                tickFormat={(x) => `${x}`.slice(0, -5)}
               />
               <VictoryLine
                 style={{
                   data: {
-                    stroke: '#1ADACE',
+                    stroke: 'green',
                   },
                   parent: {
                     border: '1px solid #ccc',
                   },
                 }}
-                data={cumulativePubKeyStats}
+                data={dailyEventsByKindStats[1]}
+              />
+              <VictoryLine
+                style={{
+                  data: {
+                    stroke: 'orange',
+                  },
+                  parent: {
+                    border: '1px solid #ccc',
+                  },
+                }}
+                data={dailyEventsByKindStats[4]}
+              />
+              <VictoryLine
+                style={{
+                  data: {
+                    stroke: 'purple',
+                  },
+                  parent: {
+                    border: '1px solid #ccc',
+                  },
+                }}
+                data={dailyEventsByKindStats[5]}
+              />
+              {/* <VictoryLine
+                style={{
+                  data: {
+                    stroke: 'yellow',
+                  },
+                  parent: {
+                    border: '1px solid #ccc',
+                  },
+                }}
+                data={dailyEventsByKindStats[6]}
+              /> */}
+              <VictoryLegend
+                x={0}
+                y={10}
+                centerTitle
+                orientation="horizontal"
+                gutter={20} // style={{ border: { stroke: 'black' } }}
+                colorScale={['green', 'orange', 'purple', 'yellow']}
+                data={[
+                  {
+                    name: 'Text',
+                  },
+                  {
+                    name: 'Event Deletion',
+                  },
+                  {
+                    name: 'Reaction',
+                  },
+                  // {
+                  //   name: 'Channel Creation',
+                  // },
+                ]}
               />
             </VictoryChart>
           </Stack>
         </CardContainer>
 
-        <CardContainer>
+        {/* <CardContainer>
           <Stack direction="column" className="text-center">
             <div className="h-16">
               <Typography variant="h5">Daily Event Count</Typography>
@@ -379,6 +433,7 @@ export function Stats({
                 tickFormat={(x) => `${x / 1000}k`}
               />
               <VictoryAxis // label="Label"
+                tickFormat={(x) => `${x}`.slice(0, -4) + `${x}`.slice(-2)}
                 style={{
                   // axis: { stroke: '#756f6a' },
                   axisLabel: {
@@ -442,6 +497,7 @@ export function Stats({
                 tickFormat={(x) => `${x / 1000}k`}
               />
               <VictoryAxis // label="Label"
+                tickFormat={(x) => `${x}`.slice(0, -4) + `${x}`.slice(-2)}
                 style={{
                   // axis: { stroke: '#756f6a' },
                   axisLabel: {
@@ -487,7 +543,7 @@ export function Stats({
                 data={dailyEventsByKindStats[2]}
               />
               <VictoryLegend
-                x={125}
+                x={0}
                 y={10}
                 orientation="horizontal"
                 gutter={20} // style={{ border: { stroke: 'black' } }}
@@ -506,7 +562,7 @@ export function Stats({
               />
             </VictoryChart>
           </Stack>
-        </CardContainer>
+        </CardContainer> */}
       </Stack>
     </>
   );

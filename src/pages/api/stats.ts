@@ -47,14 +47,14 @@ export default async function handler(
       data = dailyEventCountQuery;
     }
     data.from = `${new Date(
-      new Date().getTime() - 9 * 24 * 60 * 60 * 1000
+      new Date().getTime() - 15 * 24 * 60 * 60 * 1000
     ).getTime()}`;
     data.to = `${new Date().getTime()}`;
     // console.log('data ', data);
     const response = await axios.post(`${GRAFANA_API}`, data, header);
     const { values } = response.data.results.A.frames[0].data;
-    const arr1 = values[0];
-    const arr2 = values[1];
+    const arr1 = values[0]; // kind0
+    const arr2 = values[1]; // kind1
 
     let resultArray = [];
     if (statType === 'cumulativePubKey') {
@@ -70,15 +70,23 @@ export default async function handler(
       });
       resultArray = resultArray.filter(Boolean);
     } else if (statType === 'dailyEventsByKind') {
-      // console.log('got data ', response.data.results.A.frames);
+      // console.log(
+      //   'got data ',
+      //   response.data.results.A.frames[0].schema.fields,
+      //   response.data.results.A.frames[0].data
+      // );
+      // https://github.com/nostr-protocol/nips#event-kinds
       const arr3 = values[2]; // kind2
       const arr4 = values[3]; // kind3
+      const arr5 = values[4]; // kind40
+      const arr6 = values[5]; // kind5
+      const arr7 = values[6]; // kind7
       resultArray[0] = arr1.map((x: number, i: number) => {
         // skip first value because it's low due to the timestamp filter
         if (i !== 0) {
           return {
-            x: new Date(x).toLocaleDateString().slice(0, -5),
-            y: arr2[i],
+            x: new Date(x).toLocaleDateString(),
+            y: arr2[i] || 0,
           };
         }
         return null;
@@ -87,8 +95,8 @@ export default async function handler(
         // skip first value because it's low due to the timestamp filter
         if (i !== 0) {
           return {
-            x: new Date(x).toLocaleDateString().slice(0, -5),
-            y: arr3[i],
+            x: new Date(x).toLocaleDateString(),
+            y: arr3[i] || 0,
           };
         }
         return null;
@@ -97,8 +105,38 @@ export default async function handler(
         // skip first value because it's low due to the timestamp filter
         if (i !== 0) {
           return {
-            x: new Date(x).toLocaleDateString().slice(0, -5),
-            y: arr4[i],
+            x: new Date(x).toLocaleDateString(),
+            y: arr4[i] || 0,
+          };
+        }
+        return null;
+      });
+      resultArray[3] = arr1.map((x: number, i: number) => {
+        // skip first value because it's low due to the timestamp filter
+        if (i !== 0) {
+          return {
+            x: new Date(x).toLocaleDateString(),
+            y: arr6[i] || 0,
+          };
+        }
+        return null;
+      });
+      resultArray[4] = arr1.map((x: number, i: number) => {
+        // skip first value because it's low due to the timestamp filter
+        if (i !== 0) {
+          return {
+            x: new Date(x).toLocaleDateString(),
+            y: arr7[i] || 0,
+          };
+        }
+        return null;
+      });
+      resultArray[5] = arr1.map((x: number, i: number) => {
+        // skip first value because it's low due to the timestamp filter
+        if (i !== 0) {
+          return {
+            x: new Date(x).toLocaleDateString(),
+            y: arr5[i] || 0,
           };
         }
         return null;
@@ -109,7 +147,7 @@ export default async function handler(
         // skip first value because it's low due to the timestamp filter
         if (i !== 0) {
           return {
-            x: new Date(x).toLocaleDateString().slice(0, -5),
+            x: new Date(x).toLocaleDateString(),
             y: arr2[i],
           };
         }

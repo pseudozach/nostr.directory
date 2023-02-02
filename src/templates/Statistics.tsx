@@ -24,7 +24,7 @@ const Statistics = () => {
     setDailyEventCountStats(response2.data);
 
     const response3 = await axios.get(`/api/stats?type=dailyEventsByKind`);
-    console.log('got data ', response3.data);
+    // console.log('got data ', response3.data);
     setDailyEventsByKindStats(response3.data);
   };
 
@@ -40,7 +40,7 @@ const Statistics = () => {
         </h1>
         <p className="text-center font-medium	mt-4 mb-8 text-[16px] md:text-[22px] text-nostr-solid-darker max-w-2xl mx-auto">
           Data is collected by nostr.directory crawler from over 250+
-          distributed relays powering nostr
+          distributed relays.
         </p>
 
         <Section mxWidth="max-w-screen-xl" yPadding="m-0">
