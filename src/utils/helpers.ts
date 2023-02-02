@@ -210,3 +210,63 @@ export const defaultRelays = [
   //   "wss://nostream-production-3dbe.up.railway.app",
   //   "wss://pow32.nostr.land"
 ];
+
+export const dailyEventCountQuery = {
+  queries: [
+    {
+      refId: 'A',
+      datasource: {
+        type: 'postgres',
+        uid: 'yykK_M04k',
+      },
+      rawSql:
+        'SELECT\n  $__unixEpochGroupAlias(event_created_at, 1d),\n  count(*) AS "event count"\nFROM events\nWHERE\n  $__unixEpochFilter(event_created_at)\nGROUP BY 1\nORDER BY 1',
+      format: 'time_series',
+      datasourceId: 1,
+      intervalMs: 900000,
+      maxDataPoints: 666,
+    },
+  ],
+  from: '1674690118346',
+  to: '1675294918346',
+};
+
+export const cumulativePubKeyQuery = {
+  queries: [
+    {
+      refId: 'A',
+      datasource: {
+        type: 'postgres',
+        uid: 'yykK_M04k',
+      },
+      rawSql:
+        'SELECT floor((event_created_at)/86400)*86400 AS "time",sum(count(distinct event_pubkey)) OVER (ORDER BY floor((event_created_at)/86400)*86400)\nFROM events\nGROUP BY 1;',
+      format: 'time_series',
+      datasourceId: 1,
+      intervalMs: 600000,
+      maxDataPoints: 996,
+    },
+  ],
+  from: '1674690939231',
+  to: '1675295739231',
+};
+
+export const dailyEventsByKindQuery = {
+  queries: [
+    {
+      refId: 'A',
+      datasource: {
+        type: 'postgres',
+        uid: 'yykK_M04k',
+      },
+      rawSql:
+        'select \nfloor((event_created_at)/86400)*86400 AS "time",\ncount(*) as value, \nconcat(\'kind \',event_kind) as metric\nfrom events \nWHERE\n  $__unixEpochFilter(event_created_at)\nGROUP BY 1,3\norder by 1',
+      format: 'time_series',
+      datasourceId: 1,
+      intervalMs: 600000,
+      maxDataPoints: 996,
+    },
+  ],
+  from: '1674691339322',
+  to: '1675296139322',
+};

@@ -1,22 +1,19 @@
-
 import firebase from 'firebase/app';
 import Link from 'next/link';
-
 
 import { Section } from '../layout/Section';
 import { NavbarTwoColumns } from '../navigation/NavbarTwoColumns';
 import { auth, twitterProvider } from '../utils/firebase';
 import { Logo } from './Logo';
 
-
 const Links = [
-  { href: 'https://usenostr.org/', text: 'What is Nostr' },
-  { href: 'https://github.com/nostr-protocol/nostr', text: 'Nostr Protocol' },
-  { href: 'https://www.nostr.net/#clients', text: 'Clients' },
+  { href: 'https://usenostr.org/', text: 'What is Nostr?' },
+  { href: '/stats', text: 'Statistics' },
+  // { href: 'https://github.com/nostr-protocol/nostr', text: 'Nostr Protocol' },
+  // { href: 'https://www.nostr.net/#clients', text: 'Clients' },
 ];
 
 const Navbar = () => {
-
   const popupSignIn = async () => {
     auth
       .signInWithPopup(twitterProvider)
@@ -71,14 +68,13 @@ const Navbar = () => {
       });
   };
 
-
   return (
     <Section yPadding="py-6" mxWidth="max-w-screen-xl">
       <NavbarTwoColumns logo={<Logo xl />}>
         {Links.map((link, index) => {
           return (
             <Link key={index} href={link.href}>
-              <a target="_blank">
+              <a target={link.href.includes('http') ? '_target' : ''}>
                 <li className="py-2 px-6 text-base font-medium hover:bg-[#1d435814] rounded-full ease-in duration-100">
                   {link.text}
                 </li>
@@ -95,7 +91,6 @@ const Navbar = () => {
         </li>
       </NavbarTwoColumns>
     </Section>
-
   );
 };
 

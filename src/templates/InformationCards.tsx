@@ -60,7 +60,7 @@ const InformationCards = () => {
       // extra: "Here's a random client. Give it a try.",
       button_text: 'Go to Github',
       button_class: 'bg-card-a',
-      href: 'https://github.com/pseudozach/nostr.directory',
+      href: 'https://github.com/nostr-protocol/nostr',
     },
   ];
 

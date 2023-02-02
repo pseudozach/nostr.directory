@@ -7,7 +7,14 @@ const FooterCopyright = () => (
       <span>
         {new Date().getFullYear()} {AppConfig.site_name}
       </span>{' '}
-      - Public domain
+      - Made with 💜 for{' '}
+      <a
+        href="https://github.com/nostr-protocol/nostr"
+        target="_blank"
+        rel="noreferrer"
+      >
+        nostr
+      </a>
     </p>
 
     {/* Powered with{' '}
