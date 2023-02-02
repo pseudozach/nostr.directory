@@ -53,7 +53,6 @@ export default async function handler(
     // console.log('data ', data);
     const response = await axios.post(`${GRAFANA_API}`, data, header);
     const { values } = response.data.results.A.frames[0].data;
-    // console.log('got data ', values);
     const arr1 = values[0];
     const arr2 = values[1];
 
@@ -71,7 +70,10 @@ export default async function handler(
       });
       resultArray = resultArray.filter(Boolean);
     } else if (statType === 'dailyEventsByKind') {
-      resultArray = arr1.map((x: number, i: number) => {
+      // console.log('got data ', response.data.results.A.frames);
+      const arr3 = values[2]; // kind2
+      const arr4 = values[3]; // kind3
+      resultArray[0] = arr1.map((x: number, i: number) => {
         // skip first value because it's low due to the timestamp filter
         if (i !== 0) {
           return {
@@ -81,7 +83,28 @@ export default async function handler(
         }
         return null;
       });
+      resultArray[1] = arr1.map((x: number, i: number) => {
+        // skip first value because it's low due to the timestamp filter
+        if (i !== 0) {
+          return {
+            x: new Date(x).toLocaleDateString().slice(0, -5),
+            y: arr3[i],
+          };
+        }
+        return null;
+      });
+      resultArray[2] = arr1.map((x: number, i: number) => {
+        // skip first value because it's low due to the timestamp filter
+        if (i !== 0) {
+          return {
+            x: new Date(x).toLocaleDateString().slice(0, -5),
+            y: arr4[i],
+          };
+        }
+        return null;
+      });
     } else {
+      // daily total event count
       resultArray = arr1.map((x: number, i: number) => {
         // skip first value because it's low due to the timestamp filter
         if (i !== 0) {

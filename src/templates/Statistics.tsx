@@ -9,15 +9,19 @@ import {
   VictoryTooltip,
   VictoryVoronoiContainer,
   VictoryAxis,
+  VictoryLegend,
 } from 'victory';
 
 import { Section } from '../layout/Section';
 
 const Statistics = () => {
-  const [cumulativePubKeyStats, setCumulativePubKeyStats] = useState([]);
+  const [cumulativePubKeyStats, setCumulativePubKeyStats] = useState([
+    { x: '1/1', y: 0 },
+  ]);
   const [dailyEventCountStats, setDailyEventCountStats] = useState([
     { x: '1/1', y: 0 },
   ]);
+  const [dailyEventsByKindStats, setDailyEventsByKindStats] = useState([]);
 
   const fetchStats = async () => {
     const response = await axios.get(`/api/stats?type=cumulativePubKey`);
@@ -27,6 +31,10 @@ const Statistics = () => {
     const response2 = await axios.get(`/api/stats?type=dailyEventCount`);
     // console.log('got data ', response2.data);
     setDailyEventCountStats(response2.data);
+
+    const response3 = await axios.get(`/api/stats?type=dailyEventsByKind`);
+    console.log('got data ', response3.data);
+    setDailyEventsByKindStats(response3.data);
   };
 
   useEffect(() => {
@@ -50,45 +58,15 @@ const Statistics = () => {
             direction="column"
             className="!content-evenly !items-center"
           >
-            {/* <Card>
-              <CardContent>
-                <Stack direction="column" spacing={5}>
-                  <Typography variant="subtitle2">
-                    Total Number of Public Keys
-                  </Typography>
-                  <VictoryChart
-                    theme={VictoryTheme.material}
-                    domainPadding={20}
-                    containerComponent={
-                      <VictoryVoronoiContainer
-                        voronoiDimension="x"
-                        labels={({ datum }) => datum.y}
-                        labelComponent={
-                          <VictoryTooltip
-                            cornerRadius={0}
-                            flyoutStyle={{ fill: 'white' }}
-                          />
-                        }
-                      />
-                    }
-                  >
-                    <VictoryLine
-                      style={{
-                        data: { stroke: '#c43a31' },
-                        parent: { border: '1px solid #ccc' },
-                      }}
-                      data={cumulativePubKeyStats}
-                    />
-                  </VictoryChart>
-                </Stack>
-              </CardContent>
-            </Card> */}
-
             <Card sx={{ maxWidth: 600, width: '100%' }}>
               <CardContent>
-                <Stack direction="column" className="align-center">
-                  <Typography variant="h6">
+                <Stack direction="column" className="text-center">
+                  <Typography variant="h5">
                     Total Number of Public Keys
+                  </Typography>
+                  <Typography color="success" variant="h6">
+                    {cumulativePubKeyStats[cumulativePubKeyStats.length - 1]!
+                      .y || 0}
                   </Typography>
                   <VictoryChart
                     theme={VictoryTheme.material}
@@ -123,7 +101,7 @@ const Statistics = () => {
                     />
                     <VictoryLine
                       style={{
-                        data: { stroke: '#c43a31' },
+                        data: { stroke: '#1ADACE' },
                         parent: { border: '1px solid #ccc' },
                       }}
                       data={cumulativePubKeyStats}
@@ -135,15 +113,12 @@ const Statistics = () => {
 
             <Card sx={{ maxWidth: 600, width: '100%' }}>
               <CardContent>
-                <Stack direction="column" className="align-center">
-                  <Typography variant="h6">Daily Event Count</Typography>
-                  {/* <Typography color="success" variant="subtitle2">
+                <Stack direction="column" className="text-center">
+                  <Typography variant="h5">Daily Event Count</Typography>
+                  <Typography color="success" variant="h6">
                     Today:{' '}
-                    {dailyEventCountStats[dailyEventCountStats.length - 1].y ||
+                    {dailyEventCountStats[dailyEventCountStats.length - 1]!.y ||
                       0}
-                  </Typography> */}
-                  <Typography variant="caption">
-                    Only tracking event kinds: 0,2,3
                   </Typography>
                   <VictoryChart
                     theme={VictoryTheme.material}
@@ -178,10 +153,89 @@ const Statistics = () => {
                     />
                     <VictoryLine
                       style={{
-                        data: { stroke: '#c43a31' },
+                        data: { stroke: '#1ADACE' },
                         parent: { border: '1px solid #ccc' },
                       }}
                       data={dailyEventCountStats}
+                    />
+                  </VictoryChart>
+                  <Typography variant="caption">
+                    Only tracking event kinds: 0,2,3
+                  </Typography>
+                </Stack>
+              </CardContent>
+            </Card>
+
+            <Card sx={{ maxWidth: 600, width: '100%' }}>
+              <CardContent>
+                <Stack direction="column" className="text-center">
+                  <Typography variant="h5">
+                    Daily Event Count By Kind
+                  </Typography>
+                  <VictoryChart
+                    theme={VictoryTheme.material}
+                    domainPadding={20}
+                    containerComponent={
+                      <VictoryVoronoiContainer
+                        voronoiDimension="x"
+                        labels={({ datum }) => datum.y}
+                        labelComponent={
+                          <VictoryTooltip
+                            cornerRadius={0}
+                            flyoutStyle={{ fill: 'white' }}
+                          />
+                        }
+                      />
+                    }
+                  >
+                    <VictoryAxis
+                      dependentAxis
+                      style={{
+                        axisLabel: { fontSize: 100, padding: 30 },
+                      }}
+                      tickFormat={(x) => `${x / 1000}k`}
+                    />
+                    <VictoryAxis
+                      // label="Label"
+                      style={{
+                        // axis: { stroke: '#756f6a' },
+                        axisLabel: { fontSize: 10, padding: 30 },
+                        tickLabels: { angle: 45 },
+                      }}
+                    />
+                    <VictoryLine
+                      style={{
+                        data: { stroke: '#1ADACE' },
+                        parent: { border: '1px solid #ccc' },
+                      }}
+                      data={dailyEventsByKindStats[0]}
+                    />
+                    <VictoryLine
+                      style={{
+                        data: { stroke: '#c43a31' },
+                        parent: { border: '1px solid #ccc' },
+                      }}
+                      data={dailyEventsByKindStats[1]}
+                    />
+                    <VictoryLine
+                      style={{
+                        data: { stroke: 'black' },
+                        parent: { border: '1px solid #ccc' },
+                      }}
+                      data={dailyEventsByKindStats[2]}
+                    />
+                    <VictoryLegend
+                      x={125}
+                      y={10}
+                      orientation="horizontal"
+                      gutter={20}
+                      // style={{ border: { stroke: 'black' } }}
+                      colorScale={['#1ADACE', '#c43a31', 'black']}
+                      data={[
+                        { name: 'kind0' },
+                        { name: 'kind2' },
+                        { name: 'kind3' },
+                      ]}
                     />
                   </VictoryChart>
                 </Stack>
