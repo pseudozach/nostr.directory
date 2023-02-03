@@ -43,7 +43,9 @@
     "styled-jsx-plugin-postcss": "^4.0.1",
     "twit": "^2.2.11",
     "twitter-api-sdk": "^1.2.1",
-    "victory": "^36.6.8"
+    "verify-github-webhook-secret": "^2.0.9",
+    "victory": "^36.6.8",
+    "websocket-polyfill": "^0.0.3"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^12.0.9",
