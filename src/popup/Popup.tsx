@@ -356,6 +356,7 @@ export default function AlertDialog(props: PopupProps) {
 
           .copyToClipboardContainer code {
             flex: 1;
+            overflow-wrap: anywhere;
           }
           p {
             font-weight: 700;
