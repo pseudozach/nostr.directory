@@ -2,6 +2,12 @@
 * easy way to find people on nostr that you already follow on twitter/telegram/mastodon
 * nostr anchored social profiles
 
+## Bounties
+* Please feel free to open issues and assign bounties to them as funders.
+* Look at the list of issues/feature requests to claim bounties for fixing/delivering them.
+
+We want to make this a useful and functional tool.
+
 # build & run 
 ### locally
 * `git clone https://github.com/pseudozach/nostr.directory && cd nostr.directory`  
