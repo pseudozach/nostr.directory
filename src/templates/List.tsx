@@ -158,7 +158,7 @@ const List = () => {
       rowData.tweetId = rowData.id_str;
       rowData.url = rowData.entities?.urls[0]?.url || '';
       rowData.profile = `/p/${rowData.nPubKey}`;
-      rowData.followersCount = rowData.user.followers_count;
+      rowData.followersCount = rowData?.user?.followers_count;
       rawArray.push(rowData);
     });
     // console.log('rawArray length: ', rawArray.length);
