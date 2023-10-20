@@ -185,7 +185,7 @@ const FollowList = () => {
           <Tooltip title="Pubkey is not verified on nostr." placement="top">
             <div>
               <img src="/assets/images/not verified.png" alt="" />
-              <p>Verified</p>
+              <p>Not Verified</p>
               <style jsx>{`
                 div {
                   display: flex;
