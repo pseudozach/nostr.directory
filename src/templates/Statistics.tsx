@@ -1,36 +1,32 @@
-import { useEffect, useState } from 'react';
-
-import axios from 'axios';
-
 import { Section } from '../layout/Section';
 import { Stats } from './Stats';
 
 const Statistics = () => {
-  const [cumulativePubKeyStats, setCumulativePubKeyStats] = useState([
-    { x: '1/1', y: 0 },
-  ]);
-  const [dailyEventCountStats, setDailyEventCountStats] = useState([
-    { x: '1/1', y: 0 },
-  ]);
-  const [dailyEventsByKindStats, setDailyEventsByKindStats] = useState([]);
+  // const [cumulativePubKeyStats, setCumulativePubKeyStats] = useState([
+  //   { x: '1/1', y: 0 },
+  // ]);
+  // const [dailyEventCountStats, setDailyEventCountStats] = useState([
+  //   { x: '1/1', y: 0 },
+  // ]);
+  // const [dailyEventsByKindStats, setDailyEventsByKindStats] = useState([]);
 
-  const fetchStats = async () => {
-    const response = await axios.get(`/api/stats?type=cumulativePubKey`);
-    // console.log('got data ', response.data);
-    setCumulativePubKeyStats(response.data);
+  // const fetchStats = async () => {
+  //   const response = await axios.get(`/api/stats?type=cumulativePubKey`);
+  //   // console.log('got data ', response.data);
+  //   setCumulativePubKeyStats(response.data);
 
-    const response2 = await axios.get(`/api/stats?type=dailyEventCount`);
-    // console.log('got data ', response2.data);
-    setDailyEventCountStats(response2.data);
+  //   const response2 = await axios.get(`/api/stats?type=dailyEventCount`);
+  //   // console.log('got data ', response2.data);
+  //   setDailyEventCountStats(response2.data);
 
-    const response3 = await axios.get(`/api/stats?type=dailyEventsByKind`);
-    // console.log('got data ', response3.data);
-    setDailyEventsByKindStats(response3.data);
-  };
+  //   const response3 = await axios.get(`/api/stats?type=dailyEventsByKind`);
+  //   // console.log('got data ', response3.data);
+  //   setDailyEventsByKindStats(response3.data);
+  // };
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
+  // useEffect(() => {
+  //   fetchStats();
+  // }, []);
 
   return (
     <>
@@ -40,14 +36,14 @@ const Statistics = () => {
         </h1>
         <p className="text-center font-medium	mt-4 mb-8 text-[16px] md:text-[22px] text-nostr-solid-darker max-w-2xl mx-auto">
           Data is collected by nostr.directory crawler from over 250+
-          distributed relays.
+          distributed relays. Last 1 hour of data is shown.
         </p>
 
         <Section mxWidth="max-w-screen-xl" yPadding="m-0">
           <Stats
-            cumulativePubKeyStats={cumulativePubKeyStats}
-            dailyEventCountStats={dailyEventCountStats}
-            dailyEventsByKindStats={dailyEventsByKindStats}
+          // cumulativePubKeyStats={cumulativePubKeyStats}
+          // dailyEventCountStats={dailyEventCountStats}
+          // dailyEventsByKindStats={dailyEventsByKindStats}
           />
         </Section>
       </Section>

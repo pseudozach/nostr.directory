@@ -50,7 +50,6 @@ export default async function handler(
       new Date().getTime() - 15 * 24 * 60 * 60 * 1000
     ).getTime()}`;
     data.to = `${new Date().getTime()}`;
-    // console.log('data ', data);
     const response = await axios.post(`${GRAFANA_API}`, data, header);
     const { values } = response.data.results.A.frames[0].data;
     const arr1 = values[0]; // kind0

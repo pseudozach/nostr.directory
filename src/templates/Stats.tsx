@@ -1,13 +1,6 @@
-import { Stack, Card, Typography } from '@mui/material';
-import {
-  VictoryChart,
-  VictoryTheme,
-  VictoryLine,
-  VictoryTooltip,
-  VictoryVoronoiContainer,
-  VictoryAxis,
-  VictoryLegend,
-} from 'victory';
+import { Stack, Card } from '@mui/material';
+
+const oneDay = 1 * 24 * 60 * 60 * 1000;
 
 export const CardContainer = ({ children }: any) => {
   return (
@@ -27,11 +20,7 @@ export const CardContainer = ({ children }: any) => {
   );
 };
 
-export function Stats({
-  cumulativePubKeyStats,
-  dailyEventCountStats,
-  dailyEventsByKindStats,
-}: any) {
+export function Stats() {
   return (
     <>
       <Stack
@@ -39,12 +28,52 @@ export function Stats({
         direction={{ xs: 'column', lg: 'row' }}
         className="!content-evenly !items-center mb-4"
       >
-        <CardContainer>
+        <iframe
+          src={`https://grafana.nostr.directory/d-solo/E5QpXGAVk/nostr-events?orgId=1&from=${
+            Date.now() - oneDay
+          }&to=${Date.now()}&panelId=9`}
+          allowFullScreen={true}
+          frameBorder={0}
+          width="100%"
+          height="480"
+        ></iframe>
+
+        <iframe
+          src={`https://grafana.nostr.directory/d-solo/E5QpXGAVk/nostr-events?orgId=1&from=${
+            Date.now() - oneDay
+          }&to=${Date.now()}&panelId=11`}
+          allowFullScreen={true}
+          frameBorder={0}
+          width="100%"
+          height="480"
+        ></iframe>
+
+        <iframe
+          src={`https://grafana.nostr.directory/d-solo/E5QpXGAVk/nostr-events?orgId=1&from=${
+            Date.now() - oneDay
+          }&to=${Date.now()}&panelId=7`}
+          allowFullScreen={true}
+          frameBorder={0}
+          width="100%"
+          height="480"
+        ></iframe>
+
+        <iframe
+          src={`https://grafana.nostr.directory/d-solo/E5QpXGAVk/nostr-events?orgId=1&from=${
+            Date.now() - oneDay
+          }&to=${Date.now()}&panelId=5`}
+          allowFullScreen={true}
+          frameBorder={0}
+          width="100%"
+          height="480"
+        ></iframe>
+
+        {/* <CardContainer>
           <Stack direction="column" className="text-center">
             <div className="h-16">
               <Typography variant="h5">Total Number of Public Keys</Typography>
               <Typography color="success" variant="h6">
-                {cumulativePubKeyStats[cumulativePubKeyStats.length - 1]!.y ||
+                {cumulativePubKeyStats[cumulativePubKeyStats.length - 1]?.y ||
                   0}
               </Typography>
             </div>
@@ -110,7 +139,7 @@ export function Stats({
               <Typography variant="h5">Daily Event Count</Typography>
               <Typography color="success" variant="h6">
                 Today:{' '}
-                {dailyEventCountStats[dailyEventCountStats.length - 1]!.y || 0}
+                {dailyEventCountStats[dailyEventCountStats.length - 1]?.y || 0}
               </Typography>
             </div>
             <VictoryChart
@@ -141,10 +170,9 @@ export function Stats({
                 }}
                 tickFormat={(x) => `${x / 1000}k`}
               />
-              <VictoryAxis // label="Label"
+              <VictoryAxis
                 tickFormat={(x) => `${x}`.slice(0, -4) + `${x}`.slice(-2)}
                 style={{
-                  // axis: { stroke: '#756f6a' },
                   axisLabel: {
                     fontSize: 10,
                     padding: 30,
@@ -312,10 +340,9 @@ export function Stats({
                 }}
                 tickFormat={(x) => `${x / 1000}k`}
               />
-              <VictoryAxis // label="Label"
+              <VictoryAxis
                 tickFormat={(x) => `${x}`.slice(0, -4) + `${x}`.slice(-2)}
                 style={{
-                  // axis: { stroke: '#756f6a' },
                   axisLabel: {
                     fontSize: 10,
                     padding: 30,
@@ -358,17 +385,6 @@ export function Stats({
                 }}
                 data={dailyEventsByKindStats[5]}
               />
-              {/* <VictoryLine
-                style={{
-                  data: {
-                    stroke: 'yellow',
-                  },
-                  parent: {
-                    border: '1px solid #ccc',
-                  },
-                }}
-                data={dailyEventsByKindStats[6]}
-              /> */}
               <VictoryLegend
                 x={0}
                 y={10}
@@ -386,14 +402,11 @@ export function Stats({
                   {
                     name: 'Reaction',
                   },
-                  // {
-                  //   name: 'Channel Creation',
-                  // },
                 ]}
               />
             </VictoryChart>
           </Stack>
-        </CardContainer>
+        </CardContainer> */}
 
         {/* <CardContainer>
           <Stack direction="column" className="text-center">
