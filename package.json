@@ -2,6 +2,7 @@
   "name": "next-js-boilerplate",
   "version": "1.0.0",
   "scripts": {
+    "test": "node --test tests/analytics.test.cjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -24,6 +25,7 @@
     "@noble/hashes": "^1.1.5",
     "@noble/secp256k1": "^1.7.0",
     "@nostrgg/client": "^0.1.1",
+    "@plausible-analytics/tracker": "0.4.6",
     "algoliasearch": "^4.14.2",
     "autosuggest-highlight": "^3.3.4",
     "axios": "^1.2.1",
