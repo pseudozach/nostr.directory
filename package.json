@@ -1,8 +1,11 @@
 {
   "name": "next-js-boilerplate",
   "version": "1.0.0",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
-    "test": "node --test tests/analytics.test.cjs",
+    "test": "node --test tests/*.test.cjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -28,15 +31,15 @@
     "@plausible-analytics/tracker": "0.4.6",
     "algoliasearch": "^4.14.2",
     "autosuggest-highlight": "^3.3.4",
-    "axios": "^1.2.1",
+    "axios": "1.21.0",
     "bech32": "^2.0.0",
     "classnames": "^2.3.1",
     "firebase": "^8.10.1",
     "firestore-backfire": "^2.4.0",
     "instantsearch.js": "^4.49.2",
-    "lodash": "^4.17.21",
+    "lodash": "4.18.1",
     "lodash.throttle": "^4.1.1",
-    "next": "^12.0.9",
+    "next": "12.3.7",
     "next-seo": "^4.29.0",
     "nostr-tools": "^1.1.2",
     "qrcode.react": "^3.1.0",
@@ -50,7 +53,7 @@
     "websocket-polyfill": "^0.0.3"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^12.0.9",
+    "@next/bundle-analyzer": "12.3.7",
     "@types/autosuggest-highlight": "^3.2.0",
     "@types/lodash": "^4.14.191",
     "@types/node": "^17.0.13",
@@ -64,7 +67,7 @@
     "eslint": "^8.7.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-airbnb-typescript": "^16.1.0",
-    "eslint-config-next": "^12.0.9",
+    "eslint-config-next": "12.3.7",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-jsx-a11y": "^6.5.1",

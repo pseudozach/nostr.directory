@@ -86,7 +86,9 @@ export default async function handler(
       // get user's latest relay list and serve it as per NIP-05
       const response = await axios.get(
         `${POSTGREST_API}/events?select=event_content&event_kind=eq.2&event_pubkey=eq.\\x${hexPubKey}&order=event_created_at.desc&limit=1`,
-        header
+        // Relay hints are optional: never let the legacy service consume the
+        // serverless deadline and prevent returning the resolved public key.
+        { ...header, timeout: 2000 }
       );
       if (response.data[0].event_content) {
         const obj = {

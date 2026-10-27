@@ -1,5 +1,5 @@
-import { Section } from '../layout/Section';
 import { Stats } from './Stats';
+import { Section } from '../layout/Section';
 
 const Statistics = () => {
   // const [cumulativePubKeyStats, setCumulativePubKeyStats] = useState([
@@ -32,11 +32,11 @@ const Statistics = () => {
     <>
       <Section yPadding="pt-20 max-w-screen-xl">
         <h1 className="font-black md:text-[56px] text-[40px] text-nostr-solid-darker tracking-tight text-center leading-[48px] md:leading-[68px]">
-          Live Statistics from Nostr Relays
+          Relay Statistics
         </h1>
         <p className="text-center font-medium	mt-4 mb-8 text-[16px] md:text-[22px] text-nostr-solid-darker max-w-2xl mx-auto">
-          Data is collected by nostr.directory crawler from over 250+
-          distributed relays. Last 1 hour of data is shown.
+          Legacy crawler charts are provided separately from the directory.
+          Availability and data freshness are not currently verified.
         </p>
 
         <Section mxWidth="max-w-screen-xl" yPadding="m-0">

@@ -182,7 +182,7 @@ export default function AlertDialog(props: PopupProps) {
 
   const verificationText = `@npub1teawtzxh6y02cnp9jphxm2q8u6xxfx85nguwg6ftuksgjctvavvqnsgq5u Verifying My Public Key: "${
     twitterHandle || 'Your twitter handle here'
-  }"`
+  }"`;
 
   return (
     <>
@@ -236,7 +236,11 @@ export default function AlertDialog(props: PopupProps) {
             </Typography>
             <div className="copyToClipboardContainer">
               <code>{verificationText}</code>
-              <button onClick={() => navigator.clipboard.writeText(verificationText)}>Copy to clipboard</button>
+              <button
+                onClick={() => navigator.clipboard.writeText(verificationText)}
+              >
+                Copy to clipboard
+              </button>
             </div>
             <p>Twitter screen name</p>
             <TextField

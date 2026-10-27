@@ -1,5 +1,3 @@
-import { ReactNode } from 'react';
-
 import className from 'classnames';
 
 type IButtonProps = {
