@@ -6,6 +6,38 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
 
-.data-grid__resposive .dx-datagrid .dx-datagrid-rowsview .dx-scrollable-scrollbar.dx-scrollbar-horizontal.dx-scrollbar-hoverable{  
-       display: none;  
-}  
+/* These styles are scoped to the directory; existing brand components stay intact. */
+.directory-shell { width: 100%; max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; }
+.directory-shell, .directory-editor { color: #344350; overflow-wrap: anywhere; min-width: 0; }
+.directory-shell h1 { font-size: 1.8rem; font-weight: 700; margin: 1rem 0; }
+.directory-shell h2, .directory-editor h2 { font-size: 1.35rem; font-weight: 700; margin: .7rem 0; }
+.directory-shell h3, .directory-editor h3 { font-weight: 600; margin: .7rem 0; }
+.directory-shell p, .directory-editor p { margin: .65rem 0; }
+.directory-search { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) auto; gap: .8rem; align-items: end; margin: 1.5rem 0; }
+.directory-shell label, .directory-editor label { display: flex; flex-direction: column; gap: .35rem; font-weight: 500; min-width: 0; }
+.directory-shell input, .directory-shell select, .directory-editor input, .directory-editor textarea { width: 100%; min-width: 0; border: 1px solid #778b99; border-radius: .5rem; padding: .65rem; background: white; color: #243645; }
+.directory-editor textarea { min-height: 6rem; resize: vertical; }
+.directory-shell button, .directory-editor button, .directory-action { border: 1px solid #5684c9; border-radius: .65rem; padding: .65rem 1rem; background: #edf1fc; color: #283d68; font-weight: 600; margin: .25rem 0; }
+.directory-shell button:disabled, .directory-editor button:disabled { opacity: .55; cursor: not-allowed; }
+.directory-shell a { color: #315998; text-decoration: underline; }
+.directory-shell :focus-visible, .directory-editor :focus-visible, .directory-action:focus-visible { outline: 3px solid #5684c9; outline-offset: 3px; }
+.directory-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 1rem 0; }
+.directory-card, .directory-editor, .directory-coverage { border: 1px solid #d2dce5; border-radius: .8rem; background: white; padding: 1.2rem; min-width: 0; }
+.directory-editor { margin: 1rem 0; }
+.directory-person-heading { display: flex; align-items: center; gap: .75rem; min-width: 0; }
+.directory-avatar { flex-shrink: 0; max-width: 12rem; }
+.directory-avatar-disclosure { display: block; margin-top: .25rem; font-size: .75rem; font-weight: 400; }
+.directory-person-heading img { border-radius: 50%; flex-shrink: 0; object-fit: cover; width: 48px; height: 48px; }
+.directory-key { font-family: monospace; font-size: .85rem; overflow-wrap: anywhere; }
+.directory-evidence li { margin: .6rem 0; }
+.directory-shell pre, .directory-editor pre { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; max-width: 100%; font-size: .8rem; background: #f3f6fa; padding: .65rem; border-radius: .4rem; }
+.directory-shell summary, .directory-editor summary { cursor: pointer; text-decoration: underline; }
+.directory-editor .directory-consent { flex-direction: row; align-items: flex-start; gap: .6rem; margin: 1rem 0; }
+.directory-editor input[type='checkbox'] { width: 1.2rem; min-width: 1.2rem; height: 1.2rem; margin-top: .2rem; }
+.directory-editor form { display: grid; gap: .75rem; margin: 1rem 0; }
+@media (max-width: 720px) {
+  .directory-search { grid-template-columns: minmax(0, 1fr); }
+  .directory-grid { grid-template-columns: minmax(0, 1fr); }
+  .directory-card, .directory-editor, .directory-coverage { padding: .85rem; }
+  .directory-shell { padding: 1rem .75rem; }
+}

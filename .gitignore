@@ -33,3 +33,11 @@ local
 
 # vercel
 .vercel
+
+# Private implementation state, vendor qualification binaries and local data
+/.hermes/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+/test-results/
+/playwright-report/

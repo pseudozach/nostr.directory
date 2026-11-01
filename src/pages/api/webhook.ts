@@ -54,6 +54,8 @@ export default async function handler(
 
       // publish note on nostr
       const updatedEvent: nostrTools.Event = {
+        id: '',
+        sig: '',
         kind: nostrTools.Kind.Text,
         created_at: Math.floor(Date.now() / 1000),
         tags: [],
@@ -70,17 +72,11 @@ export default async function handler(
       );
 
       // console.log('signed note ', updatedEvent);
-      const pub = relay.publish(updatedEvent);
-      // pub.on('ok', () => {
-      //   console.log(`${relay.url} has accepted our event`);
-      // });
-      pub.on('seen', async () => {
-        console.log(`we saw the event on ${relay.url}`);
-        await relay.close();
-      });
-      pub.on('failed', (reason: any) => {
-        console.log(`failed to publish to ${relay.url}: `, reason);
-      });
+      try {
+        await relay.publish(updatedEvent);
+      } finally {
+        relay.close();
+      }
     });
 
     res.status(200).json({ status: 'ok' });

@@ -22,6 +22,7 @@ import { useRouter } from 'next/router';
 import * as nostrTools from 'nostr-tools';
 
 import DynamicButton from '../button/DynamicButton';
+import { publishLegacyEvent } from '../identity/legacy-publish';
 import { Section } from '../layout/Section';
 
 interface CustomWindow extends Window {
@@ -52,7 +53,7 @@ const FollowList = () => {
   };
 
   const handleCloseToast = (
-    event: React.SyntheticEvent | Event,
+    _event: React.SyntheticEvent | Event,
     reason?: string
   ) => {
     if (reason === 'clickaway') {
@@ -478,6 +479,8 @@ const FollowList = () => {
       // add the new list and publish
       const updatedEvent: nostrTools.Event = {
         ...beforeContacts,
+        id: '',
+        sig: '',
         kind: nostrTools.Kind.Contacts,
         created_at: Math.floor(Date.now() / 1000),
         tags,
@@ -492,21 +495,8 @@ const FollowList = () => {
       // console.log('signedEvent ', signedEvent);
 
       if (relayConnection) {
-        const pub = relayConnection.publish(signedEvent);
-        pub.on('ok', (ev: any) => {
-          console.log(`${relayConnection.url} has accepted our event `, ev);
-        });
-        pub.on('seen', (ev: any) => {
-          console.log(`we saw the event on ${relayConnection.url} `, ev);
-          setAlertOpen(true);
-        });
-        pub.on('failed', (reason: any) => {
-          console.log(`failed to publish to ${relayConnection.url}: ${reason}`);
-          setErrorAlert({
-            open: true,
-            text: `Failed to publish event with reason: ${reason}`,
-          });
-        });
+        await publishLegacyEvent(relayConnection, signedEvent);
+        setAlertOpen(true);
       } else {
         throw new Error(
           'Failed to publish, lost relay connection. Refresh and try again.'

@@ -1,0 +1,17 @@
+url = "ws://127.0.0.1:18138/"
+bind = "0.0.0.0:18138"
+metrics_bind = ""
+data_dir = "/data"
+name = "Nostr Directory canonical event store"
+contact = "https://nostr.directory/"
+nip85 = false
+trends_interval = 0
+history = false
+history_max_versions = 2
+max_message_size = 65536
+max_subscriptions = 20
+max_limit = 1000
+search = true
+search_commit_ms = 100
+[tor]
+enabled = false

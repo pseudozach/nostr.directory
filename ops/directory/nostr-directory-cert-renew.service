@@ -1,0 +1,5 @@
+[Unit]
+Description=Nostr Directory API certificate renewal
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/certbot renew --cert-name api.nostr.directory --non-interactive --quiet --no-random-sleep-on-renew

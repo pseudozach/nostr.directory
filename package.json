@@ -41,7 +41,7 @@
     "lodash.throttle": "^4.1.1",
     "next": "12.3.7",
     "next-seo": "^4.29.0",
-    "nostr-tools": "^1.1.2",
+    "nostr-tools": "1.17.0",
     "qrcode.react": "^3.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -50,15 +50,18 @@
     "twitter-api-sdk": "^1.2.1",
     "verify-github-webhook-secret": "^2.0.9",
     "victory": "^36.6.8",
-    "websocket-polyfill": "^0.0.3"
+    "websocket-polyfill": "^0.0.3",
+    "ws": "8.22.1"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "12.3.7",
     "@types/autosuggest-highlight": "^3.2.0",
     "@types/lodash": "^4.14.191",
-    "@types/node": "^17.0.13",
+    "@types/node": "22.20.0",
     "@types/react": "^17.0.38",
+    "@types/react-dom": "17.0.26",
     "@types/twit": "^2.2.31",
+    "@types/ws": "8.18.1",
     "@typescript-eslint/eslint-plugin": "^5.10.1",
     "@typescript-eslint/parser": "^5.10.1",
     "autoprefixer": "^10.4.2",
@@ -82,7 +85,9 @@
     "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
     "tailwindcss": "^3.0.17",
-    "typescript": "^4.5.5"
+    "tsx": "4.21.0",
+    "typescript": "5.9.3",
+    "vitest": "5.0.5"
   },
-  "license": "ISC"
+  "license": "MIT"
 }

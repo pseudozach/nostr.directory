@@ -1,0 +1,34 @@
+services:
+  relay:
+    image: ubuntu@sha256:d1e2e92c075e5ca139d51a140fff46f84315c0fdce203eab2807c7e495eff4f9
+    command: ["/ditto-relay", "--config", "/config.toml"]
+    user: "65534:65534"
+    read_only: true
+    init: true
+    restart: unless-stopped
+    mem_limit: 512m
+    cpus: 0.5
+    pids_limit: 128
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    environment:
+      TOKIO_WORKER_THREADS: "2"
+      RAYON_NUM_THREADS: "2"
+    networks:
+      default:
+        ipv4_address: 172.19.0.2
+    volumes:
+      - /opt/nostr-directory/ditto-relay:/ditto-relay:ro
+      - ./ditto.toml:/config.toml:ro
+      - /var/lib/nostr-directory/relay:/data
+    tmpfs: ["/tmp:rw,nosuid,nodev,noexec,size=16777216"]
+    logging:
+      driver: json-file
+      options: { max-size: "5m", max-file: "2" }
+networks:
+  default:
+    internal: true
+    ipam:
+      config:
+        - subnet: 172.19.0.0/16
+          gateway: 172.19.0.1

@@ -1,0 +1,40 @@
+[Unit]
+Description=Nostr Directory bounded relay-backed API
+After=network-online.target docker.service
+Wants=network-online.target
+[Service]
+Type=simple
+DynamicUser=yes
+StateDirectory=nostr-directory-index
+WorkingDirectory=/opt/nostr-directory/current
+ExecStart=/opt/nostr-directory/node22.22.0 /opt/nostr-directory/current/src/main.cjs
+Environment=DIRECTORY_HOST=127.0.0.1
+Environment=DIRECTORY_PORT=18140
+Environment=DIRECTORY_SQLITE_PATH=/var/lib/nostr-directory-index/index.sqlite
+Environment=DIRECTORY_RELAY_URL=ws://172.19.0.2:18138
+Environment=DIRECTORY_PEERS=wss://relay.primal.net,wss://relay.damus.io
+Environment=DIRECTORY_MAX_AUTHORS=10000
+Environment=DIRECTORY_BOOTSTRAP_AUTHORS=300
+Environment=DIRECTORY_INTERVAL_MS=300000
+Environment=DIRECTORY_PROOFS_ENABLED=true
+Environment=NODE_OPTIONS=--max-old-space-size=384
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=25
+MemoryMax=768M
+CPUQuota=75%
+TasksMax=80
+UMask=0077
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+LockPersonality=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+CapabilityBoundingSet=
+[Install]
+WantedBy=multi-user.target
