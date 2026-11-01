@@ -25,7 +25,7 @@ Certificate renewal is scoped to the API hostname by `nostr-directory-cert-renew
 ```sh
 systemctl is-active nostr-directory-api nostr-directory-cert-renew.timer
 curl --fail --silent --show-error https://api.nostr.directory/health
-curl --fail --silent --show-error 'https://api.nostr.directory/api/directory?limit=1'
+curl --fail --silent --show-error 'https://api.nostr.directory/api/directory'
 journalctl -u nostr-directory-api --since '-15 minutes' --no-pager
 ```
 
